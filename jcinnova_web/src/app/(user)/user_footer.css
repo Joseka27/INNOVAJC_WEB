@@ -1,0 +1,185 @@
+/*Footer general options*/
+footer {
+  background-color: #f2f2f2;
+  color: #616161;
+}
+
+/*Footer around margin/*/
+.section-footer {
+  padding: 2.5rem 4rem;
+}
+
+/*Footer general display*/
+.pg_footer {
+  display: flex;
+  flex-direction: column;
+}
+
+/*=============== Footer topside information ===============*/
+.pg_footer-information {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 1rem;
+}
+
+/*Logo and Title*/
+.pg_footer-logotext {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+}
+
+.pg_footer-logotext h4 {
+  font-size: 2rem;
+  padding-left: 2rem;
+  color: #176aad;
+  font-weight: bold;
+}
+
+/*Footer divider in 3 (Info-Links-Socials*/
+.pg_footer-information-div {
+  width: 150px;
+  margin: 2rem;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  flex: 1;
+}
+
+/*First child specific configuration*/
+.pg_footer-information-div:first-child {
+  gap: 2rem;
+  flex: 6;
+}
+
+.pg_footer-information-div:first-child p {
+  font-size: 1rem;
+  line-height: 1.5;
+  max-width: 800px;
+  text-align: justify;
+  font-weight: 700;
+}
+
+/*Second child specific configuration*/
+.pg_footer-information-div:nth-child(2) {
+  gap: 1.7rem;
+  padding-top: 1.5rem;
+}
+
+.pg_footer-information-div:nth-child(2) p {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.pg_footer-information-div:nth-child(2) p:hover {
+  color: #176aad;
+  text-decoration: underline;
+}
+
+/*Third child specific configuration*/
+.pg_footer-information-div:nth-child(3) {
+  gap: 1.7rem;
+  padding-top: 1.5rem;
+}
+
+.socialmedia {
+  display: flex;
+  flex-direction: colmun;
+}
+.socialmedia a {
+  transition: transform 0.2s ease-in-out;
+}
+.socialmedia a:hover {
+  color: #176aad;
+  transform: scale(1.2);
+}
+
+.socialmedia p {
+  width: 80%;
+}
+
+.pg_footer-information-div p {
+  line-height: 15px;
+  cursor: poniter;
+}
+
+/*=============== Footer botton side information (terms) ===============*/
+.pg_footer-terms {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.pg_footer-termslink {
+  display: flex;
+  flex-direction: row;
+}
+
+.pg_footer-termslink p {
+  font-size: 13px;
+  line-height: 15px;
+  margin-left: 2rem;
+  font-weight: 600;
+}
+
+hr {
+  width: 100%;
+}
+
+.pg_footer-copyright p {
+  font-size: 13px;
+  line-height: 15px;
+  font-weight: 600;
+}
+
+/*Footer Responsive Style ==========================*/
+
+@media screen and (max-width: 850px) {
+  .pg_footer-heading h1 {
+    font-size: 44px;
+    line-height: 50px;
+  }
+}
+
+@media screen and (max-width: 550px) {
+  .pg_footer-heading h1 {
+    font-size: 34px;
+    line-height: 42px;
+  }
+
+  .pg_footer-links div {
+    margin: 1rem 0;
+  }
+
+  .pg_footer-btn p {
+    font: 15px;
+    line-height: 20px;
+  }
+
+  .pg_footer-terms {
+    flex-direction: column;
+    justify-content: left;
+  }
+
+  .pg_footer-terms-links {
+    flex-direction: column;
+  }
+
+  .pg_footer-terms-links p {
+    margin-left: 0rem;
+    margin-top: 1rem;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .pg_footer-heading h1 {
+    font-size: 27px;
+    line-height: 38px;
+  }
+}
