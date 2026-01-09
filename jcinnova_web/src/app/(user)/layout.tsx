@@ -51,12 +51,13 @@ export default function RootLayout({
                 <div className="pg_footer-information-div">
                   <div className="pg_footer-logotext">
                     <Image
+                      className="imagelogo"
                       src="/Logo_InnovaJC.png"
                       alt="Logo"
                       width={150}
                       height={100}
                     ></Image>
-                    <h4>Soluciones Integrales InnovaJC</h4>
+                    <h3>Soluciones Integrales InnovaJC</h3>
                   </div>
                   <p>
                     Software de Gestión Contable y Administrativa para
@@ -67,20 +68,22 @@ export default function RootLayout({
                   </p>
                 </div>
                 <div className="pg_footer-information-div">
-                  <Link href="/about">
-                    <p>Sobre Nosotros</p>
-                  </Link>
-                  <Link href="/customers">
-                    <p>Clientes</p>
-                  </Link>
-                  <Link href="/downloads">
-                    <p>Descargar</p>
-                  </Link>
-                  <Link href="/contact">
-                    <p>Contactanos</p>
-                  </Link>
+                  <h4>Enlaces Directos</h4>
+                  <div className="pg_footer-linkrouter">
+                    <Link href="/about">Sobre Nosotros</Link>
+                  </div>
+                  <div className="pg_footer-linkrouter">
+                    <Link href="/customers">Clientes</Link>
+                  </div>
+                  <div className="pg_footer-linkrouter">
+                    <Link href="/downloads">Descargar</Link>
+                  </div>
+                  <div className="pg_footer-linkrouter">
+                    <Link href="/contact">Contactanos</Link>
+                  </div>
                 </div>
                 <div className="pg_footer-information-div">
+                  <h4>Redes Sociales</h4>
                   <div className="socialmedia flex gap-4 text-[#616161] text-4xl">
                     <a href="https://facebook.com">
                       <FaFacebook />
