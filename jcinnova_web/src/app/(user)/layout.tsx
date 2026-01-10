@@ -40,11 +40,42 @@ export default function RootLayout({
       >
         <div className="UserLayout">
           {/*Cabezera de la pagina, barra de navegacion */}
-          <header>Header</header>
+          <header>
+            <div className="pg_header section-header">
+              <div className="pg_header-principal">
+                <div className="pg_header-logo-img">
+                  <Link href="/">
+                    <Image
+                      className="imagelogo"
+                      src="/images/Logo_InnovaJC.png"
+                      alt="Logo"
+                      width={100}
+                      height={50}
+                    ></Image>
+                  </Link>
+                </div>
+                <div className="pg_header-linkrouters-links">
+                  <div className="pg_header-linkrouter">
+                    <Link href="/about">Sobre Nosotros</Link>
+                  </div>
+                  <div className="pg_header-linkrouter">
+                    <Link href="/customers">Clientes</Link>
+                  </div>
+                  <div className="pg_header-linkrouter">
+                    <Link href="/downloads">Descargar</Link>
+                  </div>
+                </div>
+              </div>
+              <div className="pg_header-contactbutton">
+                <Link href="/contact">Contactanos</Link>
+              </div>
+            </div>
+          </header>
+
           {/*Cuerpo de la pagina */}
           {children}
-          {/*Pie de pagina*/}
 
+          {/*Pie de pagina*/}
           <footer>
             <div className="pg_footer section-footer">
               <div className="pg_footer-information">
@@ -52,7 +83,7 @@ export default function RootLayout({
                   <div className="pg_footer-logotext">
                     <Image
                       className="imagelogo"
-                      src="/Logo_InnovaJC.png"
+                      src="/images/Logo_InnovaJC.png"
                       alt="Logo"
                       width={150}
                       height={100}
