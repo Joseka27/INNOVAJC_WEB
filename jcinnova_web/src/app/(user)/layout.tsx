@@ -28,6 +28,35 @@ const roboto = Roboto({
   weight: ["400", "500", "600", "700", "800", "900"], // Puedes elegir los pesos que necesites
 });
 
+const FooterSchedule = () => {
+  const schedule = [
+    { day: "Domingo", hours: "Cerrado" },
+    { day: "Lunes", hours: "6:00 AM - 17:00 PM" },
+    { day: "Martes", hours: "6:00 AM - 17:00 PM" },
+    { day: "Miércoles", hours: "6:00 AM - 17:00 PM" },
+    { day: "Jueves", hours: "6:00 AM - 17:00 PM" },
+    { day: "Viernes", hours: "6:00 AM - 17:00 PM" },
+    { day: "Sábado", hours: "6:00 AM - 12:00 PM" },
+  ];
+
+  const todayIndex = new Date().getDay();
+
+  return (
+    <div className="schedule">
+      <h4>Horario de Atención</h4>
+      {schedule.map((s, index) => (
+        <div
+          key={index}
+          className={`schedule-row ${index === todayIndex ? "today" : ""}`}
+        >
+          <span>{s.day}</span>
+          <span>{s.hours}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -126,6 +155,9 @@ export default function RootLayout({
                       <FaTwitter />
                     </a>
                   </div>
+                </div>
+                <div className="pg_footer-information-div">
+                  <FooterSchedule />
                 </div>
               </div>
               <hr></hr>

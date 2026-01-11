@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+/*page general options*/
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -12,14 +13,104 @@
   }
 }
 
+/*Body general options*/
 body {
   background: var(--background);
   color: var(--foreground);
   font-weight: 500;
 }
 
+/*Divide header-content-footer*/
 .UserLayout {
   display: grid;
   min-height: 100dvh;
   grid-template-rows: auto 1fr auto;
+}
+
+/*Footer general display*/
+.pg_main {
+  display: flex;
+  flex-direction: column;
+}
+
+/*=================First section (Presentation)==============*/
+.pg_main-presentation {
+  background-size: auto;
+  display: flex;
+  justify-content: center;
+}
+
+/*First section content 1*/
+.pg_main-presentation-sections {
+  display: flex;
+  flex-direction: row;
+  margin: 8rem;
+  gap: 40rem;
+}
+
+/*First section content*/
+.pg_main-presentation-section1 {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.pg_main-presentation-section1 h1 {
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 2.5rem;
+  max-width: 40rem;
+}
+
+.h1-span {
+  background: linear-gradient(
+    90deg,
+    #176aad,
+    #00b4ff,
+    #74d5ff,
+    #b3e8ff,
+    #74d5ff,
+    #00b4ff,
+    #176aad
+  );
+  background-size: 200%;
+  animation: moveGradient 3s infinite alternate;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes moveGradient {
+  from {
+    background-position: left;
+  }
+  to {
+    background-position: right;
+  }
+}
+
+.pg_main-presentation-section1 a {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.2rem;
+  background-color: rgb(255, 0, 0);
+  padding: 0.8rem 1rem;
+  border-radius: 2rem;
+  background: linear-gradient(#092044, #092044) padding-box,
+    linear-gradient(to right, #54b2ff, #2d9bf5, #298ce2, #1976d2, #1565c0)
+      border-box;
+  border: 0.25rem solid transparent;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.pg_main-presentation-section1 a:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0px 4px #2196f3, 0 0 8px #42a5f5, 0 0 12px #64b5f6,
+    0 0 16px #90caf9;
+}
+
+/*First section content 2*/
+.pg_main-presentation-section2 {
+  display: flex;
+  flex-direction: row;
 }

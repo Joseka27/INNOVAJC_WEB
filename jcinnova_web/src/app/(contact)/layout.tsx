@@ -39,7 +39,7 @@ export default function RootLayout({
 
         <a
           href="https://wa.me/50684753334"
-          className="whatsapp-button text-3xl"
+          className="whatsapp-button text-4xl"
         >
           <FaWhatsapp />
         </a>

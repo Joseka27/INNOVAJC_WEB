@@ -1,15 +1,15 @@
 .whatsapp-button {
   position: fixed;
-  bottom: 80px;
-  right: 60px;
-  width: 65px;
-  height: 65px;
-  background-color: #25d366; /* color típico WhatsApp */
+  bottom: 25px;
+  right: 25px;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(to top left, #008060, #00c552);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 0 10px 5px rgba(185, 255, 214, 0.568);
   z-index: 9999; /* siempre encima */
   cursor: pointer;
   transition: transform 0.2s ease-in-out;
