@@ -1,8 +1,23 @@
+"use client";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import Image from "next/image";
 
 const Home = () => {
+  const spansRef = useRef<(HTMLSpanElement | null)[]>([]);
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("show");
+        }
+      });
+    });
+    spansRef.current.forEach((span) => {
+      if (span) observer.observe(span);
+    });
+    return () => observer.disconnect();
+  }, []);
   return (
     <>
       <div className="pg_main">
@@ -33,12 +48,39 @@ const Home = () => {
         <div className="pg_main-presentation-part2"></div>
         <div className="pg_main-presentation-part3"></div>
         <div className="pg_main-presentation-part4"></div>
-        <div className="pg_main-presentation-part5"></div>
+        <div className="pg_main-presentation-part5">
+          <h1>a</h1>
+          <h1>a</h1>
+          <h1>a</h1>
+          <h1>a</h1>
+          <h1>a</h1>
+          <h1>a</h1>
+          <h1>a</h1>
+          <h1>a</h1>
+          <h1>a</h1>
+          <h1>a</h1>
+          <h1>a</h1>
+          <h1>a</h1>
+        </div>
         <div className="pg_main-presentation-part6">
           <div className="pg-main-joinus">
             <h1>
-              <span className="h1-span-part6"> Quieres unirte?</span>
-              <span className="h1-span-part6">Ponte en contacto.</span>
+              <span
+                ref={(el) => {
+                  spansRef.current[0] = el;
+                }}
+                className="h1-span-part6"
+              >
+                Quieres unirte?
+              </span>
+              <span
+                ref={(el) => {
+                  spansRef.current[1] = el;
+                }}
+                className="h1-span-part6"
+              >
+                Ponte en contacto.
+              </span>
             </h1>
             <div className="pg_header-linkrouter">
               <Link href="/contact">Contactanos</Link>
