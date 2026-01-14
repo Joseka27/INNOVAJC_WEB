@@ -89,7 +89,8 @@ body {
   }
 }
 
-.pg_main-presentation-section1 a {
+.pg_main-presentation-section1 a,
+.pg-main-joinus a {
   color: #ffffff;
   font-weight: 700;
   font-size: 1.2rem;
@@ -103,7 +104,8 @@ body {
   transition: box-shadow 0.25s ease, transform 0.25s ease;
 }
 
-.pg_main-presentation-section1 a:hover {
+.pg_main-presentation-section1 a:hover,
+.pg-main-joinus a:hover {
   transform: translateY(-2px);
   box-shadow: 0 0px 4px #2196f3, 0 0 8px #42a5f5, 0 0 12px #64b5f6,
     0 0 16px #90caf9;
@@ -113,4 +115,57 @@ body {
 .pg_main-presentation-section2 {
   display: flex;
   flex-direction: row;
+}
+
+/*================= 6 section (Join Us) ==============*/
+.pg_main-presentation-part6 {
+  background-color: #ffffff;
+}
+.pg-main-joinus {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  margin: 15rem;
+  font-size: 5rem;
+  font-weight: 900;
+  gap: 4rem;
+}
+
+.pg-main-joinus h1 {
+  display: flex;
+  flex-direction: column;
+  font-size: 5rem;
+  font-weight: 900;
+  line-height: 5rem;
+}
+
+.pg-main-joinus a {
+  font-size: 2rem;
+  padding: 1rem 2rem;
+  border-radius: 5rem;
+  color: #000000;
+  background: linear-gradient(#ffffff, #ffffff) padding-box,
+    linear-gradient(to right, #54b2ff, #2d9bf5, #298ce2, #1976d2, #1565c0)
+      border-box;
+  font-weight: 800;
+}
+
+.h1-span-part6 {
+  background: linear-gradient(
+    90deg,
+    #176aad,
+    #00b4ff,
+    #74d5ff,
+    hsl(290, 100%, 70%),
+    #74d5ff,
+    #00b4ff,
+    #176aad
+  );
+  background-size: 200%;
+  animation: moveGradient 3s infinite alternate;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }

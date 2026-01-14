@@ -31,19 +31,19 @@ const roboto = Roboto({
 const FooterSchedule = () => {
   const schedule = [
     { day: "Domingo", hours: "Cerrado" },
-    { day: "Lunes", hours: "6:00 AM - 17:00 PM" },
-    { day: "Martes", hours: "6:00 AM - 17:00 PM" },
-    { day: "Miércoles", hours: "6:00 AM - 17:00 PM" },
-    { day: "Jueves", hours: "6:00 AM - 17:00 PM" },
-    { day: "Viernes", hours: "6:00 AM - 17:00 PM" },
-    { day: "Sábado", hours: "6:00 AM - 12:00 PM" },
+    { day: "Lunes", hours: "6:00 AM - 1:00 PM" },
+    { day: "Martes", hours: "6:00 AM - 1:00 PM" },
+    { day: "Miércoles", hours: "6:00 AM - 1:00 PM" },
+    { day: "Jueves", hours: "6:00 AM - 1:00 PM" },
+    { day: "Viernes", hours: "6:00 AM - 1:00 PM" },
+    { day: "Sábado", hours: "6:00 AM - 1:00 PM" },
   ];
 
   const todayIndex = new Date().getDay();
 
   return (
     <div className="schedule">
-      <h4>Horario de Atención</h4>
+      <h4 className="text-center">Horario de Atención</h4>
       {schedule.map((s, index) => (
         <div
           key={index}

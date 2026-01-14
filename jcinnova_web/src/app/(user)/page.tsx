@@ -16,7 +16,7 @@ const Home = () => {
                 y robusto para su negocio.
               </h1>
               <div className="pg_header-linkrouter">
-                <Link href="/about">Más de Nossotros</Link>
+                <Link href="/about">Más de Nosotros</Link>
               </div>
             </div>
             <div className="pg_main-presentation-section2">
@@ -30,38 +30,20 @@ const Home = () => {
             </div>
           </div>
         </div>
-        <div className="Morecontent">
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
-          <h1>HOLA MUNDO</h1>
+        <div className="pg_main-presentation-part2"></div>
+        <div className="pg_main-presentation-part3"></div>
+        <div className="pg_main-presentation-part4"></div>
+        <div className="pg_main-presentation-part5"></div>
+        <div className="pg_main-presentation-part6">
+          <div className="pg-main-joinus">
+            <h1>
+              <span className="h1-span-part6"> Quieres unirte?</span>
+              <span className="h1-span-part6">Ponte en contacto.</span>
+            </h1>
+            <div className="pg_header-linkrouter">
+              <Link href="/contact">Contactanos</Link>
+            </div>
+          </div>
         </div>
       </div>
     </>
