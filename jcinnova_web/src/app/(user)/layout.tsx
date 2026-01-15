@@ -76,9 +76,9 @@ export default function RootLayout({
                   <Link href="/">
                     <Image
                       className="imagelogo"
-                      src="/images/Logo_InnovaJC.png"
+                      src="/images/LogoInnova.png"
                       alt="Logo"
-                      width={100}
+                      width={130}
                       height={50}
                     ></Image>
                   </Link>
@@ -112,9 +112,9 @@ export default function RootLayout({
                   <div className="pg_footer-logotext">
                     <Image
                       className="imagelogo"
-                      src="/images/Logo_InnovaJC.png"
+                      src="/images/LogoInnova.png"
                       alt="Logo"
-                      width={150}
+                      width={130}
                       height={100}
                     ></Image>
                     <h3>Soluciones Integrales InnovaJC</h3>

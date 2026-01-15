@@ -255,6 +255,9 @@ hr {
   .pg_footer-information-div:nth-child(2) {
     flex: 2;
   }
+  .pg_footer-logotext h3 {
+    max-width: 20rem;
+  }
 }
 
 /*Responsive for less than 990*/
@@ -413,5 +416,8 @@ hr {
     line-height: 3rem;
     font-size: 2rem;
     font-weight: 600;
+  }
+  .pg_footer-logotext h3 {
+    max-width: 200rem;
   }
 }

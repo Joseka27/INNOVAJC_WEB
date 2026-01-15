@@ -1,28 +1,41 @@
 "use client";
 import Link from "next/link";
-import React, { useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import { motion } from "framer-motion";
+
+import { Swiper, SwiperSlide } from "swiper/react";
+import { EffectCoverflow, Pagination, Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/effect-coverflow";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+
+const whyUsItems = [
+  {
+    title: "Uso fácil y rápido aprendizaje",
+    text: "SECE cuenta con una interfaz moderna e intuitiva que permite a cualquier usuario familiarizarse con el sistema sin capacitación avanzada, agilizando el inicio de operaciones.",
+    img: "/images/mainpage/LogoSece.png",
+  },
+  {
+    title: "Automatización y control inteligente",
+    text: "El software reduce tareas manuales en contabilidad, inventarios, ventas y planillas. Con procesos automáticos, tus equipos trabajan con mayor precisión, evitando errores y manteniendo la información organizada en tiempo real.",
+    img: "/images/mainpage/LogoSece.png",
+  },
+  {
+    title: "Acceso desde cualquier lugar de forma segura",
+    text: "Disponible en la nube, SECE permite trabajar desde oficina, casa o dispositivos móviles. Los datos se sincronizan automáticamente y permanecen protegidos con controles de seguridad y respaldo.",
+    img: "/images/mainpage/LogoSece.png",
+  },
+];
 
 const Home = () => {
-  const spansRef = useRef<(HTMLSpanElement | null)[]>([]);
-  useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("show");
-        }
-      });
-    });
-    spansRef.current.forEach((span) => {
-      if (span) observer.observe(span);
-    });
-    return () => observer.disconnect();
-  }, []);
   return (
     <>
       <div className="pg_main">
         <div className="pg_main-presentation bg-[url('/images/mainpage/MainPagePresentation.png')] bg-no-repeat bg-right bg-fit">
           <div className="pg_main-presentation-sections">
+            {/*============= Section 1 (Presentation) =============*/}
             <div className="pg_main-presentation-section1">
               <h1>
                 El sistema
@@ -37,111 +50,89 @@ const Home = () => {
             <div className="pg_main-presentation-section2">
               <Image
                 className="imagelogo"
-                src="/images/grafics.png"
+                src="/images/mainpage/LogoSece.png"
                 alt="Logo"
-                width={100}
+                width={50}
                 height={50}
               ></Image>
             </div>
           </div>
         </div>
 
+        {/*============= Section 2 (Presentation) =============*/}
         <div className="pg_main-presentation-part2">
           <div className="pg_main-part2-sections">
             <div className="pg_main-part2-section1">
               <h3>Porqué Nosotros?</h3>
-              <div className="pg_main-part2-section1-about">
-                <Image
-                  className="imagelogo"
-                  src="/images/grafics.png"
-                  alt="Logo"
-                  width={100}
-                  height={50}
-                ></Image>
-                <div className="pg_main-part2-section1-textbox">
-                  <h3>Desarrollo a la Medida</h3>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                    Autem, tempore sint aut error, praesentium voluptatem
-                    doloribus iste dolorum consectetur alias laborum! Doloremque
-                    doloribus minus ut quis sapiente totam distinctio maxime.
-                  </p>
-                </div>
-              </div>
-              <hr></hr>
-              <div className="pg_main-part2-section1-about">
-                <Image
-                  className="imagelogo"
-                  src="/images/grafics.png"
-                  alt="Logo"
-                  width={100}
-                  height={50}
-                ></Image>
-                <div className="pg_main-part2-section1-textbox">
-                  <h3>Dispositivos Móviles</h3>
-                  <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. A
-                    odit ratione quidem accusantium consequuntur illo ad atque
-                    nobis, consectetur aliquid neque quisquam commodi libero
-                    iure natus maxime culpa nihil itaque!
-                  </p>
-                </div>
-              </div>
-              <hr></hr>
-              <div className="pg_main-part2-section1-about">
-                <Image
-                  className="imagelogo"
-                  src="/images/grafics.png"
-                  alt="Logo"
-                  width={100}
-                  height={50}
-                ></Image>
-                <div className="pg_main-part2-section1-textbox">
-                  <h3>Sistema Administrativo Contable</h3>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                    Temporibus est debitis beatae harum aperiam suscipit ratione
-                    saepe ipsa incidunt. Aliquam velit quidem, iusto aspernatur
-                    exercitationem quo eligendi facere placeat ad.
-                  </p>
-                </div>
-              </div>
+
+              {whyUsItems.map((item, index) => (
+                <React.Fragment key={index}>
+                  <div className="pg_main-part2-section1-about">
+                    <Image
+                      className="imagelogo"
+                      src={item.img}
+                      alt={item.title}
+                      width={50}
+                      height={50}
+                    />
+
+                    <div className="pg_main-part2-section1-textbox">
+                      <h5>{item.title}</h5>
+                      <p>{item.text}</p>
+                    </div>
+                  </div>
+
+                  {index !== whyUsItems.length - 1 && <hr />}
+                </React.Fragment>
+              ))}
             </div>
-            <div className="pg_main-part2-section2">
+            <motion.div
+              className="pg_main-part2-section2"
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1 }}
+              viewport={{ once: true }}
+            >
               <Image
                 className="imagelogo"
-                src="/images/grafics.png"
+                src="/images/mainpage/LogoSece.png"
                 alt="Logo"
-                width={100}
-                height={50}
+                width={500}
+                height={500}
               ></Image>
-            </div>
+            </motion.div>
           </div>
         </div>
-
+        {/*============= Section 3 (Presentation) =============*/}
         <div className="pg_main-presentation-part3"></div>
+        {/*============= Section 4 (Presentation) =============*/}
         <div className="pg_main-presentation-part4"></div>
+        {/*============= Section 5 (Presentation) =============*/}
         {/* Va de otro color */}
         <div className="pg_main-presentation-part5"></div>
+
+        {/*============= Section 6 (Contact Us) =============*/}
         <div className="pg_main-presentation-part6">
           <div className="pg-main-joinus">
             <h1>
-              <span
-                ref={(el) => {
-                  spansRef.current[0] = el;
-                }}
+              <motion.span
                 className="h1-span-part6"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, ease: "easeOut" }}
+                viewport={{ once: true }}
               >
                 Quieres unirte?
-              </span>
-              <span
-                ref={(el) => {
-                  spansRef.current[1] = el;
-                }}
+              </motion.span>
+              <motion.span
                 className="h1-span-part6"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, ease: "easeOut" }}
+                viewport={{ once: true }}
               >
                 Ponte en contacto.
-              </span>
+              </motion.span>
             </h1>
             <div className="pg_header-linkrouter">
               <Link href="/contact">Contactanos</Link>
