@@ -337,8 +337,8 @@ hr {
   }
 
   .pg_footer-information-div {
-    width: 100%; /* <---- Esto hace que ocupen todo el ancho */
-    box-sizing: border-box; /* Asegura que padding no rompa el ancho */
+    width: 100%;
+    box-sizing: border-box;
     margin-bottom: 1rem;
   }
 

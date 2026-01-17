@@ -1,15 +1,8 @@
 "use client";
-import Link from "next/link";
+import Link from "next/link"; /*Rout pages whiout loading it*/
 import React, { useState, useEffect, useRef } from "react";
-import Image from "next/image";
-import { motion } from "framer-motion";
-
-import { Swiper, SwiperSlide } from "swiper/react";
-import { EffectCoverflow, Pagination, Navigation } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/effect-coverflow";
-import "swiper/css/pagination";
-import "swiper/css/navigation";
+import Image from "next/image"; /*Library allow show images*/
+import { motion } from "framer-motion"; /*Library helps animate entry of text*/
 
 const whyUsItems = [
   {
@@ -72,8 +65,8 @@ const Home = () => {
                       className="imagelogo"
                       src={item.img}
                       alt={item.title}
-                      width={50}
-                      height={50}
+                      width={140}
+                      height={20}
                     />
 
                     <div className="pg_main-part2-section1-textbox">
