@@ -1,4 +1,4 @@
-/* The model of tables data */
+/* The model of supabase tables */
 
 /* When data is inserted */
 export interface InsertCompany {
@@ -11,5 +11,11 @@ export interface Company {
   id: number;
   name: string;
   image_url: string;
-  created: string;
+  created_at: string;
+}
+
+/* update Data */
+export interface UpdateCompany {
+  name?: string;
+  image_url?: string;
 }

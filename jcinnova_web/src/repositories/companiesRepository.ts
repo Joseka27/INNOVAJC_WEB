@@ -1,28 +1,56 @@
-import { supabase } from "@/lib/dbClient";
-import { Company, InsertCompany } from "@/models/companiesModel";
+/* Direct connection with supabase */
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type {
+  Company,
+  InsertCompany,
+  UpdateCompany,
+} from "@/models/companiesModel";
 
-/* Companies Actions - Direct action with DB */
-export const companiesRepository = {
-  /* Create a Company method*/
-  async create(data: InsertCompany): Promise<Company> {
-    const { data: NewCompany, error } = await supabase
-      .from("cc")
+/* All companies actions */
+export const companiesRepository = (supabase: SupabaseClient) => ({
+  /* create method for companys */
+  async createCompany(data: InsertCompany): Promise<Company> {
+    const { data: row, error } = await supabase
+      .from("CompaniesWorkWith")
       .insert(data)
       .select()
       .single();
 
     if (error) throw error;
-    return NewCompany as Company;
+    return row as Company;
   },
 
-  /* Load all companyes method*/
+  /* call all companies in DB */
   async getCompanies(): Promise<Company[]> {
     const { data, error } = await supabase
-      .from("cc")
+      .from("CompaniesWorkWith")
       .select("*")
       .order("id", { ascending: true });
 
     if (error) throw error;
-    return data as Company[];
+    return (data ?? []) as Company[];
   },
-};
+
+  /* update company information */
+  async updateCompany(id: number, patch: UpdateCompany): Promise<Company> {
+    const { data, error } = await supabase
+      .from("CompaniesWorkWith")
+      .update(patch)
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data as Company;
+  },
+
+  /* remove company from DB */
+  async removeCompany(id: number): Promise<{ id: number }> {
+    const { error } = await supabase
+      .from("CompaniesWorkWith")
+      .delete()
+      .eq("id", id);
+    if (error) throw error;
+    return { id };
+  },
+});

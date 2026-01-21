@@ -1,26 +1,8 @@
 "use client";
 import Link from "next/link"; /*Rout pages whiout loading it*/
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 import Image from "next/image"; /*Library allow show images*/
 import { motion } from "framer-motion"; /*Library helps animate entry of text*/
-
-const whyUsItems = [
-  {
-    title: "Uso fácil y rápido aprendizaje",
-    text: "SECE cuenta con una interfaz moderna e intuitiva que permite a cualquier usuario familiarizarse con el sistema sin capacitación avanzada, agilizando el inicio de operaciones.",
-    img: "/images/mainpage/LogoSece.png",
-  },
-  {
-    title: "Automatización y control inteligente",
-    text: "El software reduce tareas manuales en contabilidad, inventarios, ventas y planillas. Con procesos automáticos, tus equipos trabajan con mayor precisión, evitando errores y manteniendo la información organizada en tiempo real.",
-    img: "/images/mainpage/LogoSece.png",
-  },
-  {
-    title: "Acceso desde cualquier lugar de forma segura",
-    text: "Disponible en la nube, SECE permite trabajar desde oficina, casa o dispositivos móviles. Los datos se sincronizan automáticamente y permanecen protegidos con controles de seguridad y respaldo.",
-    img: "/images/mainpage/LogoSece.png",
-  },
-];
 
 const Home = () => {
   return (
@@ -136,5 +118,23 @@ const Home = () => {
     </>
   );
 };
+
+const whyUsItems = [
+  {
+    title: "Uso fácil y rápido aprendizaje",
+    text: "SECE cuenta con una interfaz moderna e intuitiva que permite a cualquier usuario familiarizarse con el sistema sin capacitación avanzada, agilizando el inicio de operaciones.",
+    img: "/images/mainpage/LogoSece.png",
+  },
+  {
+    title: "Automatización y control inteligente",
+    text: "El software reduce tareas manuales en contabilidad, inventarios, ventas y planillas. Con procesos automáticos, tus equipos trabajan con mayor precisión, evitando errores y manteniendo la información organizada en tiempo real.",
+    img: "/images/mainpage/LogoSece.png",
+  },
+  {
+    title: "Acceso desde cualquier lugar de forma segura",
+    text: "Disponible en la nube, SECE permite trabajar desde oficina, casa o dispositivos móviles. Los datos se sincronizan automáticamente y permanecen protegidos con controles de seguridad y respaldo.",
+    img: "/images/mainpage/LogoSece.png",
+  },
+];
 
 export default Home;
