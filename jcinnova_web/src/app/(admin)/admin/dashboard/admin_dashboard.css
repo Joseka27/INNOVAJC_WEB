@@ -1,0 +1,94 @@
+.admin_dashboard {
+  display: flex;
+  flex-direction: column;
+  margin: 1.5rem 8rem;
+  background-color: rgba(255, 255, 255, 0.514);
+  padding: 2rem 5rem;
+  border-radius: 1rem;
+  gap: 2rem;
+}
+
+.admin_dashboard_logaccount {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  color: #176aad;
+}
+
+.admin_dashboard_logaccount h1 {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.admin_dashboard_logaccount p {
+  font-size: 1.1rem;
+  color: rgb(99, 99, 99);
+  font-weight: 700;
+}
+
+.admin_panelinfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.logout_button {
+  background-color: transparent;
+  margin-top: auto;
+  margin-bottom: auto;
+  padding: 0.7rem 1rem;
+  font-weight: 700;
+  font-size: 1.2rem;
+  border-radius: 5rem;
+  border: 0.2rem solid #176aad;
+  transition: transform 0.1s ease-in-out;
+}
+
+.logout_button:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0px 40px rgba(0, 88, 251, 0.45),
+    0 0px 20px rgba(0, 213, 251, 0.45);
+}
+
+.admin_dashboard_create {
+  background-color: #8686863a;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  margin-right: auto;
+  text-align: center;
+  gap: 2rem;
+  border: 0.2rem solid #176aad;
+  border-radius: 2rem;
+}
+
+.admin_dashboard_create h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #176aad;
+}
+
+.admin_dashboard_create_form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.create_name {
+  width: 100%;
+  padding-left: 2rem;
+  height: 2.8rem;
+  border: 0.1rem solid #176aad;
+  border-radius: 8px;
+  color: rgb(0, 0, 0);
+}
+
+.create_name:focus {
+  outline: none;
+  border-color: #008cff;
+}
+
+.create_name::placeholder {
+  color: #1769ada4;
+  opacity: 1;
+}

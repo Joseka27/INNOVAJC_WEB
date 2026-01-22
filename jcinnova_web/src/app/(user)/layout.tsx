@@ -55,7 +55,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="es">
       <body className={`${roboto.className} antialiased`}>
         <div className="UserLayout">
           {/*Cabezera de la pagina, barra de navegacion */}

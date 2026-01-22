@@ -1,11 +1,43 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/serverClient";
 
-export async function POST() {
-  /* Create server client */
+const IS_PROD = process.env.NODE_ENV === "production";
+
+export async function POST(req: Request) {
   const supabase = await createClient();
-  /* Log out, delete cookies, and invalidate session */
   await supabase.auth.signOut();
-  /* logout correct */
-  return NextResponse.json({ ok: true });
+
+  const cookieStore = await cookies();
+  const res = NextResponse.json(
+    { ok: true },
+    {
+      headers: {
+        "Cache-Control": "no-store, max-age=0",
+        Vary: "Cookie",
+      },
+    },
+  );
+
+  // borrar admin_last_seen
+  res.cookies.set("admin_last_seen", "", {
+    path: "/",
+    maxAge: 0,
+    sameSite: "lax",
+    secure: IS_PROD,
+  });
+
+  // borrar todas las sb-* (source: cookies actuales)
+  for (const c of cookieStore.getAll()) {
+    if (c.name.startsWith("sb-")) {
+      res.cookies.set(c.name, "", {
+        path: "/",
+        maxAge: 0,
+        sameSite: "lax",
+        secure: IS_PROD,
+      });
+    }
+  }
+
+  return res;
 }
