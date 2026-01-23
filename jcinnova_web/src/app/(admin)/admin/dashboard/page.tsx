@@ -9,7 +9,7 @@ import { uploadCompanyImage } from "@/lib/storage/companiesBucket";
 import "./admin_dashboard.css";
 
 /* Max page size */
-const PAGE_SIZE = 15;
+const PAGE_SIZE = 10;
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -114,7 +114,6 @@ export default function AdminDashboardPage() {
       window.addEventListener(e, onActivity, { passive: true }),
     );
 
-    // si cambia de pestaña, también podés forzar logout al volver
     const onVisibility = () => {
       if (!document.hidden) resetTimer();
     };
@@ -143,7 +142,6 @@ export default function AdminDashboardPage() {
   async function logout() {
     await fetch("/api/auth/logout", { method: "POST" });
 
-    // limpiar estado sensible y UI
     await resetForms();
     setCompanies([]);
     setTotal(null);
@@ -178,7 +176,10 @@ export default function AdminDashboardPage() {
 
   async function createCompany(e: React.FormEvent) {
     e.preventDefault();
-    if (!file) return alert("Selecciona una imagen");
+
+    const cleanName = name.trim();
+    if (!cleanName) return alert("El nombre es requerido"); // ✅ valida vacío / espacios
+    if (!file) return alert("Selecciona una imagen"); // ya lo tenías
 
     const { data: userData } = await supabase.auth.getUser();
     if (!userData.user) return;
@@ -193,7 +194,7 @@ export default function AdminDashboardPage() {
     const res = await fetch("/api/companies", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, image_url: publicUrl }),
+      body: JSON.stringify({ name: cleanName, image_url: publicUrl }), // ✅ usa cleanName
     });
 
     if (!res.ok) {
@@ -218,6 +219,12 @@ export default function AdminDashboardPage() {
     if (!editingCompany) return;
 
     let newUrl: string | undefined;
+
+    const cleanName = (editName ?? "").trim();
+    if (!cleanName) {
+      alert("El nombre es requerido");
+      return;
+    }
 
     if (editFile) {
       const { data: userData } = await supabase.auth.getUser();
@@ -285,78 +292,140 @@ export default function AdminDashboardPage() {
         </button>
       </div>
 
-      <section className="admin_dashboard_create">
-        <h2>Agregar Empresa</h2>
-        <form onSubmit={createCompany} className="admin_dashboard_create_form">
-          <input
-            className="create_name"
-            placeholder="Nombre"
-            value={name}
-            onChange={(e) => setName(e.target.value ?? null)}
-          />
-          <input
-            className="create_file"
-            ref={createFileRef}
-            type="file"
-            accept="image/*"
-            onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-          />
-          <button className="create_button">Guardar</button>
-        </form>
+      <section className="admin_config">
+        {/* ===== CREAR ===== */}
+        <div className="admin_dashboard_actions">
+          <h2>Agregar Empresa</h2>
+
+          <form
+            onSubmit={createCompany}
+            className="admin_dashboard_actions_form"
+          >
+            <input
+              className="name_field"
+              placeholder="Nombre de la empresa"
+              value={name ?? ""}
+              onChange={(e) => setName(e.target.value ?? null)}
+            />
+
+            <div className="file_field">
+              <label htmlFor="create_file" className="file_label">
+                <span className="file_icon">🖼️</span>
+
+                <div className="file_text">
+                  <span className="file_title">Subir imagen</span>
+                  <span className="file_subtitle">
+                    {file ? file.name : "PNG, JPG, WEBP"}
+                  </span>
+                </div>
+
+                <span className="file_button">Elegir</span>
+              </label>
+
+              <input
+                id="create_file"
+                ref={createFileRef}
+                className="create_file"
+                type="file"
+                accept="image/*"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setFile(e.target.files?.[0] ?? null)
+                }
+              />
+            </div>
+
+            <button type="submit" className="create_button">
+              Guardar
+            </button>
+          </form>
+        </div>
+
+        {/* ===== EDITAR ===== */}
+        {editingCompany && (
+          <div className="admin_dashboard_actions">
+            <h2>Editando: {editingCompany.name}</h2>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                saveEdit();
+              }}
+              className="admin_dashboard_actions_form"
+            >
+              <input
+                className="name_field"
+                placeholder="Editar Nombre"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+              />
+
+              <div className="file_field">
+                <label htmlFor="edit_file" className="file_label">
+                  <span className="file_icon">🖼️</span>
+
+                  <div className="file_text">
+                    <span className="file_title">Cambiar imagen</span>
+                    <span className="file_subtitle">
+                      {editFile ? editFile.name : "PNG, JPG, WEBP"}
+                    </span>
+                  </div>
+
+                  <span className="file_button">Cambiar</span>
+                </label>
+
+                <input
+                  id="edit_file"
+                  ref={editFileRef}
+                  className="create_file"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setEditFile(e.target.files?.[0] ?? null)
+                  }
+                />
+              </div>
+
+              <div className="admin_dashboard_actions_buttons">
+                <button type="submit" className="edit_button">
+                  Guardar cambios
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setEditingId(null)}
+                  className="cancel_button"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
       </section>
 
-      {editingCompany && (
-        <section className="border rounded-xl p-4">
-          <h3 className="font-bold mb-3">Editando: {editingCompany.name}</h3>
-          <div className="grid gap-3 max-w-xl">
-            <input
-              className="border p-2 rounded"
-              value={editName}
-              onChange={(e) => setEditName(e.target.value)}
-            />
-            <input
-              ref={editFileRef}
-              type="file"
-              accept="image/*"
-              onChange={(e) => setEditFile(e.target.files?.[0] ?? null)}
-            />
-            <div className="flex gap-2">
-              <button
-                onClick={saveEdit}
-                className="bg-green-600 text-white px-4 py-2 rounded"
-              >
-                Guardar cambios
-              </button>
-              <button
-                onClick={() => setEditingId(null)}
-                className="border px-4 py-2 rounded"
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* LIST */}
-      <section className="border rounded-xl p-4 space-y-4">
-        {loading && <div className="text-sm">Cargando empresas…</div>}
+      <section className="companies_list">
+        {loading && <div className="companies_loading">Cargando empresas…</div>}
+
+        {!loading && companies.length === 0 && (
+          <div className="companies_loading_status">
+            No hay empresas registradas
+          </div>
+        )}
 
         {companies.map((c) => (
-          <div key={c.id} className="border rounded p-3 flex justify-between">
-            <div>
-              <div className="font-semibold">{c.name}</div>
-              <img src={c.image_url} className="h-16 mt-1" />
+          <div key={c.id} className="companies_boxes">
+            <div className="company_box_info">
+              <img src={c.image_url} className="h-20" />
+              <div>{c.name}</div>
             </div>
-            <div className="flex gap-2">
-              <button
-                className="border px-3 py-1 rounded"
-                onClick={() => startEdit(c)}
-              >
+
+            <div className="company_box_actions">
+              <button className="edit_btn" onClick={() => startEdit(c)}>
                 Editar
               </button>
               <button
-                className="border px-3 py-1 rounded"
+                className="delete_btn"
                 onClick={() => removeCompany(c.id)}
               >
                 Eliminar
@@ -365,25 +434,19 @@ export default function AdminDashboardPage() {
           </div>
         ))}
 
-        <div className="flex gap-2">
-          <button
-            disabled={page === 0}
-            onClick={() => loadCompanies(page - 1)}
-            className="border px-3 py-1 rounded"
-          >
+        <div className="pageButtons">
+          <button disabled={page === 0} onClick={() => loadCompanies(page - 1)}>
             ←
           </button>
+          <span> Página {page + 1}</span>
           <button
             disabled={total !== null && (page + 1) * PAGE_SIZE >= total}
             onClick={() => loadCompanies(page + 1)}
-            className="border px-3 py-1 rounded"
           >
             →
           </button>
         </div>
       </section>
-
-      {/* EDIT */}
     </div>
   );
 }

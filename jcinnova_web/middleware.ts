@@ -76,8 +76,11 @@ export async function middleware(request: NextRequest) {
     const hasSessionCookie = request.cookies
       .getAll()
       .some((c) => c.name.startsWith("sb-"));
+    const lastSeenRaw2 = request.cookies.get("admin_last_seen")?.value;
+    const lastSeen2 = lastSeenRaw2 ? Number(lastSeenRaw2) : NaN;
 
-    if (!hasSessionCookie) {
+    // Si no hay sesión, o no hay last_seen, o está inválido → OUT
+    if (!hasSessionCookie || !Number.isFinite(lastSeen2)) {
       const url = request.nextUrl.clone();
       url.pathname = ADMIN_LOGIN_PATH;
 
