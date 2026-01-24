@@ -1,0 +1,116 @@
+.carouselShell {
+  position: relative;
+  overflow: hidden;
+}
+
+/* --- marquee ajustado al ANCHO REAL de la ventana --- */
+.marquee {
+  width: 100vw;
+  max-width: 100vw;
+  overflow: hidden;
+  margin-left: calc(50% - 50vw);
+}
+
+.track {
+  width: max-content;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1rem 1.5rem;
+  animation: scroll var(--duration) linear infinite;
+  animation-play-state: var(--play);
+  will-change: transform;
+}
+
+/* Accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    animation: none;
+    transform: none;
+  }
+}
+
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.tile {
+  flex: 0 0 auto;
+  height: 10rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.img {
+  height: 100%;
+  width: auto;
+  max-width: 220px;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* fades suaves */
+.fadeLeft,
+.fadeRight {
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 3rem;
+  z-index: 10;
+}
+
+.fadeLeft {
+  left: 0;
+  background: linear-gradient(to right, #fff, transparent);
+}
+
+.fadeRight {
+  right: 0;
+  background: linear-gradient(to left, #fff, transparent);
+}
+
+/* ✅ Botón general abajo derecha */
+.carouselControl {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  z-index: 20;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  font-weight: 900;
+  line-height: 1;
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease;
+}
+
+.carouselControl:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.carouselControl:active {
+  transform: translateY(0px) scale(0.98);
+}
+
+.carouselControl:focus-visible {
+  outline: 2px solid rgba(255, 153, 0, 0.65);
+  outline-offset: 3px;
+}

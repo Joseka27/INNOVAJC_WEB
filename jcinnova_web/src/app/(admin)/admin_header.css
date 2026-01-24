@@ -1,62 +1,242 @@
-/*Header general options*/
-header {
-  background-color: #00000025;
-  color: #616161;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+/* =========================
+   Admin Header (Pro + Responsive)
+   ========================= */
+
+header.pg_header_shell {
+  background: rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.25);
 }
 
-/*Header separation from borders*/
 .section-header {
-  padding: 0rem 15rem;
+  padding: 0.75rem clamp(1rem, 4vw, 2.5rem);
 }
 
-/*Header display content*/
 .pg_header {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  justify-content: center;
   justify-content: center;
 }
 
-/*============Header first part (Logo and PagesRouts)==============*/
+/* layout interno */
 .pg_header-principal {
-  display: flex;
-  flex-direction: row;
-}
-
-/*Header Pages RoutsLinks*/
-.pg_header-linkrouters-links {
+  width: min(1200px, 100%);
   display: flex;
   align-items: center;
-  flex-direction: colum;
-  gap: 1rem;
-  margin-left: 4rem;
-  max-width: 100%;
+  justify-content: center;
+  gap: 5rem;
 }
 
-/*Fit div whit size of info*/
-.pg_header-linkrouter {
+/* Logo */
+.pg_header-logo-link {
   display: flex;
-  width: fit-content;
+  align-items: center;
 }
 
-/*Fit div whit size of info*/
-.pg_header-linkrouters-links a {
-  font-size: 17px;
-  font-weight: 800;
-  padding: 0.8rem 0.8rem 0.8rem 0.8rem;
-  color: #176aad;
+.pg_header_logo {
+  height: auto;
+  width: auto;
 }
 
-.pg_header-linkrouters-links a {
-  transition: transform 0.1s ease-in-out;
+/* Desktop nav */
+.pg_header-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
-.pg_header-linkrouters-links a:hover {
-  background-color: #006eff3b;
-  border-radius: 2rem;
+/* Link base (reutilizado en desktop + mobile) */
+.pg_header-link {
+  font-size: 0.98rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  color: #ffffff;
+
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+
+  text-decoration: none;
+
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease,
+    box-shadow 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.pg_header-link:hover {
+  transform: translateY(-1px);
+  background: rgba(0, 140, 255, 0.18);
+  box-shadow: 0 12px 28px rgba(0, 140, 255, 0.18);
+}
+
+.pg_header-link:active {
+  transform: translateY(0);
+}
+
+.pg_header-link:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 140, 255, 0.28);
+}
+
+/* =========================
+   Mobile menu (details/summary)
+   ========================= */
+
+.pg_header-menu {
+  display: none; /* se activa en móvil */
+  position: relative;
+}
+
+.pg_header-menu_btn {
+  list-style: none;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.pg_header-menu_btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(0, 140, 255, 0.45);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+}
+
+/* Oculta el marcador default */
+.pg_header-menu_btn::-webkit-details-marker {
+  display: none;
+}
+
+/* Burger icon */
+.pg_header-burger {
+  width: 18px;
+  height: 14px;
+  position: relative;
+  display: inline-block;
+}
+
+.pg_header-burger::before,
+.pg_header-burger::after,
+.pg_header-burger {
+  background: transparent;
+}
+
+.pg_header-burger::before,
+.pg_header-burger::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 18px;
+  height: 2px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.pg_header-burger::before {
+  top: 2px;
+}
+
+.pg_header-burger::after {
+  bottom: 2px;
+}
+
+/* Middle line via box-shadow trick */
+.pg_header-burger {
+  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.92);
+}
+.pg_header-burger {
+  /* línea central */
+  background: rgba(255, 255, 255, 0.92);
+  height: 2px;
+  width: 18px;
+  border-radius: 99px;
+}
+
+/* Panel */
+.pg_header-menu_panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.6rem);
+
+  width: min(260px, calc(100vw - 2rem));
+  padding: 0.8rem;
+  border-radius: 16px;
+
+  background: rgba(14, 14, 20, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
+
+  display: grid;
+  gap: 0.35rem;
+
+  animation: pg_header_panel_in 160ms ease-out;
+}
+
+@keyframes pg_header_panel_in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* En el panel, links ocupan todo el ancho */
+.pg_header-menu_panel .pg_header-link {
+  width: 100%;
+  justify-content: flex-start;
+  display: inline-flex;
+}
+
+/* =========================
+   Responsive rules
+   ========================= */
+
+@media (max-width: 860px) {
+  /* Oculta nav desktop */
+  .pg_header-nav {
+    display: none;
+  }
+
+  /* Separar Contenido header */
+  .pg_header-principal {
+    justify-content: space-between;
+  }
+
+  /* Muestra menú móvil */
+  .pg_header-menu {
+    display: block;
+  }
+}
+
+/* Extra compacto */
+@media (max-width: 420px) {
+  .section-header {
+    padding: 0.65rem 0.9rem;
+  }
+
+  .pg_header-menu_btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+  }
 }

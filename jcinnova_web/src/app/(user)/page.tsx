@@ -3,17 +3,18 @@ import Link from "next/link"; /*Rout pages whiout loading it*/
 import React from "react";
 import Image from "next/image"; /*Library allow show images*/
 import { motion } from "framer-motion"; /*Library helps animate entry of text*/
+import MainCarousel from "@/components/mainCarousel";
 
 const Home = () => {
   return (
     <>
       <div className="pg_main">
-        <div className="pg_main-presentation bg-[url('/images/mainpage/MainPagePresentation.png')] bg-no-repeat bg-right bg-fit">
+        {/*============= Section 1 (Presentation) =============*/}
+        <section className="pg_main-presentation bg-[url('/images/mainpage/MainPagePresentation.png')] bg-no-repeat bg-right bg-cover">
           <div className="pg_main-presentation-sections">
-            {/*============= Section 1 (Presentation) =============*/}
             <div className="pg_main-presentation-section1">
               <h1>
-                El sistema
+                Sistema
                 <span className="h1-span"> ADMINISTRATIVO </span>
                 <span className="h1-span">CONTABLE </span>más amigable, sencillo
                 y robusto para su negocio.
@@ -23,19 +24,26 @@ const Home = () => {
               </div>
             </div>
             <div className="pg_main-presentation-section2">
-              <Image
-                className="imagelogo"
-                src="/images/mainpage/LogoSece.png"
-                alt="Logo"
-                width={50}
-                height={50}
-              ></Image>
+              <motion.div
+                initial={{ opacity: 0, x: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1 }}
+                viewport={{ once: true }}
+              >
+                <Image
+                  className="presentation_section1"
+                  src="/images/LogoInnova.png"
+                  alt="Logo"
+                  width={650}
+                  height={500}
+                ></Image>
+              </motion.div>
             </div>
           </div>
-        </div>
+        </section>
 
         {/*============= Section 2 (Presentation) =============*/}
-        <div className="pg_main-presentation-part2">
+        <section className="pg_main-presentation-part2">
           <div className="pg_main-part2-sections">
             <div className="pg_main-part2-section1">
               <h3>Porqué Nosotros?</h3>
@@ -77,17 +85,19 @@ const Home = () => {
               ></Image>
             </motion.div>
           </div>
-        </div>
+        </section>
         {/*============= Section 3 (Presentation) =============*/}
-        <div className="pg_main-presentation-part3"></div>
+        <section className="pg_main-presentation-part3"></section>
         {/*============= Section 4 (Presentation) =============*/}
-        <div className="pg_main-presentation-part4"></div>
+        <section className="pg_main-presentation-part4"></section>
         {/*============= Section 5 (Presentation) =============*/}
         {/* Va de otro color */}
-        <div className="pg_main-presentation-part5"></div>
+        <section className="pg_main-presentation-part5">
+          <MainCarousel />
+        </section>
 
         {/*============= Section 6 (Contact Us) =============*/}
-        <div className="pg_main-presentation-part6">
+        <section className="pg_main-presentation-part6">
           <div className="pg-main-joinus">
             <h1>
               <motion.span
@@ -113,7 +123,7 @@ const Home = () => {
               <Link href="/contact">Contactanos</Link>
             </div>
           </div>
-        </div>
+        </section>
       </div>
     </>
   );

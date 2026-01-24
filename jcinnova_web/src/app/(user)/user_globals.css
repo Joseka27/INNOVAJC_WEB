@@ -6,12 +6,6 @@
   --foreground: #171717;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #ffffff;
-    --foreground: #000000;
-  }
-}
 /*Body general options*/
 body {
   background: var(--background);
@@ -34,21 +28,25 @@ body {
 
 /*=================First section (Presentation)==============*/
 .pg_main-presentation {
-  background-size: auto;
+  width: 100%;
   display: flex;
   justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0;
 }
 
 /*First section content 1*/
 .pg_main-presentation-sections {
   display: flex;
   flex-direction: row;
-  margin: 8rem;
-  gap: 40rem;
+  justify-content: center;
+  align-items: center;
 }
 
 /*First section content*/
 .pg_main-presentation-section1 {
+  margin-left: 8rem;
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -57,7 +55,7 @@ body {
 .pg_main-presentation-section1 h1 {
   color: #ffffff;
   font-weight: 900;
-  font-size: 2.5rem;
+  font-size: clamp(2rem, 4vw, 3rem);
   max-width: 40rem;
 }
 
@@ -93,29 +91,40 @@ body {
   color: #ffffff;
   font-weight: 700;
   font-size: 1.2rem;
-  background-color: rgb(255, 0, 0);
   padding: 0.8rem 1rem;
   border-radius: 2rem;
-  background: linear-gradient(#092044, #092044) padding-box,
+  background:
+    linear-gradient(#092044, #092044) padding-box,
     linear-gradient(to right, #54b2ff, #2d9bf5, #298ce2, #1976d2, #1565c0)
       border-box;
   border: 0.25rem solid transparent;
-  transition: box-shadow 0.25s ease, transform 0.25s ease;
+  transition:
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
 }
 
 .pg_main-presentation-section1 a:hover,
 .pg-main-joinus a:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0px 4px #2196f3, 0 0 8px #42a5f5, 0 0 12px #64b5f6,
+  box-shadow:
+    0 0px 4px #2196f3,
+    0 0 8px #42a5f5,
+    0 0 12px #64b5f6,
     0 0 16px #90caf9;
 }
-
 /*First section content 2*/
 .pg_main-presentation-section2 {
   display: flex;
   flex-direction: row;
 }
+
+.presentation_section1 {
+  filter: drop-shadow(0 12px 50px rgb(255, 255, 255));
+  margin: 10rem;
+}
+
 /*================= 2 section (Why us) ==============*/
+
 .pg_main-presentation-part2 {
   display: flex;
   justify-content: center;
@@ -146,7 +155,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
-  max-width: 50rem;
   justify-content: center;
   text-align: left;
   max-width: 40rem;
@@ -166,9 +174,13 @@ body {
   flex-direction: column;
   justify-content: center;
 }
+/*================= 5 section (Join Us) ==============*/
+.pg_main-presentation-part5 {
+  margin: 2rem 8rem;
+}
 
 /*================= 6 section (Join Us) ==============*/
-.pg_main-part6 {
+.pg_main-presentation-part6 {
   background-color: #ffffff;
 }
 .pg-main-joinus {
@@ -196,7 +208,8 @@ body {
   padding: 1rem 2rem;
   border-radius: 5rem;
   color: rgb(0, 116, 248);
-  background: linear-gradient(#ffffff, #ffffff) padding-box,
+  background:
+    linear-gradient(#ffffff, #ffffff) padding-box,
     linear-gradient(to right, #54b2ff, #2d9bf5, #298ce2, #1976d2, #1565c0)
       border-box;
   font-weight: 800;
