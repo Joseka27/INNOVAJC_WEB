@@ -21,6 +21,12 @@ header.pg_header_shell {
   justify-content: center;
 }
 
+.pg_header h1 {
+  color: #ffffff;
+  font-size: 2rem;
+  font-weight: 900;
+}
+
 /* layout interno */
 .pg_header-principal {
   width: min(1200px, 100%);
@@ -212,22 +218,20 @@ header.pg_header_shell {
    ========================= */
 
 @media (max-width: 860px) {
-  /* Oculta nav desktop */
+  .pg_header-principal {
+    justify-content: center;
+  }
+
+  /* Mantén el título visible también en móvil */
   .pg_header-nav {
+    display: flex;
+  }
+
+  /* Ya no existe el menú */
+  .pg_header-menu {
     display: none;
   }
-
-  /* Separar Contenido header */
-  .pg_header-principal {
-    justify-content: space-between;
-  }
-
-  /* Muestra menú móvil */
-  .pg_header-menu {
-    display: block;
-  }
 }
-
 /* Extra compacto */
 @media (max-width: 420px) {
   .section-header {

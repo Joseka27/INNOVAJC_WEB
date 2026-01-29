@@ -45,42 +45,11 @@ export default function RootLayout({
                   className="pg_header-nav"
                   aria-label="Navegación principal"
                 >
-                  <Link className="pg_header-link" href="/about">
-                    Sobre Nosotros
-                  </Link>
-                  <Link className="pg_header-link" href="/customers">
-                    Clientes
-                  </Link>
-                  <Link className="pg_header-link" href="/downloads">
-                    Descargar
-                  </Link>
+                  <h1>Soluciones Integrales INNOVA JC</h1>
                 </nav>
-
-                {/* Mobile menu (no JS needed) */}
-                <details className="pg_header-menu">
-                  <summary
-                    className="pg_header-menu_btn"
-                    aria-label="Abrir menú"
-                  >
-                    <span className="pg_header-burger" aria-hidden="true" />
-                  </summary>
-
-                  <nav className="pg_header-menu_panel" aria-label="Menú móvil">
-                    <Link className="pg_header-link" href="/about">
-                      Sobre Nosotros
-                    </Link>
-                    <Link className="pg_header-link" href="/customers">
-                      Clientes
-                    </Link>
-                    <Link className="pg_header-link" href="/downloads">
-                      Descargar
-                    </Link>
-                  </nav>
-                </details>
               </div>
             </div>
           </header>
-
           {children}
         </div>
       </body>

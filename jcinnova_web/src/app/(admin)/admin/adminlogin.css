@@ -27,7 +27,6 @@ body {
    ========================= */
 
 .pg_admin {
-  min-height: 10vh;
   display: flex;
   align-items: center;
   justify-content: center;

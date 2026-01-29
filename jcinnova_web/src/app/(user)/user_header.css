@@ -49,10 +49,7 @@ header {
   font-size: 17px;
   font-weight: 900;
   padding: 0.8rem 0.8rem 0.8rem 0.8rem;
-  color: #176aad;
-}
-
-.pg_header-linkrouters-links a {
+  color: #052b69;
   transition: transform 0.1s ease-in-out;
 }
 

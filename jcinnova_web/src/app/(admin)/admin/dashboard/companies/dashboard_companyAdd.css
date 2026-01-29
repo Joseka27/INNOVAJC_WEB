@@ -1,19 +1,16 @@
-.pg_admin {
+.pg_company {
   min-height: 100vh;
   display: flex;
   align-items: flex-start;
   justify-content: center;
   padding: 2.5rem 1rem;
-  background:
-    radial-gradient(circle at top, rgba(0, 140, 255, 0.22), transparent 42%),
-    linear-gradient(180deg, #020617, #020617);
 }
 
 /* =========================
    Dashboard shell
    ========================= */
 
-.admin_dashboard {
+.company_dashboard {
   width: min(1200px, calc(100vw - 2rem));
   display: flex;
   flex-direction: column;
@@ -31,20 +28,20 @@
 }
 
 /* Header top row */
-.admin_dashboard_logaccount {
+.company_dashboard_logaccount {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
 }
 
-.admin_panelinfo {
+.company_panelinfo {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
 }
 
-.admin_dashboard_logaccount h1 {
+.company_dashboard_logaccount h1 {
   margin: 0;
   font-size: 1.6rem;
   font-weight: 900;
@@ -52,7 +49,7 @@
   color: #ffffff;
 }
 
-.admin_dashboard_logaccount p {
+.company_dashboard_logaccount p {
   margin: 0;
   font-size: 0.95rem;
   font-weight: 700;
@@ -91,20 +88,20 @@
    Config section (create/edit)
    ========================= */
 
-.admin_config {
+.company_config {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.25rem;
 }
 
 @media (min-width: 980px) {
-  .admin_config {
+  .company_config {
     grid-template-columns: 1fr 1fr;
     align-items: start;
   }
 }
 
-.admin_dashboard_actions {
+.company_dashboard_actions {
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 18px;
@@ -114,14 +111,14 @@
   gap: 1.25rem;
 }
 
-.admin_dashboard_actions h2 {
+.company_dashboard_actions h2 {
   margin: 0;
   font-size: 1.25rem;
   font-weight: 900;
   color: #ffffff;
 }
 
-.admin_dashboard_actions_form {
+.company_dashboard_actions_form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -281,7 +278,7 @@
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
 }
 
-.admin_dashboard_actions_buttons {
+.company_dashboard_actions_buttons {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.8rem;
@@ -573,17 +570,17 @@
 
 /* Tablets y abajo */
 @media (max-width: 980px) {
-  .pg_admin {
+  .pg_company {
     padding: 1.6rem 1rem;
   }
 
-  .admin_dashboard {
+  .company_dashboard {
     padding: 1.6rem 1.3rem;
     border-radius: 18px;
     gap: 1.25rem;
   }
 
-  .admin_dashboard_logaccount {
+  .company_dashboard_logaccount {
     flex-direction: column;
     align-items: stretch;
   }
@@ -593,18 +590,18 @@
     justify-content: center;
   }
 
-  .admin_config {
+  .company_config {
     grid-template-columns: 1fr;
   }
 }
 
 /* Móvil */
 @media (max-width: 640px) {
-  .admin_dashboard_logaccount h1 {
+  .company_dashboard_logaccount h1 {
     font-size: 1.35rem;
   }
 
-  .admin_dashboard_actions {
+  .company_dashboard_actions {
     padding: 1.2rem;
     border-radius: 16px;
   }
@@ -638,7 +635,7 @@
   }
 
   /* Botones editar/cancelar en edición */
-  .admin_dashboard_actions_buttons {
+  .company_dashboard_actions_buttons {
     grid-template-columns: 1fr;
   }
 
@@ -736,15 +733,15 @@
 
 /* Muy pequeño */
 @media (max-width: 380px) {
-  .admin_dashboard {
+  .company_dashboard {
     padding: 1.25rem 1rem;
   }
 
-  .admin_dashboard_logaccount h1 {
+  .company_dashboard_logaccount h1 {
     font-size: 1.2rem;
   }
 
-  .admin_dashboard_actions h2 {
+  .company_dashboard_actions h2 {
     font-size: 1.1rem;
   }
 
@@ -777,5 +774,119 @@
     align-items: flex-start;
     padding-top: 1.3rem;
     padding-bottom: 1.3rem;
+  }
+}
+
+/* =========================
+   Admin Shell (Sidebar + Main)
+   ========================= */
+
+.company_shell {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+}
+
+/* Sidebar */
+.company_sidebar {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  padding: 1.25rem 1rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+
+  background: rgba(2, 6, 23, 0.86);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.company_sidebar_brand {
+  padding: 0.75rem 0.8rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.company_sidebar_title {
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 0.03em;
+}
+
+.company_sidebar_subtitle {
+  margin-top: 0.25rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+
+.company_sidebar_nav {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.company_sidebar_link {
+  text-decoration: none;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.9);
+
+  padding: 0.75rem 0.85rem;
+  border-radius: 14px;
+
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+
+.company_sidebar_link:hover {
+  transform: translateY(-1px);
+  background: rgba(0, 140, 255, 0.14);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+}
+
+.company_sidebar_footer {
+  margin-top: auto;
+  padding: 0.75rem 0.85rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.company_sidebar_hint {
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 700;
+  font-size: 0.9rem;
+  line-height: 1.2rem;
+}
+
+/* Main */
+.company_main {
+  min-height: 100dvh;
+  overflow: auto;
+}
+
+/* OJO: tu .pg_admin centra el contenido, pero ahora queremos padding normal en main */
+.company_main .pg_company {
+  padding: 2.5rem 1.25rem;
+  justify-content: flex-start;
+}
+
+/* Responsive: sidebar pasa arriba */
+@media (max-width: 980px) {
+  .company_shell {
+    grid-template-columns: 1fr;
+  }
+
+  .company_sidebar {
+    position: relative;
+    height: auto;
   }
 }

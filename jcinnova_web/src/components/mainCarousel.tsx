@@ -86,7 +86,7 @@ export default function CompaniesInfiniteCarousel() {
     [safe],
   );
 
-  const durationSeconds = Math.max(18, Math.min(60, safe.length * 2));
+  const durationSeconds = Math.max(45, Math.min(60, safe.length * 2));
 
   return (
     <section className="w-full">

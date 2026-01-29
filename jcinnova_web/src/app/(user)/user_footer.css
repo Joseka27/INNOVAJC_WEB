@@ -37,7 +37,7 @@ footer {
 
 .pg_footer-logotext h3 {
   font-size: 2rem;
-  color: #176aad;
+  color: #052b69;
   font-weight: bold;
 }
 
@@ -53,7 +53,7 @@ footer {
 .pg_footer-information-div h4 {
   font-size: 1.4rem;
   font-weight: bold;
-  color: #176aad;
+  color: #052b69;
 }
 
 /*Links Configuration*/
@@ -95,7 +95,7 @@ footer {
 }
 
 .pg_footer-information-div:nth-child(2) a:hover {
-  color: #176aad;
+  color: #052b69;
   text-decoration: underline;
 }
 
@@ -114,7 +114,7 @@ footer {
   transition: transform 0.2s ease-in-out;
 }
 .socialmedia a:hover {
-  color: #176aad;
+  color: #052b69;
   transform: scale(1.2);
 }
 .socialmedia p {
@@ -151,7 +151,10 @@ footer {
 /*Actual Day */
 .schedule-row.today {
   font-weight: 700;
-  color: #dd8500;
+  background: linear-gradient(90deg, #008cff, #2d9bf5, #1976d2);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
   transform: scale(1.05);
 }
 

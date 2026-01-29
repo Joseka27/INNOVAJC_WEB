@@ -65,7 +65,7 @@ export default function RootLayout({
                 <div className="pg_header-logo-img">
                   <Link href="/">
                     <Image
-                      className="imagelogo"
+                      className="pg_header_logo"
                       src="/images/LogoInnova.png"
                       alt="Logo"
                       width={130}
@@ -101,7 +101,7 @@ export default function RootLayout({
                 <div className="pg_footer-information-div">
                   <div className="pg_footer-logotext">
                     <Image
-                      className="imagelogo"
+                      className="pg_footer-logo"
                       src="/images/LogoInnova.png"
                       alt="Logo"
                       width={130}

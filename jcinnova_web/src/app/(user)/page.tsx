@@ -1,16 +1,45 @@
 "use client";
 import Link from "next/link"; /*Rout pages whiout loading it*/
-import React from "react";
 import Image from "next/image"; /*Library allow show images*/
 import { motion } from "framer-motion"; /*Library helps animate entry of text*/
 import MainCarousel from "@/components/mainCarousel";
+import React, { useEffect, useMemo, useState } from "react";
 
 const Home = () => {
+  const [activeCat, setActiveCat] =
+    useState<(typeof categories)[number]>("Todos");
+
+  const filtered = useMemo(() => {
+    if (activeCat === "Todos") return servicesItems;
+    return servicesItems.filter((s) => s.category === activeCat);
+  }, [activeCat]);
+
+  const PER_PAGE = 8;
+
+  const [page, setPage] = useState(1);
+
+  const totalPages = useMemo(() => {
+    return Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+  }, [filtered.length]);
+
+  // Si cambian los filtros/categoría y quedas en una página que ya no existe, te manda a la 1.
+  useEffect(() => {
+    setPage(1);
+  }, [activeCat]); // o [filtered] si prefieres resetear con cualquier cambio
+
+  const pageItems = useMemo(() => {
+    const start = (page - 1) * PER_PAGE;
+    return filtered.slice(start, start + PER_PAGE);
+  }, [filtered, page]);
+
+  const canPrev = page > 1;
+  const canNext = page < totalPages;
+
   return (
     <>
       <div className="pg_main">
         {/*============= Section 1 (Presentation) =============*/}
-        <section className="pg_main-presentation bg-[url('/images/mainpage/MainPagePresentation.png')] bg-no-repeat bg-right bg-cover">
+        <section className="pg_main-presentation">
           <div className="pg_main-presentation-sections">
             <div className="pg_main-presentation-section1">
               <h1>
@@ -19,7 +48,7 @@ const Home = () => {
                 <span className="h1-span">CONTABLE </span>más amigable, sencillo
                 y robusto para su negocio.
               </h1>
-              <div className="pg_header-linkrouter">
+              <div className="section1-button">
                 <Link href="/about">Más de Nosotros</Link>
               </div>
             </div>
@@ -41,75 +70,339 @@ const Home = () => {
             </div>
           </div>
         </section>
+        {/*============= Section 2 (Why us) =============*/}
+        <section className="pg_main-presentation-part2" id="solucion">
+          <div className="pg_main-part2-inner">
+            <div className="pg_main-part2-head">
+              <span className="pg_main-part2-pill">¿Porqué Nosotros?</span>
+              <h2 className="pg_main-part2-title">
+                Mayor <span className="pg_main-part2-grad">control</span> de tu
+                negocio.
+              </h2>
+              <p className="pg_main-part2-subtitle">
+                La información dispersa en diferentes aplicaciones y sistemas
+                sueltos generan perdidas de tiempo y toma decisiones tardias.
+                Por esta razón SECE Software marca la diferencia.
+              </p>
+            </div>
 
-        {/*============= Section 2 (Presentation) =============*/}
-        <section className="pg_main-presentation-part2">
-          <div className="pg_main-part2-sections">
-            <div className="pg_main-part2-section1">
-              <h3>Porqué Nosotros?</h3>
-
-              {whyUsItems.map((item, index) => (
-                <React.Fragment key={index}>
-                  <div className="pg_main-part2-section1-about">
-                    <Image
-                      className="imagelogo"
-                      src={item.img}
-                      alt={item.title}
-                      width={140}
-                      height={20}
-                    />
-
-                    <div className="pg_main-part2-section1-textbox">
-                      <h5>{item.title}</h5>
-                      <p>{item.text}</p>
+            <div className="pg_main-part2-compare">
+              <motion.div
+                className="h1-span-part6"
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, ease: "easeOut" }}
+                viewport={{ once: true }}
+              >
+                <div className="pg_main-part2-block pg_main-part2-problem">
+                  <div className="pg_main-part2-blockTop">
+                    <div className="pg_main-part2-badge pg_main-part2-badgeProblem">
+                      Problemas
                     </div>
+                    <h3>Lo que suele pasar sin un sistema centralizado</h3>
                   </div>
 
-                  {index !== whyUsItems.length - 1 && <hr />}
-                </React.Fragment>
+                  <ul className="pg_main-part2-list">
+                    {problemItems.map((t) => (
+                      <li key={t} className="pg_main-part2-li">
+                        <span
+                          className="pg_main-part2-dot pg_main-part2-dotProblem"
+                          aria-hidden
+                        />
+                        <span>{t}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </motion.div>
+              <motion.div
+                className="h1-span-part6"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1.2, ease: "easeOut" }}
+                viewport={{ once: true }}
+              >
+                <div className="pg_main-part2-block pg_main-part2-solution">
+                  <div className="pg_main-part2-blockTop">
+                    <div className="pg_main-part2-badge pg_main-part2-badgeSolution">
+                      Solución SECE
+                    </div>
+                    <h3>SECE Sofware lo resuelve</h3>
+                  </div>
+
+                  <ul className="pg_main-part2-list">
+                    {solutionItems.map((t) => (
+                      <li key={t} className="pg_main-part2-li">
+                        <span
+                          className="pg_main-part2-dot pg_main-part2-dotSolution"
+                          aria-hidden
+                        />
+                        <span>{t}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="pg_main-part2-miniCta">
+                    <a className="pg_main-part2-btnPrimary" href="#servicios">
+                      Ver módulos
+                    </a>
+                    <a className="pg_main-part2-btnGhost" href="/contact">
+                      Ponte en contácto
+                    </a>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+
+            <div
+              className="pg_main-part2-outcomes"
+              aria-label="Resultados esperados"
+            >
+              {outcomes.map((o) => (
+                <div key={o.label} className="pg_main-part2-outcome">
+                  <div className="pg_main-part2-outcomeNum">
+                    <Image
+                      src={o.icon}
+                      alt={o.label}
+                      width={40}
+                      height={40}
+                    ></Image>
+                  </div>
+                  <div className="pg_main-part2-outcomeLabel">{o.label}</div>
+                </div>
               ))}
             </div>
-            <motion.div
-              className="pg_main-part2-section2"
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 1 }}
-              viewport={{ once: true }}
-            >
-              <Image
-                className="imagelogo"
-                src="/images/mainpage/LogoSece.png"
-                alt="Logo"
-                width={500}
-                height={500}
-              ></Image>
-            </motion.div>
           </div>
         </section>
         {/*============= Section 3 (Presentation) =============*/}
-        <section className="pg_main-presentation-part3"></section>
-        {/*============= Section 4 (Presentation) =============*/}
-        <section className="pg_main-presentation-part4"></section>
-        {/*============= Section 5 (Presentation) =============*/}
-        {/* Va de otro color */}
-        <section className="pg_main-presentation-part5">
-          <MainCarousel />
-        </section>
+        <section className="pg_main-presentation-part3" id="ventajas">
+          <div className="pg_main-part3-inner">
+            <div className="pg_main-part3-split">
+              {/* Left copy */}
 
+              <div className="pg_main-part3-left">
+                <span className="pg_main-part3-pill">Potencia tu empresa</span>
+
+                <h2 className="pg_main-part3-title">
+                  Pensado para{" "}
+                  <span className="pg_main-part3-grad">control</span>, reportes
+                  e integraciones
+                </h2>
+
+                <p className="pg_main-part3-subtitle">
+                  Lo que más valoran las empresas: información exportable,
+                  reportería extensa y conexiones que facilitan cumplimiento y
+                  gestión.
+                </p>
+
+                <div className="pg_main-part3-actions">
+                  <a className="pg_main-part3-btnPrimary" href="#servicios">
+                    Ver módulos
+                  </a>
+                  <a className="pg_main-part3-btnGhost" href="/contact">
+                    Solicitar más información
+                  </a>
+                </div>
+
+                <div className="pg_main-part3-miniNote">
+                  Se adapta al tamaño y proceso de tu empresa
+                </div>
+              </div>
+              <motion.div
+                className="h1-span-part6"
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 1.2, ease: "easeOut" }}
+                viewport={{ once: true }}
+              >
+                <div className="pg_main-part3-right">
+                  <div className="pg_main-part3-steps">
+                    {seceSteps.map((s, i) => (
+                      <div key={s.title} className="pg_main-part3-step">
+                        <div className="pg_main-part3-stepRail" aria-hidden />
+                        <div className="pg_main-part3-stepIcon" aria-hidden>
+                          <div className="pg_main-part3-iconSwap">
+                            <Image
+                              src={s.icon}
+                              alt={s.title}
+                              width={35}
+                              height={35}
+                              className="pg_main-part3-iconImg icon-default"
+                            />
+                            <Image
+                              src={s.iconHover}
+                              alt={s.title}
+                              width={35}
+                              height={35}
+                              className="pg_main-part3-iconImg icon-hover"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="pg_main-part3-stepBody">
+                          <div className="pg_main-part3-stepTop">
+                            <h3>{s.title}</h3>
+                          </div>
+                          <p>{s.text}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="pg_main-part3-statsBar">
+                    {seceStats.map((st) => (
+                      <div key={st.label} className="pg_main-part3-stat">
+                        <div className="pg_main-part3-statNum">{st.value}</div>
+                        <div className="pg_main-part3-statLabel">
+                          {st.label}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+        {/*============= Section 4 (Presentation) =============*/}
+        <section className="pg_main-presentation-part4" id="servicios">
+          <div className="pg_main-part4-sections">
+            <motion.div
+              className="h1-span-part6"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.2, ease: "easeOut" }}
+              viewport={{ once: true }}
+            >
+              <div className="pg_main-part4-head">
+                <h2>Todo tu negocio en un solo sistema</h2>
+                <p>
+                  Módulos integrados para controlar las distintas operaciones de
+                  tu empresa. Totalmente ajustables a tu negocio
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Filtro por categoría */}
+            <div
+              className="pg_main-part4-filters"
+              role="tablist"
+              aria-label="Filtrar servicios"
+            >
+              {categories.map((c) => {
+                const active = c === activeCat;
+                return (
+                  <button
+                    key={c}
+                    type="button"
+                    className={`pg_main-part4-filterbtn ${active ? "is-active" : ""}`}
+                    onClick={() => setActiveCat(c)}
+                    role="tab"
+                    aria-selected={active}
+                  >
+                    {c}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Grid */}
+            <div className="pg_main-part4-grid">
+              {pageItems.map((item) => (
+                <article key={item.title} className="pg_main-part4-card">
+                  <div className="pg_main-part4-media" aria-hidden>
+                    <img
+                      src={item.image}
+                      alt=""
+                      className="pg_main-part4-img"
+                      loading="lazy"
+                    />
+                  </div>
+
+                  <div className="pg_main-part4-cardtext">
+                    <div className="pg_main-part4-cardtop">
+                      <h3>{item.title}</h3>
+                      <span className="pg_main-part4-chip">
+                        {item.category}
+                      </span>
+                    </div>
+                    <p>{item.text}</p>
+                  </div>
+                  <div className="pg_main-part4-cardmoreinfo">
+                    <p>Mas información ↗</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+
+            {filtered.length > PER_PAGE && (
+              <div className="pg_main-part4-pagination" aria-label="Paginación">
+                <button
+                  type="button"
+                  className="pg_main-part4-pagebtn"
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={!canPrev}
+                >
+                  ← Anterior
+                </button>
+
+                <div className="pg_main-part4-pagestatus">
+                  Página <b>{page}</b> de <b>{totalPages}</b>
+                </div>
+
+                <button
+                  type="button"
+                  className="pg_main-part4-pagebtn"
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={!canNext}
+                >
+                  Siguiente →
+                </button>
+              </div>
+            )}
+
+            {/* Estado vacío */}
+            {filtered.length === 0 && (
+              <div className="pg_main-part4-empty">
+                No hay servicios para esta categoría.
+              </div>
+            )}
+          </div>
+        </section>
+        {/*============= Section 5 (Presentation) =============*/}
+        <section className="pg_main-presentation-part5">
+          <div className="part5-text">
+            <h2 className="pg_main-part5-title">
+              Empresas que <span className="pg_main-part5-grad">trabajan</span>{" "}
+              con nosotros
+            </h2>
+            <p className="pg_main-part5-subtitle">
+              Variedad de empresas alrededor del país deciden confiar en lo que
+              hacemos
+            </p>
+          </div>
+          <div className="section5-button">
+            <Link href="/contact">Únete a Nosotros</Link>
+          </div>
+          <div className="section5-carousel">
+            <MainCarousel />
+          </div>
+        </section>
         {/*============= Section 6 (Contact Us) =============*/}
         <section className="pg_main-presentation-part6">
-          <div className="pg-main-joinus">
+          <div className="pg_cursor-glow" />
+          <div className="pg_main-joinus">
             <h1>
-              <motion.span
+              <motion.div
                 className="h1-span-part6"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, ease: "easeOut" }}
                 viewport={{ once: true }}
               >
-                Quieres unirte?
-              </motion.span>
-              <motion.span
+                Estas interesado?
+              </motion.div>
+              <motion.div
                 className="h1-span-part6"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -117,9 +410,9 @@ const Home = () => {
                 viewport={{ once: true }}
               >
                 Ponte en contacto.
-              </motion.span>
+              </motion.div>
             </h1>
-            <div className="pg_header-linkrouter">
+            <div className="section6-button">
               <Link href="/contact">Contactanos</Link>
             </div>
           </div>
@@ -128,23 +421,188 @@ const Home = () => {
     </>
   );
 };
+/* ===== DATA: SECE features (para map) ===== */
 
-const whyUsItems = [
+const problemItems = [
+  "Duplicación de datos y errores por capturas manuales",
+  "Inventario desactualizado y compras fuera de control",
+  "Cierres contables lentos y reportes que salen tarde",
+  "Difícil seguimiento de ventas, cobros y bancos",
+  "Poca visibilidad para gerencia y decisiones a ciegas",
+];
+
+const solutionItems = [
+  "Información centralizada para contabilidad, inventario y gestión",
+  "Procesos más ordenados y trazabilidad por usuario",
+  "Reportes claros para tomar decisiones rápidas",
+  "Evitar perdida de datos entre traspasos de aplicaciones",
+  "Flujo de trabajo consistente para todo el equipo",
+];
+
+const outcomes = [
   {
-    title: "Uso fácil y rápido aprendizaje",
-    text: "SECE cuenta con una interfaz moderna e intuitiva que permite a cualquier usuario familiarizarse con el sistema sin capacitación avanzada, agilizando el inicio de operaciones.",
-    img: "/images/mainpage/LogoSece.png",
+    icon: "/images/mainpage/LessWork.png",
+    label: "Menos retrabajo",
+  },
+  { icon: "/images/mainpage/Visibility.png", label: "Más visibilidad" },
+  { icon: "/images/mainpage/Agility.png", label: "Procesos ágiles" },
+  {
+    icon: "/images/mainpage/OperationalControl.png",
+    label: "Control operativo",
+  },
+];
+
+const seceSteps = [
+  {
+    icon: "/images/mainpage/Reports.png",
+    iconHover: "/images/mainpage/WReports.png",
+    title: "Reportería para gestión",
+    text: "Más de 200 informes orientados a control y toma de decisiones.",
   },
   {
-    title: "Automatización y control inteligente",
-    text: "El software reduce tareas manuales en contabilidad, inventarios, ventas y planillas. Con procesos automáticos, tus equipos trabajan con mayor precisión, evitando errores y manteniendo la información organizada en tiempo real.",
-    img: "/images/mainpage/LogoSece.png",
+    icon: "/images/mainpage/FileTypes.png",
+    iconHover: "/images/mainpage/WFileTypes.png",
+    title: "Exportación inmediata",
+    text: "Exporta documentos en distintos formatos como a Excel, Word, PDF, HTML para compartir y analizar.",
   },
   {
-    title: "Acceso desde cualquier lugar de forma segura",
-    text: "Disponible en la nube, SECE permite trabajar desde oficina, casa o dispositivos móviles. Los datos se sincronizan automáticamente y permanecen protegidos con controles de seguridad y respaldo.",
-    img: "/images/mainpage/LogoSece.png",
+    icon: "/images/mainpage/Change2.png",
+    iconHover: "/images/mainpage/WChange.png",
+    title: "Tipo de cambio BCCR",
+    text: "Información actualizad Integración con Banco Central.",
   },
+  {
+    icon: "/images/mainpage/Goverment.png",
+    iconHover: "/images/mainpage/WGoverment.png",
+    title: "Procesos tributarios",
+    text: "Conexión con SIC Web y generación de informes para cumplimiento.",
+  },
+  {
+    icon: "/images/mainpage/Graphs.png",
+    iconHover: "/images/mainpage/WGraphs.png",
+    title: "Consultas y visualización",
+    text: "Resultados con apoyo gráfico para interpretar rápido lo importante.",
+  },
+  {
+    icon: "/images/mainpage/Productivity.png",
+    iconHover: "/images/mainpage/WProductivity.png",
+    title: "Productividad real",
+    text: "Atajos y teclas especiales para acelerar tareas del día a día.",
+  },
+];
+
+const seceStats = [
+  { value: "200+", label: "Informes" },
+  { value: "Excel/PDF", label: "Exportables" },
+  { value: "BCCR", label: "Tipo de cambio" },
+];
+
+type ServiceCategory =
+  | "Finanzas"
+  | "Operación"
+  | "Comercial"
+  | "RRHH"
+  | "Control";
+
+type ServiceItem = {
+  image: string;
+  title: string;
+  text: string;
+  category: ServiceCategory;
+};
+
+const servicesItems: ServiceItem[] = [
+  {
+    image: "/images/mainpage/MainPagePresentation.png",
+    title: "Contabilidad",
+    text: "Asientos, balances y control fiscal.",
+    category: "Finanzas",
+  },
+  {
+    image: "/images/mainpage/MainPagePresentation.png",
+    title: "Bancos",
+    text: "Conciliación, pagos y flujo de caja.",
+    category: "Finanzas",
+  },
+  {
+    image: "/images/mainpage/MainPagePresentation.png",
+    title: "Préstamos",
+    text: "Cuotas, vencimientos y control.",
+    category: "Finanzas",
+  },
+
+  {
+    image: "/images/mainpage/MainPagePresentation.png",
+    title: "Maquinaria",
+    text: "Equipos, mantenimiento y costos.",
+    category: "Operación",
+  },
+  {
+    image: "/images/mainpage/MainPagePresentation.png",
+    title: "Activos",
+    text: "Depreciación y trazabilidad.",
+    category: "Operación",
+  },
+  {
+    image: "/images/mainpage/MainPagePresentation.png",
+    title: "Inventario",
+    text: "Stock, movimientos y alertas.",
+    category: "Operación",
+  },
+
+  {
+    image: "/images/mainpage/MainPagePresentation.png",
+    title: "Compras y gastos",
+    text: "Proveedores, gastos y aprobaciones.",
+    category: "Comercial",
+  },
+  {
+    image: "/images/mainpage/MainPagePresentation.png",
+    title: "Ventas",
+    text: "Clientes, facturación y reportes.",
+    category: "Comercial",
+  },
+  {
+    image: "/images/mainpage/MainPagePresentation.png",
+    title: "App de pedidos",
+    text: "Pedidos desde móvil en tiempo real.",
+    category: "Comercial",
+  },
+
+  {
+    image: "/images/mainpage/MainPagePresentation.png",
+    title: "Recursos humanos",
+    text: "Personal, roles y documentos.",
+    category: "RRHH",
+  },
+
+  {
+    image: "/images/mainpage/MainPagePresentation.png",
+    title: "Gestión",
+    text: "Indicadores y control operativo.",
+    category: "Control",
+  },
+  {
+    image: "/images/mainpage/MainPagePresentation.png",
+    title: "Seguridad",
+    text: "Accesos, permisos y auditoría.",
+    category: "Control",
+  },
+  {
+    image: "/images/mainpage/MainPagePresentation.png",
+    title: "Reportes",
+    text: "Dashboards listos para decisiones.",
+    category: "Control",
+  },
+];
+
+const categories: Array<ServiceCategory | "Todos"> = [
+  "Todos",
+  "Finanzas",
+  "Operación",
+  "Comercial",
+  "RRHH",
+  "Control",
 ];
 
 export default Home;
