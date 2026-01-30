@@ -2,16 +2,27 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { Company } from "@/models/companiesModel";
+import type { Module } from "@/models/modulesModel";
 import { createClient } from "@/lib/supabase/browserClient";
 import { resizeImageToWebp } from "@/lib/images/resizeImage";
-import { uploadCompanyImage } from "@/lib/storage/companiesBucket";
-import "./dashboard_company.css";
+import { uploadModuleImage } from "@/lib/storage/modulesBucket";
+import "./dashboard_modules.css";
 
 /* Max page size */
 const PAGE_SIZE = 10;
+const SHORT_DESC_LIMIT = 150;
 
-/* ========= Toast system (same style as login) ========= */
+const CATEGORY_OPTIONS = [
+  "Finanzas",
+  "Operación",
+  "Comercial",
+  "RRHH",
+  "Control",
+] as const;
+
+type Category = (typeof CATEGORY_OPTIONS)[number];
+
+/* ========= Toast system ========= */
 type ToastType = "success" | "error" | "info";
 type ToastAction = { label: string; onClick: () => void };
 
@@ -37,7 +48,6 @@ function useToasts() {
 
     setToasts((prev) => [toast, ...prev].slice(0, 4));
 
-    // si tiene acciones, no autocerrar (confirmación)
     if (toast.actions?.length) return id;
 
     window.setTimeout(() => {
@@ -116,56 +126,80 @@ function Toasts({
   );
 }
 
-export default function AdminDashboardPage() {
+export default function AdminModulesPage() {
   const router = useRouter();
   const supabase = createClient();
-  const { toasts, push, remove } = useToasts();
+  const { toasts, push, remove, clearAll } = useToasts();
 
   const createFileRef = useRef<HTMLInputElement | null>(null);
   const editFileRef = useRef<HTMLInputElement | null>(null);
 
-  /* ---------------- AUTH ---------------- */
   const [booting, setBooting] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  /* ---------------- DATA ---------------- */
-  const [companies, setCompanies] = useState<Company[]>([]);
+  const [modules, setModules] = useState<Module[]>([]);
   const [loading, setLoading] = useState(false);
+
   const [page, setPage] = useState(0);
   const [total, setTotal] = useState<number | null>(null);
+
   const [query, setQuery] = useState("");
 
-  /* ---------------- CREATE ---------------- */
-  const [name, setName] = useState("");
+  // ✅ CREATE (DB fields)
+  const [title, setTitle] = useState("");
+  const [moduleCategory, setModuleCategory] = useState<Category | "">("");
+  const [shortDesc, setShortDesc] = useState("");
+  const [longDesc, setLongDesc] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [creating, setCreating] = useState(false);
 
-  /* ---------------- EDIT ---------------- */
+  // ✅ EDIT
   const [editingId, setEditingId] = useState<number | null>(null);
-  const editingCompany = useMemo(
-    () => companies.find((c) => c.id === editingId) ?? null,
-    [companies, editingId],
+  const editingModule = useMemo(
+    () => modules.find((m) => m.id === editingId) ?? null,
+    [modules, editingId],
   );
-  const filteredCompanies = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return companies;
 
-    return companies.filter((c) => (c.name ?? "").toLowerCase().includes(q));
-  }, [companies, query]);
-
-  const [editName, setEditName] = useState("");
+  const [editTitle, setEditTitle] = useState("");
+  const [editModuleCategory, setEditModuleCategory] = useState<Category | "">(
+    "",
+  );
+  const [editShortDesc, setEditShortDesc] = useState("");
+  const [editLongDesc, setEditLongDesc] = useState("");
   const [editFile, setEditFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
 
-  /* Reset all forms after use them */
+  const maxPage =
+    total !== null ? Math.max(0, Math.ceil(total / PAGE_SIZE) - 1) : null;
+
+  const isLastPage =
+    maxPage !== null ? page >= maxPage : modules.length < PAGE_SIZE;
+
+  const filteredModules = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return modules;
+
+    return modules.filter((m) => {
+      const hay =
+        `${m.title ?? ""} ${m.module_category ?? ""} ${m.short_desc ?? ""} ${m.long_desc ?? ""}`.toLowerCase();
+      return hay.includes(q);
+    });
+  }, [modules, query]);
+
   async function resetForms() {
-    setName("");
+    setTitle("");
+    setModuleCategory("");
+    setShortDesc("");
+    setLongDesc("");
     setFile(null);
     if (createFileRef.current) createFileRef.current.value = "";
 
     setEditingId(null);
-    setEditName("");
+    setEditTitle("");
+    setEditModuleCategory("");
+    setEditShortDesc("");
+    setEditLongDesc("");
     setEditFile(null);
     if (editFileRef.current) editFileRef.current.value = "";
   }
@@ -189,15 +223,14 @@ export default function AdminDashboardPage() {
 
     const email = data.user.email ?? null;
     const admin = Boolean(data.isAdmin);
-
     setUserEmail(email);
     setIsAdmin(admin);
 
     return { ok: true, isAdmin: admin, email };
   }
 
-  /* ---- idle logout (lo dejé igual, pero con UX mejor) ---- */
-  const IDLE_MS = 15 * 60 * 1000; // 15 min
+  /* Idle logout */
+  const IDLE_MS = 15 * 60 * 1000;
   const timerRef = useRef<number | null>(null);
 
   async function forceLogout() {
@@ -259,63 +292,111 @@ export default function AdminDashboardPage() {
         return;
       }
 
-      await loadCompanies(0);
+      await loadModules(0);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
 
   async function logout() {
     await fetch("/api/auth/logout", { method: "POST" });
-
+    clearAll();
     await resetForms();
-    setCompanies([]);
+    setModules([]);
     setTotal(null);
     setPage(0);
-
     setUserEmail(null);
     setIsAdmin(false);
-
     router.replace("/admin");
   }
 
-  async function loadCompanies(p = page) {
+  async function loadModules(p = page) {
+    if (total !== null) {
+      const mp = Math.max(0, Math.ceil(total / PAGE_SIZE) - 1);
+      if (p < 0 || p > mp) return;
+    }
+
     setLoading(true);
     try {
       const offset = p * PAGE_SIZE;
+
       const res = await fetch(
-        `/api/companies?limit=${PAGE_SIZE}&offset=${offset}`,
+        `/api/modules?limit=${PAGE_SIZE}&offset=${offset}`,
+        {
+          cache: "no-store",
+        },
       );
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Error cargando empresas");
 
-      setEditingId(null);
-      setEditFile(null);
-      if (editFileRef.current) editFileRef.current.value = "";
+      const raw = await res.text();
+      let data: any = null;
+      try {
+        data = raw ? JSON.parse(raw) : null;
+      } catch {
+        throw new Error(
+          `La API no devolvió JSON. Revisa que exista /api/modules (status ${res.status}).`,
+        );
+      }
 
-      setCompanies(data.items);
-      setTotal(data.count);
+      if (!res.ok) throw new Error(data?.error ?? "Error cargando módulos");
+
+      setModules(data.items ?? []);
+      setTotal(typeof data.count === "number" ? data.count : null);
       setPage(p);
     } catch (err: any) {
       push({
         type: "error",
         title: "Error",
-        message: err?.message ?? "No se pudieron cargar las empresas.",
+        message: err?.message ?? "No se pudieron cargar los módulos.",
       });
     } finally {
       setLoading(false);
     }
   }
 
-  async function createCompany(e: React.FormEvent) {
+  async function createModule(e: React.FormEvent) {
     e.preventDefault();
     if (creating) return;
 
-    const cleanName = name.trim();
-    if (!cleanName) {
+    const cleanTitle = title.trim();
+    const cleanShort = shortDesc.trim();
+    const cleanLong = longDesc.trim();
+
+    if (cleanTitle.length < 2) {
       push({
         type: "error",
         title: "Dato requerido",
-        message: "El nombre es requerido.",
+        message: "El título debe tener al menos 2 caracteres.",
+      });
+      return;
+    }
+    if (!moduleCategory) {
+      push({
+        type: "error",
+        title: "Dato requerido",
+        message: "Selecciona una categoría.",
+      });
+      return;
+    }
+    if (!cleanShort) {
+      push({
+        type: "error",
+        title: "Dato requerido",
+        message: "La descripción corta es requerida.",
+      });
+      return;
+    }
+    if (cleanShort.length > SHORT_DESC_LIMIT) {
+      push({
+        type: "error",
+        title: "Límite",
+        message: `La descripción corta no puede pasar de ${SHORT_DESC_LIMIT} caracteres.`,
+      });
+      return;
+    }
+    if (!cleanLong) {
+      push({
+        type: "error",
+        title: "Dato requerido",
+        message: "La descripción larga es requerida.",
       });
       return;
     }
@@ -341,16 +422,23 @@ export default function AdminDashboardPage() {
       }
 
       const resized = await resizeImageToWebp(file);
-      const { publicUrl } = await uploadCompanyImage(
+      const { publicUrl } = await uploadModuleImage(
         supabase,
         resized,
         userData.user.id,
       );
 
-      const res = await fetch("/api/companies", {
+      // ✅ ENVIAR NOMBRES REALES DE DB
+      const res = await fetch("/api/modules", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: cleanName, image_url: publicUrl }),
+        body: JSON.stringify({
+          title: cleanTitle,
+          module_category: moduleCategory,
+          short_desc: cleanShort,
+          long_desc: cleanLong,
+          image_url: publicUrl,
+        }),
       });
 
       if (!res.ok) {
@@ -358,7 +446,7 @@ export default function AdminDashboardPage() {
         push({
           type: "error",
           title: "No se pudo guardar",
-          message: d.error ?? "Error creando empresa.",
+          message: d.error ?? "Error creando módulo.",
         });
         return;
       }
@@ -366,13 +454,12 @@ export default function AdminDashboardPage() {
       push({
         type: "success",
         title: "Listo",
-        message: "Empresa creada correctamente.",
+        message: "Módulo creado correctamente.",
         durationMs: 1800,
       });
-      setName("");
-      setFile(null);
-      if (createFileRef.current) createFileRef.current.value = "";
-      await loadCompanies(0);
+
+      await resetForms();
+      await loadModules(0);
     } catch (err: any) {
       push({
         type: "error",
@@ -384,22 +471,60 @@ export default function AdminDashboardPage() {
     }
   }
 
-  function startEdit(c: Company) {
-    setEditingId(c.id);
-    setEditName(c.name);
+  function startEdit(m: Module) {
+    setEditingId(m.id);
+    setEditTitle(m.title ?? "");
+    setEditModuleCategory((m.module_category as Category) ?? "");
+    setEditShortDesc(m.short_desc ?? "");
+    setEditLongDesc(m.long_desc ?? "");
     setEditFile(null);
     if (editFileRef.current) editFileRef.current.value = "";
   }
 
   async function saveEdit() {
-    if (!editingCompany || saving) return;
+    if (!editingModule || saving) return;
 
-    const cleanName = (editName ?? "").trim();
-    if (!cleanName) {
+    const cleanTitle = editTitle.trim();
+    const cleanShort = editShortDesc.trim();
+    const cleanLong = editLongDesc.trim();
+
+    if (cleanTitle.length < 2) {
       push({
         type: "error",
         title: "Dato requerido",
-        message: "El nombre es requerido.",
+        message: "El título debe tener al menos 2 caracteres.",
+      });
+      return;
+    }
+    if (!editModuleCategory) {
+      push({
+        type: "error",
+        title: "Dato requerido",
+        message: "Selecciona una categoría.",
+      });
+      return;
+    }
+    if (!cleanShort) {
+      push({
+        type: "error",
+        title: "Dato requerido",
+        message: "La descripción corta es requerida.",
+      });
+      return;
+    }
+    if (cleanShort.length > SHORT_DESC_LIMIT) {
+      push({
+        type: "error",
+        title: "Límite",
+        message: `La descripción corta no puede pasar de ${SHORT_DESC_LIMIT} caracteres.`,
+      });
+      return;
+    }
+    if (!cleanLong) {
+      push({
+        type: "error",
+        title: "Dato requerido",
+        message: "La descripción larga es requerida.",
       });
       return;
     }
@@ -420,7 +545,7 @@ export default function AdminDashboardPage() {
         }
 
         const resized = await resizeImageToWebp(editFile);
-        const uploaded = await uploadCompanyImage(
+        const uploaded = await uploadModuleImage(
           supabase,
           resized,
           userData.user.id,
@@ -428,13 +553,16 @@ export default function AdminDashboardPage() {
         newUrl = uploaded.publicUrl;
       }
 
-      const res = await fetch(`/api/companies/${editingCompany.id}`, {
+      const res = await fetch(`/api/modules/${editingModule.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: cleanName,
+          title: cleanTitle,
+          module_category: editModuleCategory,
+          short_desc: cleanShort,
+          long_desc: cleanLong,
           image_url: newUrl,
-          old_image_url: editingCompany.image_url,
+          old_image_url: editingModule.image_url,
         }),
       });
 
@@ -458,7 +586,7 @@ export default function AdminDashboardPage() {
       setEditingId(null);
       setEditFile(null);
       if (editFileRef.current) editFileRef.current.value = "";
-      await loadCompanies(page);
+      await loadModules(page);
     } catch (err: any) {
       push({
         type: "error",
@@ -470,24 +598,19 @@ export default function AdminDashboardPage() {
     }
   }
 
-  async function removeCompany(id: number) {
+  async function removeModule(id: number) {
     const confirmId = push({
       type: "info",
       title: "Confirmación",
-      message: "¿Eliminar esta empresa? Esta acción no se puede deshacer.",
+      message: "¿Eliminar este módulo? Esta acción no se puede deshacer.",
       actions: [
-        {
-          label: "Cancelar",
-          onClick: () => {
-            remove(confirmId); // ✅ ahora sí se cierra
-          },
-        },
+        { label: "Cancelar", onClick: () => remove(confirmId) },
         {
           label: "Eliminar",
           onClick: async () => {
-            remove(confirmId); // ✅ cerramos el toast antes de ejecutar
+            remove(confirmId);
             try {
-              const res = await fetch(`/api/companies/${id}`, {
+              const res = await fetch(`/api/modules/${id}`, {
                 method: "DELETE",
               });
 
@@ -504,11 +627,11 @@ export default function AdminDashboardPage() {
               push({
                 type: "success",
                 title: "Eliminado",
-                message: "Empresa eliminada.",
+                message: "Módulo eliminado.",
                 durationMs: 1800,
               });
 
-              await loadCompanies(page);
+              await loadModules(page);
             } catch {
               push({
                 type: "error",
@@ -520,11 +643,8 @@ export default function AdminDashboardPage() {
         },
       ],
     });
-
-    // Nota: confirmId siempre existe porque push() devuelve id.
   }
 
-  /* ---------------- UI ---------------- */
   if (booting) return <div className="p-6"></div>;
   if (!userEmail || !isAdmin) return <div className="p-6">Redirigiendo…</div>;
 
@@ -532,53 +652,94 @@ export default function AdminDashboardPage() {
     <>
       <Toasts items={toasts} onClose={remove} />
 
-      <div className="pg_company">
-        <div id="dashboard" className="company_dashboard">
-          <div className="company_dashboard_logaccount">
-            <div className="company_panelinfo">
-              <h1>PANEL ADMINISTRADOR EMPRESAS</h1>
+      <div className="pg_module">
+        <div id="dashboard" className="module_dashboard">
+          <div className="module_dashboard_logaccount">
+            <div className="module_panelinfo">
+              <h1>PANEL ADMINISTRADOR MÓDULOS</h1>
               <p>Cuenta: {userEmail}</p>
             </div>
 
-            <button onClick={logout} className="logout_button" type="button">
+            <button
+              onClick={logout}
+              className="module_logout_button"
+              type="button"
+            >
               Cerrar Sesión
             </button>
           </div>
 
-          <section className="company_config">
+          <section className="module_config">
             {/* ===== CREAR ===== */}
-            <div className="company_dashboard_actions">
-              <h2>Agregar Empresa</h2>
+            <div className="module_dashboard_actions">
+              <h2>Agregar Módulo</h2>
 
               <form
-                onSubmit={createCompany}
-                className="company_dashboard_actions_form"
+                onSubmit={createModule}
+                className="module_dashboard_actions_form"
               >
                 <input
-                  className="name_field"
-                  placeholder="Nombre de la empresa"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  className="module_name_field"
+                  placeholder="Título del módulo"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
                 />
 
-                <div className="file_field">
-                  <label htmlFor="create_file" className="file_label">
-                    <span className="file_icon">🖼️</span>
+                <select
+                  className="module_select_field"
+                  value={moduleCategory}
+                  onChange={(e) =>
+                    setModuleCategory(e.target.value as Category)
+                  }
+                >
+                  <option value="" disabled>
+                    Selecciona categoría…
+                  </option>
+                  {CATEGORY_OPTIONS.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
 
-                    <div className="file_text">
-                      <span className="file_title">Subir imagen</span>
-                      <span className="file_subtitle">
+                <textarea
+                  className="module_textarea_field"
+                  placeholder="Descripción pagina principal"
+                  value={shortDesc}
+                  maxLength={SHORT_DESC_LIMIT}
+                  onChange={(e) => setShortDesc(e.target.value)}
+                  rows={3}
+                />
+                <div className="module_char_counter">
+                  {shortDesc.length}/{SHORT_DESC_LIMIT}
+                </div>
+
+                <textarea
+                  className="module_textarea_field"
+                  placeholder="Descripción larga"
+                  value={longDesc}
+                  onChange={(e) => setLongDesc(e.target.value)}
+                  rows={6}
+                />
+
+                <div className="module_file_field">
+                  <label htmlFor="create_file" className="module_file_label">
+                    <span className="module_file_icon">🖼️</span>
+
+                    <div className="module_file_text">
+                      <span className="module_file_title">Subir imagen</span>
+                      <span className="module_file_subtitle">
                         {file ? file.name : "PNG, JPG, WEBP"}
                       </span>
                     </div>
 
-                    <span className="file_button">Elegir</span>
+                    <span className="module_file_button">Elegir</span>
                   </label>
 
                   <input
                     id="create_file"
                     ref={createFileRef}
-                    className="create_file"
+                    className="module_create_file"
                     type="file"
                     accept="image/*"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -589,7 +750,7 @@ export default function AdminDashboardPage() {
 
                 <button
                   type="submit"
-                  className="create_button"
+                  className="module_create_button"
                   disabled={creating}
                 >
                   {creating ? "Guardando…" : "Guardar"}
@@ -598,42 +759,81 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* ===== EDITAR ===== */}
-            {editingCompany && (
-              <div className="company_dashboard_actions">
-                <h2>Editando: {editingCompany.name}</h2>
+            {editingModule && (
+              <div className="module_dashboard_actions">
+                <h2>Editando: {editingModule.title}</h2>
 
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
                     saveEdit();
                   }}
-                  className="company_dashboard_actions_form"
+                  className="module_dashboard_actions_form"
                 >
                   <input
-                    className="name_field"
-                    placeholder="Editar Nombre"
-                    value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
+                    className="module_name_field"
+                    placeholder="Editar título"
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
                   />
 
-                  <div className="file_field">
-                    <label htmlFor="edit_file" className="file_label">
-                      <span className="file_icon">🖼️</span>
+                  <select
+                    className="module_select_field"
+                    value={editModuleCategory}
+                    onChange={(e) =>
+                      setEditModuleCategory(e.target.value as Category)
+                    }
+                  >
+                    <option value="" disabled>
+                      Selecciona categoría…
+                    </option>
+                    {CATEGORY_OPTIONS.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
 
-                      <div className="file_text">
-                        <span className="file_title">Cambiar imagen</span>
-                        <span className="file_subtitle">
+                  <textarea
+                    className="module_textarea_field"
+                    placeholder="Editar descripción pagina principal"
+                    value={editShortDesc}
+                    maxLength={SHORT_DESC_LIMIT}
+                    onChange={(e) => setEditShortDesc(e.target.value)}
+                    rows={3}
+                  />
+                  <div className="module_char_counter">
+                    {editShortDesc.length}/{SHORT_DESC_LIMIT}
+                  </div>
+
+                  <textarea
+                    className="module_textarea_field"
+                    placeholder="Editar descripción larga"
+                    value={editLongDesc}
+                    onChange={(e) => setEditLongDesc(e.target.value)}
+                    rows={6}
+                  />
+
+                  <div className="module_file_field">
+                    <label htmlFor="edit_file" className="module_file_label">
+                      <span className="module_file_icon">🖼️</span>
+
+                      <div className="module_file_text">
+                        <span className="module_file_title">
+                          Cambiar imagen
+                        </span>
+                        <span className="module_file_subtitle">
                           {editFile ? editFile.name : "PNG, JPG, WEBP"}
                         </span>
                       </div>
 
-                      <span className="file_button">Cambiar</span>
+                      <span className="module_file_button">Cambiar</span>
                     </label>
 
                     <input
                       id="edit_file"
                       ref={editFileRef}
-                      className="create_file"
+                      className="module_create_file"
                       type="file"
                       accept="image/*"
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -642,10 +842,10 @@ export default function AdminDashboardPage() {
                     />
                   </div>
 
-                  <div className="company_dashboard_actions_buttons">
+                  <div className="module_dashboard_actions_buttons">
                     <button
                       type="submit"
-                      className="edit_button"
+                      className="module_edit_button"
                       disabled={saving}
                     >
                       {saving ? "Guardando…" : "Guardar cambios"}
@@ -654,7 +854,7 @@ export default function AdminDashboardPage() {
                     <button
                       type="button"
                       onClick={() => setEditingId(null)}
-                      className="cancel_button"
+                      className="module_cancel_button"
                     >
                       Cancelar
                     </button>
@@ -664,17 +864,17 @@ export default function AdminDashboardPage() {
             )}
           </section>
 
-          <div className="companies_search">
+          <div className="modules_search">
             <input
-              className="companies_search_input"
-              placeholder="Buscar empresa por nombre…"
+              className="modules_search_input"
+              placeholder="Buscar módulo (título, categoría, descripción)…"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
             {query.trim() && (
               <button
                 type="button"
-                className="companies_search_clear"
+                className="modules_search_clear"
                 onClick={() => setQuery("")}
                 aria-label="Limpiar búsqueda"
               >
@@ -684,47 +884,59 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* LIST */}
-          <section className="companies_list">
+          <section className="modules_list">
             {loading && (
-              <div className="companies_loading">Cargando empresas…</div>
+              <div className="modules_loading">Cargando módulos…</div>
             )}
 
-            {!loading && companies.length === 0 && (
-              <div className="companies_loading_status">
-                No hay empresas registradas
+            {!loading && modules.length === 0 && (
+              <div className="modules_loading_status">
+                No hay módulos registrados
               </div>
             )}
 
-            {!loading &&
-              companies.length > 0 &&
-              filteredCompanies.length === 0 && (
-                <div className="companies_loading_status">
-                  No se encontraron empresas para “{query.trim()}”.
-                </div>
-              )}
+            {!loading && modules.length > 0 && filteredModules.length === 0 && (
+              <div className="modules_loading_status">
+                No se encontraron módulos para “{query.trim()}”.
+              </div>
+            )}
 
-            {filteredCompanies.map((c) => (
-              <div key={c.id} className="companies_boxes">
-                <div className="company_box_info">
+            {filteredModules.map((m) => (
+              <div key={m.id} className="modules_boxes">
+                <div className="module_box_info">
                   <img
-                    src={c.image_url}
-                    className="company_logo"
-                    alt={c.name}
+                    src={m.image_url}
+                    className="module_logo"
+                    alt={m.title}
                   />
-                  <div>{c.name}</div>
+
+                  <div className="module_card_text">
+                    <div className="module_card_top">
+                      <div className="module_card_name">{m.title}</div>
+                      <div className="module_card_category">
+                        {m.module_category}
+                      </div>
+                    </div>
+                    <div className="module_card_desc">
+                      <span className="module_card_short_desc">
+                        Descripcion corta:{" "}
+                      </span>
+                      {m.short_desc}
+                    </div>
+                  </div>
                 </div>
 
-                <div className="company_box_actions">
+                <div className="module_box_actions">
                   <button
-                    className="edit_btn"
-                    onClick={() => startEdit(c)}
+                    className="module_edit_btn"
+                    onClick={() => startEdit(m)}
                     type="button"
                   >
                     Editar
                   </button>
                   <button
-                    className="delete_btn"
-                    onClick={() => removeCompany(c.id)}
+                    className="module_delete_btn"
+                    onClick={() => removeModule(m.id)}
                     type="button"
                   >
                     Eliminar
@@ -733,18 +945,22 @@ export default function AdminDashboardPage() {
               </div>
             ))}
 
-            <div className="pageButtons">
+            <div className="module_pageButtons">
               <button
-                disabled={page === 0}
-                onClick={() => loadCompanies(page - 1)}
+                disabled={loading || page === 0}
+                onClick={() => loadModules(page - 1)}
                 type="button"
               >
                 ←
               </button>
+
               <span> Página {page + 1}</span>
+
               <button
-                disabled={total !== null && (page + 1) * PAGE_SIZE >= total}
-                onClick={() => loadCompanies(page + 1)}
+                disabled={loading || isLastPage}
+                onClick={() => {
+                  if (!isLastPage) loadModules(page + 1);
+                }}
                 type="button"
               >
                 →

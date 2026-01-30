@@ -1,45 +1,61 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/serverClient";
-import { requireAdmin } from "@/lib/auth/requireAdmin";
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import "./dashboard_layout.css";
 
-export default async function DashboardLayout({
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  try {
-    const supabase = await createClient();
-    await requireAdmin(supabase);
-    return (
-      <div className="dashboard_shell">
-        <aside className="dashboard_sidebar" aria-label="Admin sidebar">
+  const router = useRouter();
+
+  async function logout() {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } finally {
+      router.replace("/admin");
+    }
+  }
+
+  return (
+    <div className="dashboard_shell">
+      {/* ===== SIDEBAR ===== */}
+      <aside className="dashboard_sidebar">
+        <div>
           <div className="dashboard_sidebar_brand">
-            <div className="dashboard_sidebar_title">INNOVA JC</div>
-            <div className="dashboard_sidebar_subtitle">Panel admin</div>
+            <h2>Admin Panel</h2>
+
+            <button
+              onClick={logout}
+              className="dashboard_logout_under"
+              type="button"
+            >
+              Cerrar sesión
+            </button>
           </div>
 
-          <nav className="dashboard_sidebar_nav" aria-label="Navegación">
+          <nav className="dashboard_sidebar_nav">
             <Link
-              className="dashboard_sidebar_link"
               href="/admin/dashboard/companies"
+              className="dashboard_nav_item"
             >
               Empresas
             </Link>
 
             <Link
-              className="dashboard_sidebar_link"
-              href="/admin/dashboard/services"
+              href="/admin/dashboard/modules"
+              className="dashboard_nav_item"
             >
-              Servicios
+              Módulos
             </Link>
           </nav>
-        </aside>
-        <main className="dashboard_main">{children}</main>
-      </div>
-    );
-  } catch {
-    redirect("/admin");
-  }
+        </div>
+      </aside>
+
+      {/* ===== CONTENT ===== */}
+      <main className="dashboard_content">{children}</main>
+    </div>
+  );
 }

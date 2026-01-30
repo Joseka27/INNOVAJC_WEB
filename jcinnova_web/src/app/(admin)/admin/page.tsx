@@ -128,7 +128,7 @@ export default function AdminLoginPage() {
     (async () => {
       const me = await getMe();
       setBooting(false);
-      if (me.ok && me.isAdmin) router.replace("/admin/dashboard");
+      if (me.ok && me.isAdmin) router.replace("/admin/dashboard/companies");
     })();
   }, [router]);
 
@@ -187,7 +187,7 @@ export default function AdminLoginPage() {
         durationMs: 1800,
       });
 
-      router.replace("/admin/dashboard");
+      router.replace("/admin/dashboard/companies");
     } catch {
       push({
         type: "error",

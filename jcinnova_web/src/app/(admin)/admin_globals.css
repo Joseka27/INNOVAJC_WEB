@@ -23,9 +23,8 @@ body {
   background-position: center;
   background-size: cover;
   background-attachment: fixed;
-  background:
-    radial-gradient(circle at top, rgba(0, 140, 255, 0.25), transparent 40%),
-    linear-gradient(180deg, #020617, #020617);
+  background: linear-gradient(180deg, #020617, #020617);
+  overflow: hidden;
 }
 
 /*Divide header-content-footer*/
