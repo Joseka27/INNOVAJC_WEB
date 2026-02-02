@@ -1,7 +1,7 @@
 "use client";
 import "tailwindcss";
 import React, { useEffect, useMemo, useState } from "react";
-import "./mainCarousel.css";
+import "./landing_carousel.css";
 
 type Company = {
   id: number;

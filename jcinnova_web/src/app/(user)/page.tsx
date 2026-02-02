@@ -1,40 +1,18 @@
 "use client";
-import Link from "next/link"; /*Rout pages whiout loading it*/
-import Image from "next/image"; /*Library allow show images*/
-import { motion } from "framer-motion"; /*Library helps animate entry of text*/
-import MainCarousel from "@/components/mainCarousel";
-import React, { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import MainCarousel from "@/app/(user)/_components/landing_carousel";
+import ServicesSection from "@/app/(user)/_components/landing_serviceModules";
+import {
+  problemItems,
+  solutionItems,
+  outcomes,
+  seceSteps,
+  seceStats,
+} from "./_components/landing_data";
 
 const Home = () => {
-  const [activeCat, setActiveCat] =
-    useState<(typeof categories)[number]>("Todos");
-
-  const filtered = useMemo(() => {
-    if (activeCat === "Todos") return servicesItems;
-    return servicesItems.filter((s) => s.category === activeCat);
-  }, [activeCat]);
-
-  const PER_PAGE = 8;
-
-  const [page, setPage] = useState(1);
-
-  const totalPages = useMemo(() => {
-    return Math.max(1, Math.ceil(filtered.length / PER_PAGE));
-  }, [filtered.length]);
-
-  // Si cambian los filtros/categoría y quedas en una página que ya no existe, te manda a la 1.
-  useEffect(() => {
-    setPage(1);
-  }, [activeCat]); // o [filtered] si prefieres resetear con cualquier cambio
-
-  const pageItems = useMemo(() => {
-    const start = (page - 1) * PER_PAGE;
-    return filtered.slice(start, start + PER_PAGE);
-  }, [filtered, page]);
-
-  const canPrev = page > 1;
-  const canNext = page < totalPages;
-
   return (
     <>
       <div className="pg_main">
@@ -265,110 +243,7 @@ const Home = () => {
           </div>
         </section>
         {/*============= Section 4 (Presentation) =============*/}
-        <section className="pg_main-presentation-part4" id="servicios">
-          <div className="pg_main-part4-sections">
-            <motion.div
-              className="h1-span-part6"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.2, ease: "easeOut" }}
-              viewport={{ once: true }}
-            >
-              <div className="pg_main-part4-head">
-                <h2>Todo tu negocio en un solo sistema</h2>
-                <p>
-                  Módulos integrados para controlar las distintas operaciones de
-                  tu empresa. Totalmente ajustables a tu negocio
-                </p>
-              </div>
-            </motion.div>
-
-            {/* Filtro por categoría */}
-            <div
-              className="pg_main-part4-filters"
-              role="tablist"
-              aria-label="Filtrar servicios"
-            >
-              {categories.map((c) => {
-                const active = c === activeCat;
-                return (
-                  <button
-                    key={c}
-                    type="button"
-                    className={`pg_main-part4-filterbtn ${active ? "is-active" : ""}`}
-                    onClick={() => setActiveCat(c)}
-                    role="tab"
-                    aria-selected={active}
-                  >
-                    {c}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Grid */}
-            <div className="pg_main-part4-grid">
-              {pageItems.map((item) => (
-                <article key={item.title} className="pg_main-part4-card">
-                  <div className="pg_main-part4-media" aria-hidden>
-                    <img
-                      src={item.image}
-                      alt=""
-                      className="pg_main-part4-img"
-                      loading="lazy"
-                    />
-                  </div>
-
-                  <div className="pg_main-part4-cardtext">
-                    <div className="pg_main-part4-cardtop">
-                      <h3>{item.title}</h3>
-                      <span className="pg_main-part4-chip">
-                        {item.category}
-                      </span>
-                    </div>
-                    <p>{item.text}</p>
-                  </div>
-                  <div className="pg_main-part4-cardmoreinfo">
-                    <p>Mas información ↗</p>
-                  </div>
-                </article>
-              ))}
-            </div>
-
-            {filtered.length > PER_PAGE && (
-              <div className="pg_main-part4-pagination" aria-label="Paginación">
-                <button
-                  type="button"
-                  className="pg_main-part4-pagebtn"
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={!canPrev}
-                >
-                  ← Anterior
-                </button>
-
-                <div className="pg_main-part4-pagestatus">
-                  Página <b>{page}</b> de <b>{totalPages}</b>
-                </div>
-
-                <button
-                  type="button"
-                  className="pg_main-part4-pagebtn"
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={!canNext}
-                >
-                  Siguiente →
-                </button>
-              </div>
-            )}
-
-            {/* Estado vacío */}
-            {filtered.length === 0 && (
-              <div className="pg_main-part4-empty">
-                No hay servicios para esta categoría.
-              </div>
-            )}
-          </div>
-        </section>
+        <ServicesSection />
         {/*============= Section 5 (Presentation) =============*/}
         <section className="pg_main-presentation-part5">
           <div className="part5-text">
@@ -421,105 +296,5 @@ const Home = () => {
     </>
   );
 };
-/* ===== DATA: SECE features (para map) ===== */
-
-const problemItems = [
-  "Duplicación de datos y errores por capturas manuales",
-  "Inventario desactualizado y compras fuera de control",
-  "Cierres contables lentos y reportes que salen tarde",
-  "Difícil seguimiento de ventas, cobros y bancos",
-  "Poca visibilidad para gerencia y decisiones a ciegas",
-];
-
-const solutionItems = [
-  "Información centralizada para contabilidad, inventario y gestión",
-  "Procesos más ordenados y trazabilidad por usuario",
-  "Reportes claros para tomar decisiones rápidas",
-  "Evitar perdida de datos entre traspasos de aplicaciones",
-  "Flujo de trabajo consistente para todo el equipo",
-];
-
-const outcomes = [
-  {
-    icon: "/images/mainpage/LessWork.png",
-    label: "Menos retrabajo",
-  },
-  { icon: "/images/mainpage/Visibility.png", label: "Más visibilidad" },
-  { icon: "/images/mainpage/Agility.png", label: "Procesos ágiles" },
-  {
-    icon: "/images/mainpage/OperationalControl.png",
-    label: "Control operativo",
-  },
-];
-
-const seceSteps = [
-  {
-    icon: "/images/mainpage/Reports.png",
-    iconHover: "/images/mainpage/WReports.png",
-    title: "Reportería para gestión",
-    text: "Más de 200 informes orientados a control y toma de decisiones.",
-  },
-  {
-    icon: "/images/mainpage/FileTypes.png",
-    iconHover: "/images/mainpage/WFileTypes.png",
-    title: "Exportación inmediata",
-    text: "Exporta documentos en distintos formatos como a Excel, Word, PDF, HTML para compartir y analizar.",
-  },
-  {
-    icon: "/images/mainpage/Change2.png",
-    iconHover: "/images/mainpage/WChange.png",
-    title: "Tipo de cambio BCCR",
-    text: "Información actualizad Integración con Banco Central.",
-  },
-  {
-    icon: "/images/mainpage/Goverment.png",
-    iconHover: "/images/mainpage/WGoverment.png",
-    title: "Procesos tributarios",
-    text: "Conexión con SIC Web y generación de informes para cumplimiento.",
-  },
-  {
-    icon: "/images/mainpage/Graphs.png",
-    iconHover: "/images/mainpage/WGraphs.png",
-    title: "Consultas y visualización",
-    text: "Resultados con apoyo gráfico para interpretar rápido lo importante.",
-  },
-  {
-    icon: "/images/mainpage/Productivity.png",
-    iconHover: "/images/mainpage/WProductivity.png",
-    title: "Productividad real",
-    text: "Atajos y teclas especiales para acelerar tareas del día a día.",
-  },
-];
-
-const seceStats = [
-  { value: "200+", label: "Informes" },
-  { value: "Excel/PDF", label: "Exportables" },
-  { value: "BCCR", label: "Tipo de cambio" },
-];
-
-type ServiceCategory =
-  | "Finanzas"
-  | "Operación"
-  | "Comercial"
-  | "RRHH"
-  | "Control";
-
-type ServiceItem = {
-  image: string;
-  title: string;
-  text: string;
-  category: ServiceCategory;
-};
-
-const servicesItems: ServiceItem[] = [];
-
-const categories: Array<ServiceCategory | "Todos"> = [
-  "Todos",
-  "Finanzas",
-  "Operación",
-  "Comercial",
-  "RRHH",
-  "Control",
-];
 
 export default Home;
