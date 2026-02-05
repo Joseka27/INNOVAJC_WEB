@@ -535,7 +535,7 @@ export default function AdminDashboardPage() {
       <div className="pg_company">
         <div id="dashboard" className="company_dashboard">
           <div className="company_dashboard_logaccount">
-            <div className="company_panelinfo">
+            <div className="company_panelinfo" id="companies_header">
               <h1>PANEL ADMINISTRADOR EMPRESAS</h1>
               <p>Cuenta: {userEmail}</p>
             </div>
@@ -717,8 +717,9 @@ export default function AdminDashboardPage() {
                 <div className="company_box_actions">
                   <button
                     className="edit_btn"
-                    onClick={() => startEdit(c)}
-                    type="button"
+                    onClick={() => {
+                      startEdit(c);
+                    }}
                   >
                     Editar
                   </button>

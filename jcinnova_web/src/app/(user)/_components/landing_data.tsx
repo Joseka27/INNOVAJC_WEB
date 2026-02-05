@@ -24,60 +24,6 @@ export const servicesItems: ServiceItem[] = [
     text: "hola",
     category: "RRHH",
   },
-  {
-    image: "prueba",
-    title: "prueba",
-    text: "hola",
-    category: "Control",
-  },
-  {
-    image: "prueba",
-    title: "prueba",
-    text: "hola",
-    category: "Comercial",
-  },
-  {
-    image: "prueba",
-    title: "prueba",
-    text: "hola",
-    category: "Operación",
-  },
-  {
-    image: "prueba",
-    title: "prueba",
-    text: "hola",
-    category: "Finanzas",
-  },
-  {
-    image: "prueba",
-    title: "prueba",
-    text: "hola",
-    category: "RRHH",
-  },
-  {
-    image: "prueba",
-    title: "prueba",
-    text: "hola",
-    category: "Control",
-  },
-  {
-    image: "prueba",
-    title: "prueba",
-    text: "hola",
-    category: "Comercial",
-  },
-  {
-    image: "prueba",
-    title: "prueba",
-    text: "hola",
-    category: "Operación",
-  },
-  {
-    image: "prueba",
-    title: "prueba",
-    text: "hola",
-    category: "Finanzas",
-  },
 ];
 
 export const seceStats = [
