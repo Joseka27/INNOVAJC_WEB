@@ -1,21 +1,23 @@
-/*Footer general options*/
 footer {
   background-color: #f8f8f8;
   color: #616161;
 }
 
-/*Footer around margin/*/
+/* Footer around margin */
 .section-footer {
   padding: 2rem 4rem;
 }
 
-/*Footer general display*/
+/* Footer general display (wrapper) */
 .pg_footer {
   display: flex;
   flex-direction: column;
 }
 
-/*=============== Footer topside information ===============*/
+/* =========================================
+   TOP SIDE: INFORMATION (4 columnas)
+========================================= */
+
 .pg_footer-information {
   display: flex;
   justify-content: space-between;
@@ -27,7 +29,24 @@ footer {
   margin-bottom: 1rem;
 }
 
-/*Logo and Title*/
+/* Each column */
+.pg_footer-information-div {
+  width: fit-content;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Column titles (h4) */
+.pg_footer-information-div h4 {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #052b69;
+}
+
+/* ---- Column 1: Logo + Text ---- */
+
 .pg_footer-logotext {
   display: flex;
   justify-content: left;
@@ -41,29 +60,7 @@ footer {
   font-weight: bold;
 }
 
-/*Footer divider in 3 (Info-Links-Socials*/
-.pg_footer-information-div {
-  width: fit-content;
-  display: flex;
-  justify-content: flex-start;
-  flex-direction: column;
-  flex: 1;
-}
-
-.pg_footer-information-div h4 {
-  font-size: 1.4rem;
-  font-weight: bold;
-  color: #052b69;
-}
-
-/*Links Configuration*/
-.pg_footer-linkrouter {
-  display: flex;
-  justify-content: left;
-  flex-direction: row;
-}
-
-/*First child specific configuration*/
+/* First child specific configuration */
 .pg_footer-information-div:first-child {
   gap: 2rem;
   flex: 5;
@@ -77,7 +74,15 @@ footer {
   font-weight: 700;
 }
 
-/*Second child specific configuration*/
+/* ---- Column 2: Links ---- */
+
+.pg_footer-linkrouter {
+  display: flex;
+  justify-content: left;
+  flex-direction: row;
+}
+
+/* Second child specific configuration */
 .pg_footer-information-div:nth-child(2) {
   gap: 1.7rem;
   padding-top: 1.5rem;
@@ -99,7 +104,9 @@ footer {
   text-decoration: underline;
 }
 
-/*Third child specific configuration*/
+/* ---- Column 3: Social ---- */
+
+/* Third child specific configuration */
 .pg_footer-information-div:nth-child(3) {
   gap: 1.7rem;
   padding-top: 1.5rem;
@@ -110,23 +117,29 @@ footer {
   display: flex;
   flex-direction: colmun;
 }
+
 .socialmedia a {
   transition: transform 0.2s ease-in-out;
 }
+
 .socialmedia a:hover {
   color: #052b69;
   transform: scale(1.2);
 }
+
 .socialmedia p {
   width: 80%;
 }
 
+/* Generic p inside footer columns */
 .pg_footer-information-div p {
   line-height: 15px;
   cursor: poniter;
 }
 
-/*Four child specific configuration*/
+/* ---- Column 4: Schedule ---- */
+
+/* Four child specific configuration */
 .pg_footer-information-div:nth-child(4) {
   gap: 1.7rem;
   padding-top: 1.5rem;
@@ -148,7 +161,7 @@ footer {
   margin: 3px 0;
 }
 
-/*Actual Day */
+/* Actual Day */
 .schedule-row.today {
   font-weight: 700;
   background: linear-gradient(90deg, #008cff, #2d9bf5, #1976d2);
@@ -158,12 +171,29 @@ footer {
   transform: scale(1.05);
 }
 
-/*=============== Footer botton side information (terms) ===============*/
+/* =========================================
+   DIVIDER
+========================================= */
+
+hr {
+  width: 100%;
+}
+
+/* =========================================
+   BOTTOM SIDE: TERMS
+========================================= */
+
 .pg_footer-terms {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   margin-top: 1rem;
+}
+
+.pg_footer-copyright p {
+  font-size: 13px;
+  line-height: 15px;
+  font-weight: 600;
 }
 
 .pg_footer-termslink {
@@ -178,19 +208,11 @@ footer {
   font-weight: 600;
 }
 
-hr {
-  width: 100%;
-}
+/* =========================================
+   RESPONSIVE
+========================================= */
 
-.pg_footer-copyright p {
-  font-size: 13px;
-  line-height: 15px;
-  font-weight: 600;
-}
-
-/*Footer Responsive Style ==========================*/
-
-/*Responsive for less than 1430*/
+/* Responsive for less than 1430 */
 @media screen and (max-width: 1600px) {
   .pg_footer-information-div h4 {
     font-size: 1.3rem;
@@ -203,7 +225,7 @@ hr {
   }
 }
 
-/*Responsive for less than 1430*/
+/* Responsive for less than 1430 */
 @media screen and (max-width: 1350px) {
   .pg_footer-information-div:nth-child(3) {
     flex: 1.2;
@@ -213,7 +235,7 @@ hr {
   }
 }
 
-/*Responsive for less than 1225*/
+/* Responsive for less than 1225 */
 @media screen and (max-width: 1225px) {
   .pg_footer-information-div h4 {
     font-size: 1.2rem;
@@ -240,7 +262,7 @@ hr {
   }
 }
 
-/*Responsive for less than 1120*/
+/* Responsive for less than 1120 */
 @media screen and (max-width: 1120px) {
   .pg_footer-information-div h4 {
     font-size: 1.1rem;
@@ -263,7 +285,7 @@ hr {
   }
 }
 
-/*Responsive for less than 990*/
+/* Responsive for less than 990 */
 @media screen and (max-width: 990px) {
   .pg_footer-information-div h4 {
     font-size: 1rem;
@@ -289,7 +311,7 @@ hr {
   }
 }
 
-/*Responsive for less than 970*/
+/* Responsive for less than 970 */
 @media screen and (max-width: 970px) {
   .pg_footer-logotext h3 {
     font-size: 1.2rem;
@@ -302,7 +324,7 @@ hr {
   }
 }
 
-/*Responsive for less than 912*/
+/* Responsive for less than 912 */
 @media screen and (max-width: 912px) {
   .pg_footer-information {
     flex-direction: row;

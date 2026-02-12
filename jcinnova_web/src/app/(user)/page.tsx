@@ -156,8 +156,6 @@ const Home = () => {
         <section className="pg_main-presentation-part3" id="ventajas">
           <div className="pg_main-part3-inner">
             <div className="pg_main-part3-split">
-              {/* Left copy */}
-
               <div className="pg_main-part3-left">
                 <span className="pg_main-part3-pill">Potencia tu empresa</span>
 

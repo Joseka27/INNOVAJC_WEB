@@ -1,4 +1,4 @@
-/*Header general options*/
+/* Header general options */
 header {
   background-color: #f8f8f8;
   color: #616161;
@@ -9,12 +9,12 @@ header {
   border-bottom: 1px solid #e4e4e4;
 }
 
-/*Header separation from borders*/
+/* Header separation from borders */
 .section-header {
   padding: 0rem 15rem;
 }
 
-/*Header display content*/
+/* Header display content (wrapper) */
 .pg_header {
   display: flex;
   flex-direction: row;
@@ -22,13 +22,14 @@ header {
   justify-content: space-between;
 }
 
-/*============Header first part (Logo and PagesRouts)==============*/
+/* ===== Header first part (Logo + Pages Routes) ===== */
+
 .pg_header-principal {
   display: flex;
   flex-direction: row;
 }
 
-/*Header Pages RoutsLinks*/
+/* Pages routes links wrapper */
 .pg_header-linkrouters-links {
   display: flex;
   align-items: center;
@@ -37,13 +38,13 @@ header {
   margin-left: 4rem;
 }
 
-/*Fit div whit size of info*/
+/* Each link container */
 .pg_header-linkrouter {
   display: flex;
   width: fit-content;
 }
 
-/*Fit div whit size of info*/
+/* Links style */
 .pg_header-linkrouters-links a {
   justify-content: left;
   font-size: 17px;
@@ -58,7 +59,7 @@ header {
   border-radius: 2rem;
 }
 
-/*============Header first part (Logo and PagesRouts)==============*/
+/* ===== Contact button ===== */
 
 .pg_header-contactbutton {
   color: #ffffff;
@@ -68,6 +69,7 @@ header {
   font-weight: bold;
   transition: transform 0.2s ease-in-out;
 }
+
 .pg_header-contactbutton:hover {
   color: #ffffff;
   background-color: #084c83;

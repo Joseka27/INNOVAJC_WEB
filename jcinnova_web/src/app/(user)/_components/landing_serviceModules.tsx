@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { slugify } from "@/app/(user)/_utils/helpers";
 
 type ModuleItem = {
   id: number;
@@ -192,7 +193,9 @@ export default function ServicesSection() {
                 </div>
 
                 <div className="pg_main-part4-cardmoreinfo">
-                  <Link href={`/about#${item.title}`}>Más información ↗</Link>
+                  <Link href={`/about#${slugify(item.title)}`}>
+                    Más información ↗
+                  </Link>
                 </div>
               </article>
             ))}

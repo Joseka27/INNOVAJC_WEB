@@ -1,0 +1,519 @@
+:root {
+  --about-sticky-offset: 140px;
+  --about-sticky-offset-cat: 235px;
+}
+
+/* Para secciones del About */
+#innovajc,
+#WhatWeDo,
+#services,
+#location {
+  scroll-margin-top: var(--about-sticky-offset);
+}
+.pg_about_services-catDivider {
+  scroll-margin-top: var(--about-sticky-offset-cat);
+}
+
+/* Cada módulo (article) también, por si navegas por hash al módulo */
+.pg_about_services-card {
+  scroll-margin-top: var(--about-sticky-offset-cat);
+}
+
+.pg_about_innovajc {
+  width: 100%;
+  padding: 5.2rem 1.25rem;
+
+  background:
+    radial-gradient(circle at 20% 0%, rgba(0, 140, 255, 0.1), transparent 42%),
+    radial-gradient(circle at 85% 15%, rgba(5, 43, 105, 0.06), transparent 46%),
+    linear-gradient(180deg, #f7fbff 0%, #ffffff 70%);
+}
+
+.pg_about_innovajc-inner {
+  width: min(1600px, 100%);
+  margin: 0 auto;
+}
+
+/* ===== LAYOUT ===== */
+.pg_about_innovajc-split {
+  display: grid;
+  grid-template-columns: 0.95fr 1.05fr;
+  gap: 2.2rem;
+  align-items: start;
+}
+
+/* ===== LEFT ===== */
+.pg_about_innovajc-left {
+  position: static;
+  top: auto;
+  align-self: stretch;
+}
+
+.pg_about_innovajc-logoWrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.pg_about_innovajc-logo {
+  width: min(520px, 100%);
+  height: auto;
+  object-fit: contain;
+}
+
+/* ===== RIGHT ===== */
+.pg_about_innovajc-right {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding-top: 0.25rem;
+}
+
+.pg_about_innovajc-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 2rem;
+  padding: 0 0.85rem;
+  border-radius: 999px;
+
+  font-weight: 900;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+
+  color: rgba(5, 43, 105, 0.9);
+  background: rgba(0, 140, 255, 0.08);
+  border: 1px solid rgba(0, 140, 255, 0.18);
+  width: fit-content;
+}
+
+.pg_about_innovajc-title {
+  margin: 0.15rem 0 0;
+  font-size: clamp(2rem, 3.3vw, 3rem);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  line-height: 1.05;
+  color: #052b69;
+}
+
+.pg_about_innovajc-grad {
+  background: linear-gradient(90deg, #008cff, #2d9bf5, #1976d2);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.pg_about_innovajc-subtitle {
+  margin: 0.25rem 0 0;
+  font-weight: 700;
+  line-height: 1.55rem;
+  font-size: clamp(1.05rem, 1.6vw, 1.2rem);
+  color: rgba(1, 28, 71, 0.78);
+  max-width: 46rem;
+}
+
+.pg_about_innovajc-subtitle-span {
+  font-weight: 800;
+  color: rgb(5, 117, 192);
+}
+
+/* ===== SOCIAL ===== */
+.pg_about_innovajc_socialmedia {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.25rem;
+  font-size: 2rem;
+  color: #616161;
+}
+
+.pg_about_innovajc_socialmedia a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform 0.2s ease-in-out,
+    color 0.2s ease-in-out;
+}
+
+.pg_about_innovajc_socialmedia a:hover {
+  color: #052b69;
+  transform: scale(1.15);
+}
+
+.pg_about_innovajc-miniNote {
+  margin-top: 0.4rem;
+  color: rgba(5, 43, 105, 0.62);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 980px) {
+  .pg_about_innovajc {
+    padding: 4rem 1.1rem;
+  }
+
+  .pg_about_innovajc-split {
+    grid-template-columns: 1fr;
+    gap: 1.6rem;
+  }
+
+  .pg_about_innovajc-left {
+    position: static; /* quitar sticky en mobile */
+  }
+
+  .pg_about_innovajc-logo {
+    width: min(420px, 100%);
+  }
+
+  .pg_about_innovajc-right {
+    text-align: center;
+    align-items: center;
+  }
+
+  .pg_about_innovajc-subtitle {
+    max-width: 52rem;
+  }
+
+  .pg_about_innovajc_socialmedia {
+    justify-content: center;
+  }
+}
+
+.pg_about_innovajc_button {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+}
+
+.pg_about_innovajc_button a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #052b69;
+  text-decoration: none;
+
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: 0.02em;
+
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  cursor: pointer;
+
+  background: #ffffff;
+  border: 0.2rem solid #052b69;
+  animation: ease-in-out;
+}
+
+.pg_about_innovajc_button a:hover {
+  transform: translateY(-1px);
+  color: #ffffff;
+  background-color: #083e96;
+  border-color: #083e96;
+  box-shadow: 0 16px 45px rgba(8, 62, 150, 0.18);
+}
+/* ===============================
+   STICKY MINI NAV (ABOUT)
+================================ */
+
+.pg_about_stickyNav {
+  position: sticky;
+
+  /* Si tienes un header global fijo, cambia esto:
+     top: 80px; (o lo que mida tu header) */
+  top: 90;
+
+  z-index: 80;
+  width: 100%;
+
+  background: rgba(255, 255, 255, 0.993);
+  border-bottom: 1px solid rgba(0, 102, 255, 0.12);
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.pg_about_stickyNav-inner {
+  width: min(1200px, 100%);
+  margin: 0 auto;
+  padding: 0.85rem 1.25rem;
+
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.pg_about_stickyNav-link {
+  text-decoration: none;
+  color: #041a3b;
+  font-weight: 700;
+  font-size: 0.9rem;
+
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(4, 26, 59, 0.06);
+
+  transition:
+    transform 0.15s ease,
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.pg_about_stickyNav-link:hover {
+  background: #041a3b;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+/* CTA a la derecha */
+.pg_about_stickyNav-cta {
+  margin-left: auto;
+
+  text-decoration: none;
+  font-weight: 900;
+  font-size: 0.9rem;
+
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+
+  background: #041a3b;
+  color: #fff;
+
+  transition:
+    transform 0.15s ease,
+    opacity 0.2s ease;
+}
+
+.pg_about_stickyNav-cta:hover {
+  transform: translateY(-1px);
+  opacity: 0.92;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .pg_about_stickyNav-inner {
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .pg_about_stickyNav-link {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.75rem;
+  }
+
+  .pg_about_stickyNav-cta {
+    width: 100%;
+    margin-left: 0;
+    text-align: center;
+  }
+}
+
+/* ===============================
+   ABOUT - "QUÉ HACEMOS" SECTION
+================================ */
+
+.pg_about_servicesFeature {
+  width: 100%;
+  padding: 4.5rem 1.25rem;
+  background: #ffffff;
+}
+
+.pg_about_servicesFeature-inner {
+  width: min(1200px, 100%);
+  margin: 0 auto;
+}
+
+.pg_about_servicesFeature-head {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2.25rem;
+}
+
+.pg_about_servicesFeature-title {
+  margin: 0;
+  font-size: clamp(3rem, 2.6vw, 2.6rem);
+  font-weight: 900;
+  letter-spacing: 0.01em;
+  color: #052b69;
+  margin: 1rem 0;
+}
+
+/* Layout grid (Left cards + Right list) */
+.pg_about_servicesFeature-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 0.85fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+/* LEFT side: 4 cards in 2 columns */
+.pg_about_servicesFeature-left {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.4rem 1.4rem;
+}
+
+.pg_about_servicesFeature-card {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+
+  padding: 1.05rem 1.05rem;
+}
+
+.pg_about_servicesFeature-icon {
+  width: 50px;
+  height: 50px;
+  flex: 0 0 50px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden; /* evita que la imagen sobresalga */
+}
+
+.pg_about_servicesFeature-icon img {
+  width: 55px;
+  height: 55px;
+  object-fit: contain;
+  display: block;
+}
+
+.pg_about_servicesFeature-cardBody {
+  min-width: 0;
+}
+
+.pg_about_servicesFeature-cardTitle {
+  margin: 0;
+  color: #0b1220;
+  font-weight: 900;
+  font-size: 1.05rem;
+  letter-spacing: 0.01em;
+}
+
+.pg_about_servicesFeature-cardText {
+  margin: 0.45rem 0 0;
+  color: rgba(11, 18, 32, 0.72);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+/* RIGHT side: list + button */
+.pg_about_servicesFeature-right {
+  padding: 1.25rem 1.25rem;
+  border-radius: 18px;
+
+  background: #ffffff;
+  border: 1px solid #e9eef6;
+  box-shadow: 0 10px 28px rgba(12, 18, 32, 0.06);
+}
+
+.pg_about_servicesFeature-sideTitle {
+  margin: 0 0 1rem;
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #0b1220;
+}
+
+.pg_about_servicesFeature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pg_about_servicesFeature-li {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+  color: rgba(11, 18, 32, 0.8);
+  font-size: 0.96rem;
+  line-height: 1.5;
+}
+
+.pg_about_servicesFeature-check {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  display: grid;
+  place-items: center;
+
+  color: #1d5bd6;
+  font-weight: 900;
+  font-size: 1.2rem;
+  line-height: 1;
+  margin-top: 0.1rem;
+}
+
+.pg_about_servicesFeature-cta {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border-radius: 999px;
+
+  background: #2f67ff;
+  color: #ffffff;
+  text-decoration: none;
+
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  font-size: 0.95rem;
+
+  transition:
+    transform 0.18s ease,
+    filter 0.18s ease;
+}
+
+.pg_about_servicesFeature-cta:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 980px) {
+  .pg_about_servicesFeature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pg_about_servicesFeature-right {
+    order: 2;
+  }
+
+  .pg_about_servicesFeature-left {
+    order: 1;
+  }
+}
+
+@media (max-width: 720px) {
+  .pg_about_servicesFeature {
+    padding: 3.5rem 1.1rem;
+  }
+
+  .pg_about_servicesFeature-left {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .pg_about_servicesFeature-card {
+    padding: 1rem;
+  }
+
+  .pg_about_servicesFeature-icon {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+  }
+}
