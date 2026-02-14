@@ -38,7 +38,7 @@ export default function AdminModulesPage() {
 
   // ✅ TEST: 1 min idle, 3 min hard
   useIdleLogout(push, {
-    idleMs: 15 * 60 * 1000,
+    idleMs: 30 * 60 * 1000,
     sessionMaxMs: 60 * 60 * 1000,
   });
 
@@ -483,14 +483,6 @@ export default function AdminModulesPage() {
               <h1>PANEL ADMINISTRADOR MÓDULOS</h1>
               <p>Cuenta: {userEmail}</p>
             </div>
-
-            <button
-              onClick={logout}
-              className="module_logout_button"
-              type="button"
-            >
-              Cerrar Sesión
-            </button>
           </div>
 
           <section className="module_config">
@@ -767,7 +759,7 @@ export default function AdminModulesPage() {
                             container.scrollTop;
 
                           container.scrollTo({
-                            top: top - 20, // margen superior
+                            top: top - 150, // margen superior
                             behavior: "smooth",
                           });
                         }

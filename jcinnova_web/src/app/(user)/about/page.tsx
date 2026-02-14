@@ -98,7 +98,7 @@ const About = () => {
             Sobre InnovaJC
           </a>
           <a className="pg_about_stickyNav-link" href="#WhatWeDo">
-            Qué hacemos
+            Qué ofrecemos
           </a>
           <a className="pg_about_stickyNav-link" href="#services">
             Módulos SECE
@@ -115,7 +115,7 @@ const About = () => {
 
       <section className="pg_about_servicesFeature" id="WhatWeDo">
         <div className="pg_about_servicesFeature-inner">
-          <h2 className="pg_about_servicesFeature-title">Qué hacemos</h2>
+          <h2 className="pg_about_servicesFeature-title">Qué ofrecemos</h2>
 
           <div className="pg_about_servicesFeature-grid">
             <div className="pg_about_servicesFeature-left">

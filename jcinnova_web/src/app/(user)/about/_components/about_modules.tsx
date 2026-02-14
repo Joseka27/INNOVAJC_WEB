@@ -142,7 +142,7 @@ export default function AboutServices() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
           viewport={{ once: true }}
         >
           <div className="pg_about_services-head">

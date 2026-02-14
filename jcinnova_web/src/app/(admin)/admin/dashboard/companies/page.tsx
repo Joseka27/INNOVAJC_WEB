@@ -25,9 +25,9 @@ export default function AdminDashboardPage() {
   const { toasts, push, remove, clearAll } = useToasts();
   const { booting, userEmail, isAdmin } = useAdminGate();
 
-  // ✅ TEST: 15 min idle, 60 min hard
+  // ✅ TEST: 30 min idle, 60 min hard
   useIdleLogout(push, {
-    idleMs: 15 * 60 * 1000,
+    idleMs: 30 * 60 * 1000,
     sessionMaxMs: 60 * 60 * 1000,
   });
 
@@ -348,10 +348,6 @@ export default function AdminDashboardPage() {
               <h1>PANEL ADMINISTRADOR EMPRESAS</h1>
               <p>Cuenta: {userEmail}</p>
             </div>
-
-            <button onClick={logout} className="logout_button" type="button">
-              Cerrar Sesión
-            </button>
           </div>
 
           <section className="company_config">
@@ -540,7 +536,7 @@ export default function AdminDashboardPage() {
                             container.scrollTop;
 
                           container.scrollTo({
-                            top: top - 20, // margen superior
+                            top: top - 150, // margen superior
                             behavior: "smooth",
                           });
                         }

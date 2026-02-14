@@ -14,12 +14,6 @@
 
 body {
   margin: 0;
-  font-family:
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
 }
 
 /* =========================
@@ -27,9 +21,12 @@ body {
    ========================= */
 
 .pg_admin {
+  min-height: 100dvh; /* ✅ altura real del viewport (mejor en móvil) */
   display: flex;
   align-items: center;
   justify-content: center;
+
+  padding: 2rem 1rem; /* ✅ evita que se pegue en pantallas pequeñas */
   overflow: hidden;
 }
 
