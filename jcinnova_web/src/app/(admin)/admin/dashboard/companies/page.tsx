@@ -8,149 +8,52 @@ import { resizeImageToWebp } from "@/lib/images/resizeImage";
 import { uploadCompanyImage } from "@/lib/storage/companiesBucket";
 import "./dashboard_company.css";
 
+import {
+  Toasts,
+  useToasts,
+} from "@/app/(admin)/admin/_admin_components/useToast";
+import { useAdminGate } from "@/app/(admin)/admin/_admin_components/useAdmingate";
+import { useIdleLogout } from "@/app/(admin)/admin/_admin_components/useIdlelogout";
+
 /* Max page size */
 const PAGE_SIZE = 10;
-
-/* ========= Toast system (same style as login) ========= */
-type ToastType = "success" | "error" | "info";
-type ToastAction = { label: string; onClick: () => void };
-
-type ToastItem = {
-  id: string;
-  type: ToastType;
-  title?: string;
-  message: string;
-  durationMs?: number;
-  actions?: ToastAction[];
-};
-
-function uid() {
-  return `${Date.now()}_${Math.random().toString(16).slice(2)}`;
-}
-
-function useToasts() {
-  const [toasts, setToasts] = useState<ToastItem[]>([]);
-
-  function push(t: Omit<ToastItem, "id">) {
-    const id = uid();
-    const toast: ToastItem = { id, durationMs: 3500, ...t };
-
-    setToasts((prev) => [toast, ...prev].slice(0, 4));
-
-    // si tiene acciones, no autocerrar (confirmación)
-    if (toast.actions?.length) return id;
-
-    window.setTimeout(() => {
-      setToasts((prev) => prev.filter((x) => x.id !== id));
-    }, toast.durationMs);
-
-    return id;
-  }
-
-  function remove(id: string) {
-    setToasts((prev) => prev.filter((x) => x.id !== id));
-  }
-
-  function clearAll() {
-    setToasts([]);
-  }
-
-  return { toasts, push, remove, clearAll };
-}
-
-function Toasts({
-  items,
-  onClose,
-}: {
-  items: ToastItem[];
-  onClose: (id: string) => void;
-}) {
-  if (!items.length) return null;
-
-  return (
-    <div
-      className="pg_toast_container"
-      aria-live="polite"
-      aria-relevant="additions"
-    >
-      {items.map((t) => (
-        <div key={t.id} className={`pg_toast pg_toast--${t.type}`}>
-          <button
-            type="button"
-            className="pg_toast_close"
-            onClick={() => onClose(t.id)}
-            aria-label="Cerrar notificación"
-          >
-            ×
-          </button>
-
-          <div className="pg_toast_body">
-            {t.title ? <div className="pg_toast_title">{t.title}</div> : null}
-            <div className="pg_toast_msg">{t.message}</div>
-
-            {t.actions?.length ? (
-              <div className="pg_toast_actions">
-                {t.actions.map((a) => (
-                  <button
-                    key={a.label}
-                    type="button"
-                    className="pg_toast_actionbtn"
-                    onClick={a.onClick}
-                  >
-                    {a.label}
-                  </button>
-                ))}
-              </div>
-            ) : null}
-          </div>
-
-          {!t.actions?.length ? (
-            <div
-              className="pg_toast_bar"
-              style={{ animationDuration: `${t.durationMs ?? 3500}ms` }}
-            />
-          ) : null}
-        </div>
-      ))}
-    </div>
-  );
-}
 
 export default function AdminDashboardPage() {
   const router = useRouter();
   const supabase = createClient();
-  const { toasts, push, remove } = useToasts();
+
+  const { toasts, push, remove, clearAll } = useToasts();
+  const { booting, userEmail, isAdmin } = useAdminGate();
+
+  // ✅ TEST: 15 min idle, 60 min hard
+  useIdleLogout(push, {
+    idleMs: 15 * 60 * 1000,
+    sessionMaxMs: 60 * 60 * 1000,
+  });
 
   const createFileRef = useRef<HTMLInputElement | null>(null);
   const editFileRef = useRef<HTMLInputElement | null>(null);
+  const editBoxRef = useRef<HTMLDivElement | null>(null);
 
-  /* ---------------- AUTH ---------------- */
-  const [booting, setBooting] = useState(true);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  /* ---------------- DATA ---------------- */
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [total, setTotal] = useState<number | null>(null);
   const [query, setQuery] = useState("");
 
-  /* ---------------- CREATE ---------------- */
   const [name, setName] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [creating, setCreating] = useState(false);
 
-  /* ---------------- EDIT ---------------- */
   const [editingId, setEditingId] = useState<number | null>(null);
   const editingCompany = useMemo(
     () => companies.find((c) => c.id === editingId) ?? null,
     [companies, editingId],
   );
+
   const filteredCompanies = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return companies;
-
     return companies.filter((c) => (c.name ?? "").toLowerCase().includes(q));
   }, [companies, query]);
 
@@ -158,7 +61,6 @@ export default function AdminDashboardPage() {
   const [editFile, setEditFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
 
-  /* Reset all forms after use them */
   async function resetForms() {
     setName("");
     setFile(null);
@@ -170,110 +72,21 @@ export default function AdminDashboardPage() {
     if (editFileRef.current) editFileRef.current.value = "";
   }
 
-  async function getMe(): Promise<{
-    ok: boolean;
-    isAdmin: boolean;
-    email: string | null;
-  }> {
-    const res = await fetch("/api/auth/me", {
-      method: "GET",
-      cache: "no-store",
-    });
-    const data = await res.json();
-
-    if (!res.ok || !data.user) {
-      setUserEmail(null);
-      setIsAdmin(false);
-      return { ok: false, isAdmin: false, email: null };
-    }
-
-    const email = data.user.email ?? null;
-    const admin = Boolean(data.isAdmin);
-
-    setUserEmail(email);
-    setIsAdmin(admin);
-
-    return { ok: true, isAdmin: admin, email };
-  }
-
-  /* ---- idle logout (lo dejé igual, pero con UX mejor) ---- */
-  const IDLE_MS = 15 * 60 * 1000; // 15 min
-  const timerRef = useRef<number | null>(null);
-
-  async function forceLogout() {
-    try {
-      await fetch("/api/auth/logout", { method: "POST" });
-    } finally {
-      router.replace("/admin");
-    }
-  }
-
-  function resetTimer() {
-    if (timerRef.current) window.clearTimeout(timerRef.current);
-    timerRef.current = window.setTimeout(() => {
-      push({
-        type: "info",
-        title: "Sesión expirada",
-        message: "Se cerró tu sesión por inactividad.",
-      });
-      forceLogout();
-    }, IDLE_MS);
-  }
-
   useEffect(() => {
-    resetTimer();
-
-    const events = [
-      "mousemove",
-      "mousedown",
-      "keydown",
-      "scroll",
-      "touchstart",
-    ];
-    const onActivity = () => resetTimer();
-
-    events.forEach((e) =>
-      window.addEventListener(e, onActivity, { passive: true }),
-    );
-
-    const onVisibility = () => {
-      if (!document.hidden) resetTimer();
-    };
-    document.addEventListener("visibilitychange", onVisibility);
-
-    return () => {
-      if (timerRef.current) window.clearTimeout(timerRef.current);
-      events.forEach((e) => window.removeEventListener(e, onActivity));
-      document.removeEventListener("visibilitychange", onVisibility);
-    };
+    if (!booting && userEmail && isAdmin) {
+      loadCompanies(0);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      const me = await getMe();
-      setBooting(false);
-
-      if (!me.ok || !me.isAdmin) {
-        router.replace("/admin");
-        return;
-      }
-
-      await loadCompanies(0);
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router]);
+  }, [booting, userEmail, isAdmin]);
 
   async function logout() {
-    await fetch("/api/auth/logout", { method: "POST" });
+    await fetch("/api/auth/logout", { method: "POST", cache: "no-store" });
 
+    clearAll();
     await resetForms();
     setCompanies([]);
     setTotal(null);
     setPage(0);
-
-    setUserEmail(null);
-    setIsAdmin(false);
 
     router.replace("/admin");
   }
@@ -284,6 +97,7 @@ export default function AdminDashboardPage() {
       const offset = p * PAGE_SIZE;
       const res = await fetch(
         `/api/companies?limit=${PAGE_SIZE}&offset=${offset}`,
+        { cache: "no-store" },
       );
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Error cargando empresas");
@@ -369,6 +183,7 @@ export default function AdminDashboardPage() {
         message: "Empresa creada correctamente.",
         durationMs: 1800,
       });
+
       setName("");
       setFile(null);
       if (createFileRef.current) createFileRef.current.value = "";
@@ -476,16 +291,11 @@ export default function AdminDashboardPage() {
       title: "Confirmación",
       message: "¿Eliminar esta empresa? Esta acción no se puede deshacer.",
       actions: [
-        {
-          label: "Cancelar",
-          onClick: () => {
-            remove(confirmId); // ✅ ahora sí se cierra
-          },
-        },
+        { label: "Cancelar", onClick: () => remove(confirmId) },
         {
           label: "Eliminar",
           onClick: async () => {
-            remove(confirmId); // ✅ cerramos el toast antes de ejecutar
+            remove(confirmId);
             try {
               const res = await fetch(`/api/companies/${id}`, {
                 method: "DELETE",
@@ -521,10 +331,9 @@ export default function AdminDashboardPage() {
       ],
     });
 
-    // Nota: confirmId siempre existe porque push() devuelve id.
+    void confirmId;
   }
 
-  /* ---------------- UI ---------------- */
   if (booting) return <div className="p-6"></div>;
   if (!userEmail || !isAdmin) return <div className="p-6">Redirigiendo…</div>;
 
@@ -546,7 +355,6 @@ export default function AdminDashboardPage() {
           </div>
 
           <section className="company_config">
-            {/* ===== CREAR ===== */}
             <div className="company_dashboard_actions">
               <h2>Agregar Empresa</h2>
 
@@ -597,9 +405,8 @@ export default function AdminDashboardPage() {
               </form>
             </div>
 
-            {/* ===== EDITAR ===== */}
             {editingCompany && (
-              <div className="company_dashboard_actions">
+              <div ref={editBoxRef} className="company_dashboard_actions">
                 <h2>Editando: {editingCompany.name}</h2>
 
                 <form
@@ -683,7 +490,6 @@ export default function AdminDashboardPage() {
             )}
           </div>
 
-          {/* LIST */}
           <section className="companies_list">
             {loading && (
               <div className="companies_loading">Cargando empresas…</div>
@@ -717,12 +523,33 @@ export default function AdminDashboardPage() {
                 <div className="company_box_actions">
                   <button
                     className="edit_btn"
+                    type="button"
                     onClick={() => {
                       startEdit(c);
+
+                      // ✅ Scroll SOLO dentro de dashboard_content (no afecta header global)
+                      requestAnimationFrame(() => {
+                        const container =
+                          document.getElementById("dashboard_scroll");
+                        const editBox = editBoxRef.current;
+
+                        if (container && editBox) {
+                          const top =
+                            editBox.getBoundingClientRect().top -
+                            container.getBoundingClientRect().top +
+                            container.scrollTop;
+
+                          container.scrollTo({
+                            top: top - 20, // margen superior
+                            behavior: "smooth",
+                          });
+                        }
+                      });
                     }}
                   >
                     Editar
                   </button>
+
                   <button
                     className="delete_btn"
                     onClick={() => removeCompany(c.id)}

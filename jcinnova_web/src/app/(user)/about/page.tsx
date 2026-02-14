@@ -6,10 +6,7 @@ import "./user_about.css";
 import Link from "next/link";
 import AboutServices from "@/app/(user)/about/_components/about_modules";
 import LocationMap from "@/app/(user)/about/_components/about_location";
-import {
-  section2About,
-  section2RightSide,
-} from "@/app/(user)/_components/landing_data";
+import { section2About, section2RightSide } from "./_components/about_data";
 
 const About = () => {
   return (

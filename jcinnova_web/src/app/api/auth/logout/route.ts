@@ -27,6 +27,14 @@ export async function POST(req: Request) {
     secure: IS_PROD,
   });
 
+  // borrar admin_session_start (hard timeout cookie)
+  res.cookies.set("admin_session_start", "", {
+    path: "/",
+    maxAge: 0,
+    sameSite: "lax",
+    secure: IS_PROD,
+  });
+
   // borrar todas las sb-* (source: cookies actuales)
   for (const c of cookieStore.getAll()) {
     if (c.name.startsWith("sb-")) {

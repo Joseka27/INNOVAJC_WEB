@@ -2,15 +2,15 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import MainCarousel from "@/app/(user)/_components/landing_carousel";
-import ServicesSection from "@/app/(user)/_components/landing_serviceModules";
+import MainCarousel from "@/app/(user)/_landig_components/landing_carousel";
+import ServicesSection from "@/app/(user)/_landig_components/landing_serviceModules";
 import {
   problemItems,
   solutionItems,
   outcomes,
   seceSteps,
   seceStats,
-} from "./_components/landing_data";
+} from "./_landig_components/landing_data";
 
 const Home = () => {
   return (
@@ -34,7 +34,7 @@ const Home = () => {
               <motion.div
                 initial={{ opacity: 0, x: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1 }}
+                transition={{ duration: 0.7 }}
                 viewport={{ once: true }}
               >
                 <Image
@@ -69,7 +69,7 @@ const Home = () => {
                 className="h1-span-part6"
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, ease: "easeOut" }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
                 viewport={{ once: true }}
               >
                 <div className="pg_main-part2-block pg_main-part2-problem">
@@ -97,7 +97,7 @@ const Home = () => {
                 className="h1-span-part6"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1.2, ease: "easeOut" }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
                 viewport={{ once: true }}
               >
                 <div className="pg_main-part2-block pg_main-part2-solution">
@@ -188,7 +188,7 @@ const Home = () => {
                 className="h1-span-part6"
                 initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 1.2, ease: "easeOut" }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
                 viewport={{ once: true }}
               >
                 <div className="pg_main-part3-right">
@@ -246,7 +246,7 @@ const Home = () => {
         <section className="pg_main-presentation-part5">
           <div className="part5-text">
             <h2 className="pg_main-part5-title">
-              Empresas que <span className="pg_main-part5-grad">trabajan</span>{" "}
+              Empresas que <span className="pg_main-part5-grad">crecen</span>{" "}
               con nosotros
             </h2>
             <p className="pg_main-part5-subtitle">
@@ -270,7 +270,7 @@ const Home = () => {
                 className="h1-span-part6"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, ease: "easeOut" }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
                 viewport={{ once: true }}
               >
                 Estas interesado?
@@ -279,7 +279,7 @@ const Home = () => {
                 className="h1-span-part6"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, ease: "easeOut" }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
                 viewport={{ once: true }}
               >
                 Ponte en contacto.

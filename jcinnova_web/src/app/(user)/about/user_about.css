@@ -335,7 +335,7 @@
 
 .pg_about_servicesFeature-title {
   margin: 0;
-  font-size: clamp(3rem, 2.6vw, 2.6rem);
+  font-size: clamp(2.6rem, 2.6vw, 2.6rem);
   font-weight: 900;
   letter-spacing: 0.01em;
   color: #052b69;

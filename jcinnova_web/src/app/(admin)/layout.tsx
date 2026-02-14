@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
-import "./admin_globals.css";
-import "./admin_header.css";
 import { Roboto } from "next/font/google";
-import Link from "next/link";
-import Image from "next/image";
+import "./admin_globals.css"; // ✅ si quieres que aplique a TODO admin (incluye dashboard y login)
 
 export const metadata: Metadata = {
   title: "INNOVA JC | Admin",
@@ -22,37 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body className={`${roboto.className} antialiased`}>
-        <div className="AdminLayout">
-          <header className="pg_header_shell">
-            <div className="pg_header section-header">
-              <div className="pg_header-principal">
-                <div className="pg_header-logo-img">
-                  <Link className="pg_header-logo-link" href="/">
-                    <Image
-                      className="pg_header_logo"
-                      src="/images/LogoInnova.png"
-                      alt="Logo"
-                      width={100}
-                      height={50}
-                      priority
-                    />
-                  </Link>
-                </div>
-
-                {/* Desktop nav */}
-                <nav
-                  className="pg_header-nav"
-                  aria-label="Navegación principal"
-                >
-                  <h1>Soluciones Integrales INNOVA JC</h1>
-                </nav>
-              </div>
-            </div>
-          </header>
-          {children}
-        </div>
-      </body>
+      <body className={`${roboto.className} antialiased`}>{children}</body>
     </html>
   );
 }

@@ -8,6 +8,13 @@ import { resizeImageToWebp } from "@/lib/images/resizeImage";
 import { uploadModuleImage } from "@/lib/storage/modulesBucket";
 import "./dashboard_modules.css";
 
+import {
+  Toasts,
+  useToasts,
+} from "@/app/(admin)/admin/_admin_components/useToast";
+import { useAdminGate } from "@/app/(admin)/admin/_admin_components/useAdmingate";
+import { useIdleLogout } from "@/app/(admin)/admin/_admin_components/useIdlelogout";
+
 /* Max page size */
 const PAGE_SIZE = 10;
 const SHORT_DESC_LIMIT = 150;
@@ -22,121 +29,22 @@ const CATEGORY_OPTIONS = [
 
 type Category = (typeof CATEGORY_OPTIONS)[number];
 
-/* ========= Toast system ========= */
-type ToastType = "success" | "error" | "info";
-type ToastAction = { label: string; onClick: () => void };
-
-type ToastItem = {
-  id: string;
-  type: ToastType;
-  title?: string;
-  message: string;
-  durationMs?: number;
-  actions?: ToastAction[];
-};
-
-function uid() {
-  return `${Date.now()}_${Math.random().toString(16).slice(2)}`;
-}
-
-function useToasts() {
-  const [toasts, setToasts] = useState<ToastItem[]>([]);
-
-  function push(t: Omit<ToastItem, "id">) {
-    const id = uid();
-    const toast: ToastItem = { id, durationMs: 3500, ...t };
-
-    setToasts((prev) => [toast, ...prev].slice(0, 4));
-
-    if (toast.actions?.length) return id;
-
-    window.setTimeout(() => {
-      setToasts((prev) => prev.filter((x) => x.id !== id));
-    }, toast.durationMs);
-
-    return id;
-  }
-
-  function remove(id: string) {
-    setToasts((prev) => prev.filter((x) => x.id !== id));
-  }
-
-  function clearAll() {
-    setToasts([]);
-  }
-
-  return { toasts, push, remove, clearAll };
-}
-
-function Toasts({
-  items,
-  onClose,
-}: {
-  items: ToastItem[];
-  onClose: (id: string) => void;
-}) {
-  if (!items.length) return null;
-
-  return (
-    <div
-      className="pg_toast_container"
-      aria-live="polite"
-      aria-relevant="additions"
-    >
-      {items.map((t) => (
-        <div key={t.id} className={`pg_toast pg_toast--${t.type}`}>
-          <button
-            type="button"
-            className="pg_toast_close"
-            onClick={() => onClose(t.id)}
-            aria-label="Cerrar notificación"
-          >
-            ×
-          </button>
-
-          <div className="pg_toast_body">
-            {t.title ? <div className="pg_toast_title">{t.title}</div> : null}
-            <div className="pg_toast_msg">{t.message}</div>
-
-            {t.actions?.length ? (
-              <div className="pg_toast_actions">
-                {t.actions.map((a) => (
-                  <button
-                    key={a.label}
-                    type="button"
-                    className="pg_toast_actionbtn"
-                    onClick={a.onClick}
-                  >
-                    {a.label}
-                  </button>
-                ))}
-              </div>
-            ) : null}
-          </div>
-
-          {!t.actions?.length ? (
-            <div
-              className="pg_toast_bar"
-              style={{ animationDuration: `${t.durationMs ?? 3500}ms` }}
-            />
-          ) : null}
-        </div>
-      ))}
-    </div>
-  );
-}
-
 export default function AdminModulesPage() {
   const router = useRouter();
   const supabase = createClient();
+
   const { toasts, push, remove, clearAll } = useToasts();
+  const { booting, userEmail, isAdmin } = useAdminGate();
+
+  // ✅ TEST: 1 min idle, 3 min hard
+  useIdleLogout(push, {
+    idleMs: 15 * 60 * 1000,
+    sessionMaxMs: 60 * 60 * 1000,
+  });
 
   const createFileRef = useRef<HTMLInputElement | null>(null);
   const editFileRef = useRef<HTMLInputElement | null>(null);
-
-  const [booting, setBooting] = useState(true);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const editBoxRef = useRef<HTMLDivElement | null>(null);
 
   const [modules, setModules] = useState<Module[]>([]);
   const [loading, setLoading] = useState(false);
@@ -146,7 +54,7 @@ export default function AdminModulesPage() {
 
   const [query, setQuery] = useState("");
 
-  // ✅ CREATE (DB fields)
+  // CREATE
   const [title, setTitle] = useState("");
   const [moduleCategory, setModuleCategory] = useState<Category | "">("");
   const [shortDesc, setShortDesc] = useState("");
@@ -154,7 +62,7 @@ export default function AdminModulesPage() {
   const [file, setFile] = useState<File | null>(null);
   const [creating, setCreating] = useState(false);
 
-  // ✅ EDIT
+  // EDIT
   const [editingId, setEditingId] = useState<number | null>(null);
   const editingModule = useMemo(
     () => modules.find((m) => m.id === editingId) ?? null,
@@ -204,108 +112,23 @@ export default function AdminModulesPage() {
     if (editFileRef.current) editFileRef.current.value = "";
   }
 
-  async function getMe(): Promise<{
-    ok: boolean;
-    isAdmin: boolean;
-    email: string | null;
-  }> {
-    const res = await fetch("/api/auth/me", {
-      method: "GET",
-      cache: "no-store",
-    });
-    const data = await res.json();
-
-    if (!res.ok || !data.user) {
-      setUserEmail(null);
-      setIsAdmin(false);
-      return { ok: false, isAdmin: false, email: null };
-    }
-
-    const email = data.user.email ?? null;
-    const admin = Boolean(data.isAdmin);
-    setUserEmail(email);
-    setIsAdmin(admin);
-
-    return { ok: true, isAdmin: admin, email };
-  }
-
-  /* Idle logout */
-  const IDLE_MS = 15 * 60 * 1000;
-  const timerRef = useRef<number | null>(null);
-
-  async function forceLogout() {
-    try {
-      await fetch("/api/auth/logout", { method: "POST" });
-    } finally {
-      router.replace("/admin");
-    }
-  }
-
-  function resetTimer() {
-    if (timerRef.current) window.clearTimeout(timerRef.current);
-    timerRef.current = window.setTimeout(() => {
-      push({
-        type: "info",
-        title: "Sesión expirada",
-        message: "Se cerró tu sesión por inactividad.",
-      });
-      forceLogout();
-    }, IDLE_MS);
-  }
-
+  // ✅ load solo cuando ya pasó gate
   useEffect(() => {
-    resetTimer();
-
-    const events = [
-      "mousemove",
-      "mousedown",
-      "keydown",
-      "scroll",
-      "touchstart",
-    ];
-    const onActivity = () => resetTimer();
-
-    events.forEach((e) =>
-      window.addEventListener(e, onActivity, { passive: true }),
-    );
-
-    const onVisibility = () => {
-      if (!document.hidden) resetTimer();
-    };
-    document.addEventListener("visibilitychange", onVisibility);
-
-    return () => {
-      if (timerRef.current) window.clearTimeout(timerRef.current);
-      events.forEach((e) => window.removeEventListener(e, onActivity));
-      document.removeEventListener("visibilitychange", onVisibility);
-    };
+    if (!booting && userEmail && isAdmin) {
+      loadModules(0);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      const me = await getMe();
-      setBooting(false);
-
-      if (!me.ok || !me.isAdmin) {
-        router.replace("/admin");
-        return;
-      }
-
-      await loadModules(0);
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router]);
+  }, [booting, userEmail, isAdmin]);
 
   async function logout() {
-    await fetch("/api/auth/logout", { method: "POST" });
+    await fetch("/api/auth/logout", { method: "POST", cache: "no-store" });
+
     clearAll();
     await resetForms();
     setModules([]);
     setTotal(null);
     setPage(0);
-    setUserEmail(null);
-    setIsAdmin(false);
+
     router.replace("/admin");
   }
 
@@ -332,7 +155,7 @@ export default function AdminModulesPage() {
         data = raw ? JSON.parse(raw) : null;
       } catch {
         throw new Error(
-          `La API no devolvió JSON. Revisa que exista /api/modules (status ${res.status}).`,
+          `La API no devolvió JSON. Revisa /api/modules (status ${res.status}).`,
         );
       }
 
@@ -428,7 +251,6 @@ export default function AdminModulesPage() {
         userData.user.id,
       );
 
-      // ✅ ENVIAR NOMBRES REALES DE DB
       const res = await fetch("/api/modules", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -643,6 +465,8 @@ export default function AdminModulesPage() {
         },
       ],
     });
+
+    void confirmId;
   }
 
   if (booting) return <div className="p-6"></div>;
@@ -670,7 +494,6 @@ export default function AdminModulesPage() {
           </div>
 
           <section className="module_config">
-            {/* ===== CREAR ===== */}
             <div className="module_dashboard_actions">
               <h2>Agregar Módulo</h2>
 
@@ -758,9 +581,8 @@ export default function AdminModulesPage() {
               </form>
             </div>
 
-            {/* ===== EDITAR ===== */}
             {editingModule && (
-              <div className="module_dashboard_actions">
+              <div ref={editBoxRef} className="module_dashboard_actions">
                 <h2>Editando: {editingModule.title}</h2>
 
                 <form
@@ -883,7 +705,6 @@ export default function AdminModulesPage() {
             )}
           </div>
 
-          {/* LIST */}
           <section className="modules_list">
             {loading && (
               <div className="modules_loading">Cargando módulos…</div>
@@ -929,8 +750,29 @@ export default function AdminModulesPage() {
                 <div className="module_box_actions">
                   <button
                     className="module_edit_btn"
-                    onClick={() => startEdit(m)}
                     type="button"
+                    onClick={() => {
+                      startEdit(m);
+
+                      // ✅ Scroll SOLO dentro de dashboard_content (no afecta header global)
+                      requestAnimationFrame(() => {
+                        const container =
+                          document.getElementById("dashboard_scroll");
+                        const editBox = editBoxRef.current;
+
+                        if (container && editBox) {
+                          const top =
+                            editBox.getBoundingClientRect().top -
+                            container.getBoundingClientRect().top +
+                            container.scrollTop;
+
+                          container.scrollTo({
+                            top: top - 20, // margen superior
+                            behavior: "smooth",
+                          });
+                        }
+                      });
+                    }}
                   >
                     Editar
                   </button>

@@ -1,0 +1,281 @@
+.pg_toast_container {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: min(22rem, calc(100vw - 2rem));
+}
+
+.pg_toast {
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  padding: 0.9rem 1rem;
+
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(14, 14, 20, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
+  animation: pg_toast_in 180ms ease-out;
+}
+
+@keyframes pg_toast_in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pg_toast_body {
+  display: grid;
+  gap: 0.25rem;
+  padding-right: 1.2rem;
+}
+
+.pg_toast_title {
+  font-weight: 900;
+  color: #fff;
+  font-size: 0.95rem;
+  letter-spacing: 0.2px;
+}
+
+.pg_toast_msg {
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 0.92rem;
+  line-height: 1.25rem;
+}
+
+.pg_toast_close {
+  position: absolute;
+  right: 0.65rem;
+  top: 0.55rem;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.pg_toast_close:hover {
+  color: #fff;
+}
+
+/* Variantes */
+.pg_toast--success {
+  border-color: rgba(46, 204, 113, 0.25);
+}
+.pg_toast--error {
+  border-color: rgba(231, 76, 60, 0.25);
+}
+.pg_toast--info {
+  border-color: rgba(52, 152, 219, 0.25);
+}
+
+/* Barra de tiempo */
+.pg_toast_bar {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 100%;
+  transform-origin: left;
+  background: rgba(255, 255, 255, 0.55);
+  animation-name: pg_toast_bar;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+.pg_toast--success .pg_toast_bar {
+  background: rgba(46, 204, 113, 0.85);
+}
+.pg_toast--error .pg_toast_bar {
+  background: rgba(231, 76, 60, 0.85);
+}
+.pg_toast--info .pg_toast_bar {
+  background: rgba(52, 152, 219, 0.85);
+}
+
+@keyframes pg_toast_bar {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+/* Toast actions (confirm) */
+.pg_toast_actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+
+.pg_toast_actionbtn {
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  font-weight: 900;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+
+.pg_toast_actionbtn:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+}
+
+.pg_toast_container {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: min(22rem, calc(100vw - 2rem));
+}
+
+.pg_toast {
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  padding: 0.9rem 1rem;
+
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(14, 14, 20, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
+  animation: pg_toast_in 180ms ease-out;
+}
+
+@keyframes pg_toast_in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pg_toast_body {
+  display: grid;
+  gap: 0.25rem;
+  padding-right: 1.2rem;
+}
+
+.pg_toast_title {
+  font-weight: 900;
+  color: #fff;
+  font-size: 0.95rem;
+  letter-spacing: 0.2px;
+}
+
+.pg_toast_msg {
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 0.92rem;
+  line-height: 1.25rem;
+}
+
+.pg_toast_close {
+  position: absolute;
+  right: 0.65rem;
+  top: 0.55rem;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.pg_toast_close:hover {
+  color: #fff;
+}
+
+.pg_toast--success {
+  border-color: rgba(46, 204, 113, 0.25);
+}
+.pg_toast--error {
+  border-color: rgba(231, 76, 60, 0.25);
+}
+.pg_toast--info {
+  border-color: rgba(52, 152, 219, 0.25);
+}
+
+.pg_toast_bar {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 100%;
+  transform-origin: left;
+  background: rgba(255, 255, 255, 0.55);
+  animation-name: pg_toast_bar;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+.pg_toast--success .pg_toast_bar {
+  background: rgba(46, 204, 113, 0.85);
+}
+.pg_toast--error .pg_toast_bar {
+  background: rgba(231, 76, 60, 0.85);
+}
+.pg_toast--info .pg_toast_bar {
+  background: rgba(52, 152, 219, 0.85);
+}
+
+@keyframes pg_toast_bar {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+/* Toast actions (confirm) */
+.pg_toast_actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+
+.pg_toast_actionbtn {
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  font-weight: 900;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+
+.pg_toast_actionbtn:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+}
