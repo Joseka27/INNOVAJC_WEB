@@ -236,14 +236,18 @@
 /* ===============================
    EMPTY / STATUS
 ================================ */
-.pg_about_services-empty {
-  margin-top: 0.5rem;
-  padding: 1rem;
-  border-radius: 14px;
 
-  border: 1px solid rgba(5, 43, 105, 0.18);
-  background: rgba(0, 140, 255, 0.06);
+.pg_about_services-descGroup {
+  margin-top: 1rem; /* 🔥 espacio entre bloques */
+}
 
-  color: rgba(5, 43, 105, 0.78);
-  font-weight: 700;
+.pg_about_services-descList {
+  padding-left: 1.2rem;
+  margin: 0;
+}
+
+.pg_about_services-descList li {
+  margin-bottom: 0.35rem;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }

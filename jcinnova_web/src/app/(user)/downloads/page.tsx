@@ -1,107 +1,199 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import "./user_downloads.css";
+import { createClient } from "@/lib/supabase/browserClient";
 
-type Platform = "Windows" | "macOS" | "Linux" | "Web" | "Android" | "iOS";
+type Platform = "windows" | "linux" | "mac" | "android";
 
-type DownloadItem = {
-  id: string;
-  name: string;
-  tagline: string;
-  platform: Platform;
-  version: string;
-  size: string;
-  updated: string; // "2026-02-11" etc
-  fileUrl: string;
-  notesUrl?: string;
-  image: string; // /images/...
-  requirements?: string[];
-  highlights?: string[];
+type DownloadRow = {
+  id: number;
+  title: string | null;
+  description: string | null;
+  size: string | null;
+  version: string | null;
+  type_file: Platform | null;
+  app_image: string | null; // path privado en bucket
+  file_url: string | null; // path privado en bucket
+  requirements: string | null;
+  created_at?: string | null; // o updated_at si existe
 };
 
-const downloads: DownloadItem[] = [
-  {
-    id: "sece-desktop-win",
-    name: "SECE Desktop",
-    tagline: "ERP completo para tu operación diaria.",
-    platform: "Windows",
-    version: "v1.8.2",
-    size: "120 MB",
-    updated: "2026-02-11",
-    fileUrl: "/downloads/SECE-Desktop-Windows.exe",
-    notesUrl: "/downloads/release-notes/sece-desktop",
-    image: "/images/LogoInnova.png",
-    requirements: [
-      "Windows 10/11",
-      "4GB RAM (8GB recomendado)",
-      "500MB libres",
-    ],
-    highlights: [
-      "Instalador guiado",
-      "Actualizaciones automáticas",
-      "Soporte técnico",
-    ],
-  },
-  {
-    id: "sece-web",
-    name: "SECE Web",
-    tagline: "Accede desde cualquier dispositivo sin instalar.",
-    platform: "Web",
-    version: "v2.3.0",
-    size: "—",
-    updated: "2026-02-05",
-    fileUrl: "/login",
-    notesUrl: "/downloads/release-notes/sece-web",
-    image: "/images/LogoInnova.png",
-    requirements: ["Chrome/Edge/Firefox actualizado", "Conexión estable"],
-    highlights: ["Multi-sucursal", "Reportes exportables", "Acceso por roles"],
-  },
-  {
-    id: "sece-mobile-android",
-    name: "SECE Mobile",
-    tagline: "Consultas rápidas y operaciones básicas.",
-    platform: "Android",
-    version: "v0.9.4",
-    size: "28 MB",
-    updated: "2026-01-30",
-    fileUrl: "/downloads/SECE-Mobile-Android.apk",
-    notesUrl: "/downloads/release-notes/sece-mobile",
-    image: "/images/LogoInnova.png",
-    requirements: ["Android 10+", "Permisos: cámara (opcional)"],
-    highlights: ["Inventario rápido", "Pedidos", "Notificaciones"],
-  },
-];
+const DOWNLOADS_BUCKET = "downloads";
 
+// filtros UI
 const PLATFORMS: Array<Platform | "Todos"> = [
   "Todos",
-  "Windows",
-  "macOS",
-  "Linux",
-  "Web",
-  "Android",
-  "iOS",
+  "windows",
+  "linux",
+  "mac",
+  "android",
 ];
 
+// si hay muchos registros
+const FETCH_LIMIT = 200;
+
 function fmtDate(iso: string) {
-  // formato simple tipo 2026-02-11 -> 11/02/2026
-  const [y, m, d] = iso.split("-");
-  if (!y || !m || !d) return iso;
-  return `${d}/${m}/${y}`;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  const day = String(d.getDate()).padStart(2, "0");
+  const mon = String(d.getMonth() + 1).padStart(2, "0");
+  const yr = d.getFullYear();
+  return `${day}/${mon}/${yr}`;
+}
+
+function parseRequirements(req: string | null): string[] {
+  const s = (req ?? "").trim();
+  if (!s) return [];
+  return s
+    .split(/\r?\n|;|,/g)
+    .map((x) => x.trim())
+    .filter(Boolean);
 }
 
 export default function Downloads() {
+  const supabase = createClient();
+
   const [active, setActive] = useState<(typeof PLATFORMS)[number]>("Todos");
   const [q, setQ] = useState("");
+
+  const [rows, setRows] = useState<DownloadRow[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // signed urls SOLO para imagen (porque bucket privado)
+  const [signedUrlByPath, setSignedUrlByPath] = useState<
+    Record<string, string>
+  >({});
+
+  async function fetchAllDownloads() {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const all: DownloadRow[] = [];
+      let offset = 0;
+
+      while (true) {
+        const qs = new URLSearchParams();
+        qs.set("limit", String(FETCH_LIMIT));
+        qs.set("offset", String(offset));
+
+        const res = await fetch(`/api/downloads?${qs.toString()}`, {
+          method: "GET",
+          cache: "no-store",
+        });
+
+        const raw = await res.text();
+        let data: any = null;
+
+        try {
+          data = raw ? JSON.parse(raw) : null;
+        } catch {
+          throw new Error(
+            `La API no devolvió JSON. Revisa /api/downloads (status ${res.status}).`,
+          );
+        }
+
+        if (!res.ok) throw new Error(data?.error ?? "Error cargando downloads");
+
+        const batch: DownloadRow[] = Array.isArray(data?.items)
+          ? data.items
+          : [];
+        all.push(...batch);
+
+        if (batch.length < FETCH_LIMIT) break;
+
+        offset += FETCH_LIMIT;
+        if (offset > 5000) break;
+      }
+
+      setRows(all);
+      void prefetchCovers(all);
+    } catch (e: any) {
+      setError(e?.message ?? "Error inesperado cargando downloads.");
+      setRows([]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function prefetchCovers(items: DownloadRow[]) {
+    const paths = Array.from(
+      new Set(
+        items
+          .map((d) => d.app_image)
+          .filter((x): x is string => typeof x === "string" && !!x),
+      ),
+    );
+
+    if (paths.length === 0) return;
+
+    const next: Record<string, string> = {};
+
+    await Promise.all(
+      paths.map(async (path) => {
+        if (signedUrlByPath[path]) return;
+
+        const { data, error } = await supabase.storage
+          .from(DOWNLOADS_BUCKET)
+          .createSignedUrl(path, 60 * 30); // 30 min
+
+        if (!error && data?.signedUrl) next[path] = data.signedUrl;
+      }),
+    );
+
+    if (Object.keys(next).length) {
+      setSignedUrlByPath((prev) => ({ ...prev, ...next }));
+    }
+  }
+
+  useEffect(() => {
+    fetchAllDownloads();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const downloadsUI = useMemo(() => {
+    return rows
+      .filter((r) => typeof r.id === "number")
+      .map((r) => {
+        const platform = (r.type_file ?? "windows") as Platform;
+
+        // ✅ coverUrl firmado (si existe), sino fallback local
+        const coverUrl =
+          r.app_image && signedUrlByPath[r.app_image]
+            ? signedUrlByPath[r.app_image]
+            : null;
+
+        const updatedISO = (
+          r.created_at ?? new Date().toISOString()
+        ).toString();
+
+        return {
+          id: r.id,
+          name: (r.title ?? "App").toString(),
+          tagline: (r.description ?? "").toString(),
+          platform,
+          version: (r.version ?? "—").toString(),
+          size: (r.size ?? "—").toString(),
+          updatedISO,
+          // ✅ descarga profesional (usa tu endpoint)
+          fileHref: `/api/downloads/${r.id}/download`,
+          coverUrl,
+          requirements: parseRequirements(r.requirements),
+        };
+      })
+      .sort((a, b) => (b.updatedISO > a.updatedISO ? 1 : -1));
+  }, [rows, signedUrlByPath]);
 
   const filtered = useMemo(() => {
     const base =
       active === "Todos"
-        ? downloads
-        : downloads.filter((d) => d.platform === active);
+        ? downloadsUI
+        : downloadsUI.filter((d) => d.platform === active);
 
     const qq = q.trim().toLowerCase();
     if (!qq) return base;
@@ -111,7 +203,7 @@ export default function Downloads() {
         `${d.name} ${d.tagline} ${d.platform} ${d.version}`.toLowerCase();
       return haystack.includes(qq);
     });
-  }, [active, q]);
+  }, [active, q, downloadsUI]);
 
   return (
     <div className="pg_down">
@@ -130,7 +222,7 @@ export default function Downloads() {
 
               <p className="pg_down-subtitle">
                 Instalador oficial, notas de versión y requisitos. Todo en un
-                solo lugar para que tu empresa mantenga el control con SECE.
+                solo lugar para tu empresa.
               </p>
 
               <div className="pg_down-actions">
@@ -163,14 +255,14 @@ export default function Downloads() {
                   <div>
                     <div className="pg_down-heroBrandTitle">INNOVA JC</div>
                     <div className="pg_down-heroBrandSub">
-                      Descargas oficiales SECE
+                      Descargas oficiales
                     </div>
                   </div>
                 </div>
 
                 <div className="pg_down-heroStats">
                   <div className="pg_down-stat">
-                    <div className="pg_down-statNum">{downloads.length}</div>
+                    <div className="pg_down-statNum">{downloadsUI.length}</div>
                     <div className="pg_down-statLabel">Apps disponibles</div>
                   </div>
                   <div className="pg_down-stat">
@@ -184,7 +276,7 @@ export default function Downloads() {
                 </div>
 
                 <div className="pg_down-heroHint">
-                  El sistema ideal para el control de tu empresa
+                  Descarga siempre desde este Centro Oficial
                 </div>
               </div>
             </motion.div>
@@ -216,7 +308,7 @@ export default function Downloads() {
                   className={`pg_down-filterBtn ${active === p ? "is-active" : ""}`}
                   onClick={() => setActive(p)}
                 >
-                  {p}
+                  {p === "Todos" ? "Todos" : p.toUpperCase()}
                 </button>
               ))}
             </div>
@@ -232,7 +324,11 @@ export default function Downloads() {
             </div>
           </div>
 
-          {filtered.length === 0 ? (
+          {loading ? (
+            <div className="pg_down-empty">Cargando descargas…</div>
+          ) : error ? (
+            <div className="pg_down-empty">❌ {error}</div>
+          ) : filtered.length === 0 ? (
             <div className="pg_down-empty">
               No hay resultados con esos filtros.
             </div>
@@ -243,19 +339,33 @@ export default function Downloads() {
                   <div className="pg_down-cardTop">
                     <div className="pg_down-app">
                       <div className="pg_down-appLogo">
-                        <Image
-                          src={d.image}
-                          alt={d.name}
-                          width={56}
-                          height={44}
-                          className="pg_down-appLogoImg"
-                        />
+                        {/* ✅ IMPORTANTE: para signed urls usa <img>, no next/image */}
+                        {d.coverUrl ? (
+                          <img
+                            src={d.coverUrl}
+                            alt={d.name}
+                            className="pg_down-appLogoImg"
+                            width={56}
+                            height={44}
+                            loading="lazy"
+                          />
+                        ) : (
+                          <Image
+                            src="/images/LogoInnova.png"
+                            alt={d.name}
+                            width={56}
+                            height={44}
+                            className="pg_down-appLogoImg"
+                          />
+                        )}
                       </div>
 
                       <div className="pg_down-appInfo">
                         <div className="pg_down-appNameRow">
                           <h3 className="pg_down-appName">{d.name}</h3>
-                          <span className="pg_down-chip">{d.platform}</span>
+                          <span className="pg_down-chip">
+                            {d.platform.toUpperCase()}
+                          </span>
                         </div>
                         <div className="pg_down-appTagline">{d.tagline}</div>
                       </div>
@@ -272,46 +382,27 @@ export default function Downloads() {
                       </div>
                       <div className="pg_down-metaItem">
                         <span>Actualizado</span>
-                        <strong>{fmtDate(d.updated)}</strong>
+                        <strong>{fmtDate(d.updatedISO)}</strong>
                       </div>
                     </div>
                   </div>
 
-                  {d.highlights?.length ? (
-                    <ul className="pg_down-highlights">
-                      {d.highlights.slice(0, 3).map((h) => (
-                        <li key={h} className="pg_down-hi">
-                          <span className="pg_down-dot" aria-hidden />
-                          {h}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : null}
-
                   {d.requirements?.length ? (
                     <div className="pg_down-req">
                       <div className="pg_down-reqTitle">Requisitos</div>
+
                       <ul className="pg_down-reqList">
-                        {d.requirements.slice(0, 3).map((r) => (
-                          <li key={r}>{r}</li>
+                        {d.requirements.map((r, idx) => (
+                          <li key={`${d.id}-req-${idx}`}>{r}</li>
                         ))}
                       </ul>
                     </div>
                   ) : null}
 
                   <div className="pg_down-cardActions">
-                    <a className="pg_down-btnPrimary" href={d.fileUrl}>
-                      {d.platform === "Web" ? "Abrir" : "Descargar"}
+                    <a className="pg_down-btnPrimary" href={d.fileHref}>
+                      Descargar
                     </a>
-                    {d.notesUrl ? (
-                      <a className="pg_down-btnGhost" href={d.notesUrl}>
-                        Notas
-                      </a>
-                    ) : (
-                      <span className="pg_down-btnGhost is-disabled">
-                        Notas
-                      </span>
-                    )}
                   </div>
                 </article>
               ))}
@@ -319,8 +410,6 @@ export default function Downloads() {
           )}
         </div>
       </section>
-
-      {/* SEGURIDAD / INFO */}
       <section className="pg_down-safety" id="seguridad">
         <div className="pg_down-safetyInner">
           <div className="pg_down-safetyHead">
@@ -329,8 +418,7 @@ export default function Downloads() {
               Seguridad y requisitos mínimos
             </h2>
             <p className="pg_down-safetyText">
-              Para evitar instalaciones corruptas o archivos modificados,
-              descarga siempre desde este Centro de Descargas. Si tu antivirus o
+              Descarga siempre desde este Centro de Descargas. Si tu antivirus o
               Windows SmartScreen muestra advertencias, valida que el archivo
               provenga de esta URL.
             </p>

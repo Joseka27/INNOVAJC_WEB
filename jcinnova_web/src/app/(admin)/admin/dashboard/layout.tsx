@@ -132,6 +132,13 @@ export default function DashboardShell({
                 >
                   Módulos
                 </Link>
+
+                <Link
+                  href="/admin/dashboard/downloads"
+                  className="dashboard_nav_item"
+                >
+                  Descargas
+                </Link>
               </nav>
             </div>
           </aside>

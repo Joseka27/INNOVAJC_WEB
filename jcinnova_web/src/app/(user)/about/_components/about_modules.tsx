@@ -17,6 +17,22 @@ type ModuleItem = {
 // Si tu API tiene muchos módulos, puedes subir este número.
 const FETCH_LIMIT = 200;
 
+function parseLongDesc(text: string | null): string[][] {
+  const s = (text ?? "").trim();
+  if (!s) return [];
+
+  return s
+    .replace(/\\n/g, "\n")
+    .split(/\n\s*\n/g) // 🔥 divide por doble salto
+    .map((block) =>
+      block
+        .split(/\r?\n/g) // salto simple dentro del bloque
+        .map((line) => line.trim())
+        .filter(Boolean),
+    )
+    .filter((group) => group.length > 0);
+}
+
 export default function AboutServices() {
   const [modules, setModules] = useState<ModuleItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -204,7 +220,20 @@ export default function AboutServices() {
                         </div>
                       </div>
 
-                      <p className="pg_about_services-desc">{item.long_desc}</p>
+                      {parseLongDesc(item.long_desc).map((group, groupIdx) => (
+                        <div
+                          key={`${item.id}-group-${groupIdx}`}
+                          className="pg_about_services-descGroup"
+                        >
+                          <ul className="pg_about_services-descList">
+                            {group.map((line, idx) => (
+                              <li key={`${item.id}-desc-${groupIdx}-${idx}`}>
+                                {line}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
                     </article>
                   ))}
                 </div>

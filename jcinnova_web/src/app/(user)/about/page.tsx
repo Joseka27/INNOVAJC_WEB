@@ -47,12 +47,12 @@ const About = () => {
               <p className="pg_about_innovajc-subtitle">
                 Somos una empresa dedicada al desarrollo de soluciones
                 tecnológicas para la gestión empresarial. Creamos software
-                diseñado para ayudar a las empresas a organizar, automatizar y
+                enfocado en ayudar a las empresas a organizar, automatizar y
                 controlar sus procesos de forma eficiente.
               </p>
               <p className="pg_about_innovajc-subtitle">
-                Nuestro sistema SECE-ERP integra en una sola plataforma áreas
-                clave como{" "}
+                Nuestro sistema SECE integra en una sola plataforma áreas clave
+                como{" "}
                 <span className="pg_about_innovajc-subtitle-span">
                   contabilidad, inventario, compras, ventas, bancos y recursos
                   humanos

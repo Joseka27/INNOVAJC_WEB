@@ -428,6 +428,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.6rem;
+  max-width: 20rem;
 }
 
 .pg_down-appName {
@@ -525,7 +526,6 @@
   border-radius: 16px;
   padding: 0.8rem 0.9rem;
   background: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(5, 43, 105, 0.12);
 }
 
 .pg_down-reqTitle {
@@ -646,4 +646,89 @@
   .pg_down-safetyGrid {
     grid-template-columns: 1fr;
   }
+}
+
+.pg_down-reqList {
+  list-style: none;
+  padding-left: 0;
+  margin: 0.5rem 0 0;
+}
+
+.pg_down-reqList li {
+  position: relative;
+  padding-left: 1.15rem;
+  margin: 0.35rem 0;
+}
+
+.pg_down-reqList li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #1c8eff; /* usa el color del texto */
+}
+
+/* 1) Regla base anti-overflow en flex */
+.pg_down-card,
+.pg_down-card * {
+  min-width: 0;
+}
+
+/* 2) Fila nombre + chip */
+.pg_down-appNameRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+/* 3) Nombre con ellipsis */
+.pg_down-appName {
+  min-width: 0;
+  flex: 1;
+
+  white-space: normal; /* permite salto */
+  overflow-wrap: anywhere; /* rompe strings largas */
+  word-break: break-word; /* seguridad extra */
+}
+
+/* 4) Chip no se sale */
+.pg_down-chip {
+  flex-shrink: 0;
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 5) TAGLINE: aquí está el problema del screenshot */
+.pg_down-appTagline {
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere; /* ✅ rompe strings sin espacios */
+  word-break: break-word;
+}
+
+/* 6) Meta: que nunca desborde */
+.pg_down-meta,
+.pg_down-metaItem,
+.pg_down-metaItem strong,
+.pg_down-metaItem span {
+  min-width: 0;
+}
+
+.pg_down-metaItem strong {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+}
+
+/* 7) Requirements (por si acaso) */
+.pg_down-reqList li {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
 }
