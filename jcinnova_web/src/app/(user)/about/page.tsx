@@ -78,7 +78,7 @@ const About = () => {
                 <a href="https://twitter.com" aria-label="Twitter">
                   <FaTwitter />
                 </a>
-                <a href="https://whatsapp.com" aria-label="WhatsApp">
+                <a href="https://wa.me/40701423" aria-label="WhatsApp">
                   <FaWhatsapp />
                 </a>
               </div>
@@ -98,7 +98,7 @@ const About = () => {
             Sobre InnovaJC
           </a>
           <a className="pg_about_stickyNav-link" href="#WhatWeDo">
-            Qué ofrecemos
+            Qué ofrece SECE
           </a>
           <a className="pg_about_stickyNav-link" href="#services">
             Módulos SECE
@@ -115,7 +115,7 @@ const About = () => {
 
       <section className="pg_about_servicesFeature" id="WhatWeDo">
         <div className="pg_about_servicesFeature-inner">
-          <h2 className="pg_about_servicesFeature-title">Qué ofrecemos</h2>
+          <h2 className="pg_about_servicesFeature-title">Qué ofrece SECE</h2>
 
           <div className="pg_about_servicesFeature-grid">
             <div className="pg_about_servicesFeature-left">
@@ -154,7 +154,7 @@ const About = () => {
                 aria-label="Nuestros servicios"
               >
                 <h3 className="pg_about_servicesFeature-sideTitle">
-                  Nuestros servicios
+                  Más servicios
                 </h3>
 
                 <ul className="pg_about_servicesFeature-list">

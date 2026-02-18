@@ -162,7 +162,7 @@ export default function AboutServices() {
           viewport={{ once: true }}
         >
           <div className="pg_about_services-head">
-            <h2>Servicios que SECE-Software te ofrece</h2>
+            <h2>SECE Software se adapta a tu negocio</h2>
             <p>
               Ofrecemos servicios tecnológicos enfocados en la optimización y
               control empresarial, incluyendo implementación de sistemas ERP,

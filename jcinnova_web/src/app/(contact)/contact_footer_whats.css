@@ -1,9 +1,9 @@
 .whatsapp-button {
   position: fixed;
-  bottom: 25px;
-  right: 25px;
-  width: 60px;
-  height: 60px;
+  bottom: 35px;
+  right: 35px;
+  width: 65px;
+  height: 65px;
   background: linear-gradient(to top left, #008060, #00c552);
   border-radius: 50%;
   display: flex;

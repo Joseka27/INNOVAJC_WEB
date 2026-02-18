@@ -21,7 +21,12 @@ const FILES_FOLDER = "AppLink";
 const COVERS_FOLDER = "AppImages";
 
 /** select requerido */
-const TYPE_FILE_OPTIONS = ["windows", "linux", "mac", "android"] as const;
+const TYPE_FILE_OPTIONS = [
+  "Software",
+  "Documentacion",
+  "Soporte",
+  "Reportes",
+] as const;
 type TypeFile = (typeof TYPE_FILE_OPTIONS)[number];
 
 type DownloadRow = {

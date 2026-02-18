@@ -1,12 +1,18 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 
 // CSS del dashboard (sidebar + content)
 import "../dashboard/dashboard_layout.css";
+
+// ✅ Toasts (misma implementación que ya usas en admin pages)
+import {
+  Toasts,
+  useToasts,
+} from "@/app/(admin)/admin/_admin_components/useToast";
 
 export default function DashboardShell({
   children,
@@ -17,22 +23,90 @@ export default function DashboardShell({
   const pathname = usePathname();
   const loggingOutRef = useRef(false);
 
+  const { toasts, push, remove, clearAll } = useToasts();
+
   // Solo estas rutas muestran sidebar + wrapper dashboard_shell
   const isDashboard = pathname?.startsWith("/admin/dashboard");
 
-  async function logout() {
+  // ✅ Evita que el dashboard se renderice antes de verificar sesión
+  const [checkingSession, setCheckingSession] = useState(true);
+
+  async function logout(withToast = false) {
     if (loggingOutRef.current) return;
     loggingOutRef.current = true;
+
+    if (withToast) {
+      push({
+        type: "error",
+        title: "Acceso denegado",
+        message: "No se pudo acceder. Inicia sesión nuevamente.",
+        durationMs: 2500,
+      });
+    }
 
     try {
       await fetch("/api/auth/logout", {
         method: "POST",
         cache: "no-store",
       });
+    } catch {
+      // ignoramos
     } finally {
+      clearAll();
       router.replace("/admin");
     }
   }
+
+  // ✅ Check inicial: si NO hay sesión, NO renderiza el dashboard (sin flash)
+  useEffect(() => {
+    let canceled = false;
+
+    const run = async () => {
+      // Si no es dashboard, no bloqueamos
+      if (!isDashboard) {
+        if (!canceled) setCheckingSession(false);
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/auth/me", { cache: "no-store" });
+        const raw = await res.text();
+
+        let data: any = null;
+        try {
+          data = raw ? JSON.parse(raw) : null;
+        } catch {
+          // respuesta inválida => tratamos como sesión inválida
+          if (!canceled) {
+            setCheckingSession(true);
+            await logout(true);
+          }
+          return;
+        }
+
+        if (!data?.user || data?.error === "SESSION_MAX_EXPIRED") {
+          if (!canceled) {
+            setCheckingSession(true);
+            await logout(true);
+          }
+          return;
+        }
+
+        // OK: ya podemos renderizar dashboard
+        if (!canceled) setCheckingSession(false);
+      } catch {
+        // si falla red, por seguridad no bloqueamos para siempre:
+        if (!canceled) setCheckingSession(false);
+      }
+    };
+
+    run();
+
+    return () => {
+      canceled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDashboard]);
 
   // 🔐 Verificación periódica de sesión (solo en dashboard)
   useEffect(() => {
@@ -51,12 +125,12 @@ export default function DashboardShell({
         try {
           data = raw ? JSON.parse(raw) : null;
         } catch {
-          await logout();
+          await logout(true);
           return;
         }
 
         if (!data?.user || data?.error === "SESSION_MAX_EXPIRED") {
-          await logout();
+          await logout(true);
         }
       } catch {
         // ignoramos errores de red
@@ -70,10 +144,14 @@ export default function DashboardShell({
       stopped = true;
       window.clearInterval(id);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDashboard]);
 
   return (
     <div className="AdminLayout">
+      {/* ✅ Toasts globales del layout */}
+      <Toasts items={toasts} onClose={remove} />
+
       {/* 🔵 HEADER GLOBAL (NO se mueve con el scroll del dashboard) */}
       <header className="pg_header_shell">
         <div className="pg_header section-header">
@@ -101,6 +179,12 @@ export default function DashboardShell({
       {/* Si NO es dashboard (ej: /admin login), renderiza normal */}
       {!isDashboard ? (
         <>{children}</>
+      ) : checkingSession ? (
+        // ✅ Mientras verifica sesión: NO renderiza children (evita flash)
+        <div className="dashboard_shell">
+          <aside className="dashboard_sidebar" aria-hidden="true" />
+          <main id="dashboard_scroll" className="dashboard_content" />
+        </div>
       ) : (
         <div className="dashboard_shell">
           {/* 🔵 SIDEBAR */}
@@ -110,7 +194,7 @@ export default function DashboardShell({
                 <h2>Admin Panel</h2>
 
                 <button
-                  onClick={logout}
+                  onClick={() => logout(false)}
                   className="dashboard_logout_under"
                   type="button"
                 >
@@ -143,10 +227,7 @@ export default function DashboardShell({
             </div>
           </aside>
 
-          {/* 🔥 IMPORTANTE:
-             Este es el contenedor que tiene el scroll.
-             NO el window.
-          */}
+          {/* ✅ Contenedor con scroll */}
           <main id="dashboard_scroll" className="dashboard_content">
             {children}
           </main>

@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import "./user_downloads.css";
 import { createClient } from "@/lib/supabase/browserClient";
 
-type Platform = "windows" | "linux" | "mac" | "android";
+type Platform = "Todos" | "Software" | "Documentacion" | "Soporte" | "Reportes";
 
 type DownloadRow = {
   id: number;
@@ -16,10 +16,10 @@ type DownloadRow = {
   size: string | null;
   version: string | null;
   type_file: Platform | null;
-  app_image: string | null; // path privado en bucket
-  file_url: string | null; // path privado en bucket
+  app_image: string | null;
+  file_url: string | null;
   requirements: string | null;
-  created_at?: string | null; // o updated_at si existe
+  created_at?: string | null;
 };
 
 const DOWNLOADS_BUCKET = "downloads";
@@ -27,10 +27,10 @@ const DOWNLOADS_BUCKET = "downloads";
 // filtros UI
 const PLATFORMS: Array<Platform | "Todos"> = [
   "Todos",
-  "windows",
-  "linux",
-  "mac",
-  "android",
+  "Software",
+  "Documentacion",
+  "Soporte",
+  "Reportes",
 ];
 
 // si hay muchos registros
@@ -221,8 +221,9 @@ export default function Downloads() {
               </h1>
 
               <p className="pg_down-subtitle">
-                Instalador oficial, notas de versión y requisitos. Todo en un
-                solo lugar para tu empresa.
+                Aqui podras encontrar nuestro instalador oficial, notas de
+                versión y requisitos, documentacion, reportes, entre otros. Todo
+                en un solo lugar para tu empresa.
               </p>
 
               <div className="pg_down-actions">
@@ -262,8 +263,8 @@ export default function Downloads() {
 
                 <div className="pg_down-heroStats">
                   <div className="pg_down-stat">
-                    <div className="pg_down-statNum">{downloadsUI.length}</div>
-                    <div className="pg_down-statLabel">Apps disponibles</div>
+                    <div className="pg_down-statNum">Apps</div>
+                    <div className="pg_down-statLabel">En un solo lugar</div>
                   </div>
                   <div className="pg_down-stat">
                     <div className="pg_down-statNum">24/7</div>
@@ -271,12 +272,12 @@ export default function Downloads() {
                   </div>
                   <div className="pg_down-stat">
                     <div className="pg_down-statNum">Seguridad</div>
-                    <div className="pg_down-statLabel">Fuente oficial</div>
+                    <div className="pg_down-statLabel">Pagina oficial</div>
                   </div>
                 </div>
 
                 <div className="pg_down-heroHint">
-                  Descarga siempre desde este Centro Oficial
+                  Pagina oficial de Descargas en InnovaJC
                 </div>
               </div>
             </motion.div>
@@ -290,8 +291,8 @@ export default function Downloads() {
           <div className="pg_down-head">
             <h2>Descargas</h2>
             <p>
-              Filtra por plataforma y encuentra la versión adecuada para tu
-              empresa.
+              Aqui podras encontrar todo lo que necesites, desde el sorftware
+              hasta documentacion adecuada
             </p>
           </div>
 
@@ -308,7 +309,7 @@ export default function Downloads() {
                   className={`pg_down-filterBtn ${active === p ? "is-active" : ""}`}
                   onClick={() => setActive(p)}
                 >
-                  {p === "Todos" ? "Todos" : p.toUpperCase()}
+                  {p === "Todos" ? "Todos" : p}
                 </button>
               ))}
             </div>
@@ -330,7 +331,7 @@ export default function Downloads() {
             <div className="pg_down-empty">❌ {error}</div>
           ) : filtered.length === 0 ? (
             <div className="pg_down-empty">
-              No hay resultados con esos filtros.
+              No hay resultados para esta categoria
             </div>
           ) : (
             <div className="pg_down-grid">
@@ -413,33 +414,37 @@ export default function Downloads() {
       <section className="pg_down-safety" id="seguridad">
         <div className="pg_down-safetyInner">
           <div className="pg_down-safetyHead">
-            <span className="pg_down-pill">Recomendaciones</span>
+            <span className="pg_down-pill-section3">Recomendaciones</span>
             <h2 className="pg_down-safetyTitle">
               Seguridad y requisitos mínimos
             </h2>
             <p className="pg_down-safetyText">
-              Descarga siempre desde este Centro de Descargas. Si tu antivirus o
-              Windows SmartScreen muestra advertencias, valida que el archivo
-              provenga de esta URL.
+              Descarga siempre desde este Sitio ofiacial. Si tu antivirus o
+              muestra advertencias, valida que el archivo provenga de esta URL y
+              que tu equipo cuente con las caracteristicas minimas que el
+              sistema requiere.
             </p>
           </div>
 
           <div className="pg_down-safetyGrid">
             <div className="pg_down-safetyCard">
-              <h3>Buenas prácticas</h3>
+              <h3>Recomendaciones</h3>
               <ul>
-                <li>Verifica la versión y fecha de actualización.</li>
-                <li>No instales desde enlaces compartidos por terceros.</li>
-                <li>Si tienes dudas, contáctanos antes de instalar.</li>
+                <li>
+                  ● Verifica que el sistema siempre este Actualizado a su ultima
+                  version por seguridad
+                </li>
+                <li>● No instales desde paginas no oficiales</li>
+                <li>● Si tienes dudas, contáctanos antes de instalar.</li>
               </ul>
             </div>
 
             <div className="pg_down-safetyCard">
               <h3>Soporte</h3>
               <ul>
-                <li>Instalación y configuración guiada.</li>
-                <li>Resolución de errores y actualizaciones.</li>
-                <li>Capacitación básica para tu equipo.</li>
+                <li>● Instalación y configuración guiada.</li>
+                <li>● Resolución de errores y actualizaciones.</li>
+                <li>● Capacitación básica para tu equipo.</li>
               </ul>
               <Link className="pg_down-safetyCta" href="/contact">
                 Ir a contacto →
