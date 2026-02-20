@@ -144,6 +144,9 @@ export default function RootLayout({
                     <a href="https://Twitter.com">
                       <FaTwitter />
                     </a>
+                    <a href="https://wa.me/40701423">
+                      <FaWhatsapp />
+                    </a>
                   </div>
                 </div>
                 <div className="pg_footer-information-div">

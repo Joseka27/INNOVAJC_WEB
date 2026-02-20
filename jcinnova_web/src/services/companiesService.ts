@@ -14,14 +14,15 @@ export const companiesService = {
     data: InsertCompany,
   ): Promise<Company> {
     if (!data.name || data.name.trim().length < 2)
-      /* validate name is notnull and +2 lenght */
       throw new Error("Invalid Name");
     if (!data.image_url || !data.image_url.trim())
-      /* validate name is notnull and remove blanks */
       throw new Error("URL of image is needed");
+    if (!data.description || !data.description.trim())
+      throw new Error("Description is needed");
 
     return companiesRepository(supabase).createCompany({
-      /* Calls back Repository to create Company */ name: data.name.trim(),
+      name: data.name.trim(),
+      description: data.description.trim(),
       image_url: data.image_url.trim(),
     });
   },
@@ -50,6 +51,12 @@ export const companiesService = {
       const u = patch.image_url.trim();
       if (!u) throw new Error("URL of image is needed");
       clean.image_url = u;
+    }
+    if (patch.description !== undefined) {
+      /* Comes path url can be undefined */
+      const u = patch.description.trim();
+      if (!u) throw new Error("Description is needed");
+      clean.description = u;
     }
 
     /* If there is no information to update, reject and throw error */

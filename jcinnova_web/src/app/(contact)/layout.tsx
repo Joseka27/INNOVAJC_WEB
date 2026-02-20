@@ -4,28 +4,29 @@ import "./contact_header.css";
 import "./contact_footer_whats.css";
 import Link from "next/link";
 import Image from "next/image";
-import { FaFacebook, FaInstagram, FaTwitter, FaWhatsapp } from "react-icons/fa";
+import { FaWhatsapp } from "react-icons/fa";
 import { Roboto } from "next/font/google";
+import BackButton from "./BackButton"; // ✅ IMPORTAMOS EL COMPONENTE CLIENT
 
 export const metadata: Metadata = {
   title: "INNOVA JC | Contacto",
   description: "INNOVA JC | Contacto",
 };
+
 const roboto = Roboto({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"], // Puedes elegir los pesos que necesites
+  weight: ["400", "500", "600", "700", "800", "900"],
 });
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="es">
       <body className={`${roboto.className} antialiased`}>
         <div className="UserLayout">
-          {/*Cabezera de la pagina, barra de navegacion */}
           <header>
             <div className="pg_header section-header">
               <div className="pg_header-principal">
@@ -37,23 +38,31 @@ export default function RootLayout({
                       alt="Logo"
                       width={130}
                       height={50}
-                    ></Image>
+                    />
                   </Link>
                 </div>
+
                 <div className="pg_header-text-title">
                   <div className="pg_header-title">
                     <h1>INNOVA JC CENTRO DE CONTACTO</h1>
                   </div>
                 </div>
               </div>
+
               <div className="pg_header-contactbutton">
-                <Link href="/">Volver a Inicio</Link>
+                <BackButton />
               </div>
             </div>
           </header>
-          {/*Cuerpo de la pagina */}
+
           {children}
-          <a href="https://wa.me/40701423" className="whatsapp-button text-4xl">
+
+          <a
+            href="https://wa.me/40701423"
+            className="whatsapp-button text-4xl"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <FaWhatsapp />
           </a>
         </div>

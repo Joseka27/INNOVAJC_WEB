@@ -38,9 +38,13 @@ export async function PUT(req: Request, ctx: Ctx) {
     /* update row information in db */
     const { data, error } = await supabase
       .from("CompaniesWorkWith")
-      .update({ name: patch.name, image_url: patch.image_url })
+      .update({
+        name: patch.name,
+        description: patch.description,
+        image_url: patch.image_url,
+      })
       .eq("id", rowId)
-      .select("id,name,image_url")
+      .select("id,name,description,image_url")
       .single();
 
     if (error) throw error;

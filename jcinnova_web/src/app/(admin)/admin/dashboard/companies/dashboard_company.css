@@ -124,7 +124,10 @@
   gap: 1rem;
 }
 
-/* Name input */
+/* =========================
+   Inputs (name + description)
+   ========================= */
+
 .name_field {
   width: 100%;
   height: 2.8rem;
@@ -148,6 +151,15 @@
 
 .name_field:focus-visible {
   box-shadow: 0 0 0 3px rgba(0, 140, 255, 0.25);
+}
+
+/* ✅ textarea usando la misma clase */
+textarea.name_field {
+  height: auto; /* deja que el rows mande */
+  min-height: 3.25rem;
+  padding: 0.75rem 0.9rem; /* padding vertical */
+  line-height: 1.25rem;
+  resize: vertical; /* puedes cambiar a none si no quieres resize */
 }
 
 /* File */
@@ -285,6 +297,69 @@
 }
 
 /* =========================
+   Companies search
+   ========================= */
+
+.companies_search {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 0.85rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.companies_search_input {
+  width: 100%;
+  height: 2.75rem;
+  padding: 0 0.95rem;
+  border-radius: 12px;
+
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.companies_search_input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 700;
+}
+
+.companies_search_input:focus {
+  outline: none;
+  border-color: #008cff;
+}
+
+.companies_search_input:focus-visible {
+  box-shadow: 0 0 0 3px rgba(0, 140, 255, 0.25);
+}
+
+.companies_search_clear {
+  height: 2.75rem;
+  padding: 0 0.95rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+
+  color: #fff;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+
+  background: rgba(255, 255, 255, 0.12);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+
+.companies_search_clear:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+}
+
+/* =========================
    Companies list
    ========================= */
 
@@ -335,6 +410,26 @@
   font-size: 1.1rem;
   font-weight: 900;
   color: #ffffff;
+}
+
+/* ✅ NUEVO: nombre + descripción en columna */
+.company_box_text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0; /* permite ellipsis/clamp */
+}
+
+/* ✅ NUEVO: descripción (clamp a 2 líneas) */
+.company_box_desc {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.72);
+  line-height: 1.2rem;
+
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .company_logo {
@@ -419,7 +514,6 @@
 
 /* =========================
    Responsive - Admin Dashboard
-   Pegar al final de admin_dashboard.css
    ========================= */
 
 /* Tablets y abajo */
@@ -520,69 +614,27 @@
     bottom: 0.75rem;
     width: calc(100vw - 1.5rem);
   }
-}
 
-/* =========================
-   Companies search
-   ========================= */
+  /* Search: botón pasa abajo */
+  .companies_search {
+    flex-direction: column;
+    align-items: stretch;
+  }
 
-.companies_search {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.85rem 0.85rem 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-}
+  .companies_search_clear {
+    width: 100%;
+    text-align: center;
+  }
 
-.companies_search_input {
-  width: 100%;
-  height: 2.75rem;
-  padding: 0 0.95rem;
-  border-radius: 12px;
+  /* ✅ tu regla original aumentaba demasiado el font, la dejo más controlada */
+  .company_box_info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  background: rgba(255, 255, 255, 0.06);
-  color: #ffffff;
-  font-size: 0.95rem;
-  font-weight: 700;
-}
-
-.companies_search_input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
-  font-weight: 700;
-}
-
-.companies_search_input:focus {
-  outline: none;
-  border-color: #008cff;
-}
-
-.companies_search_input:focus-visible {
-  box-shadow: 0 0 0 3px rgba(0, 140, 255, 0.25);
-}
-
-.companies_search_clear {
-  height: 2.75rem;
-  padding: 0 0.95rem;
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
-
-  color: #fff;
-  font-weight: 900;
-  letter-spacing: 0.02em;
-
-  background: rgba(255, 255, 255, 0.12);
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease,
-    background 0.15s ease;
-}
-
-.companies_search_clear:hover {
-  transform: translateY(-1px);
-  background: rgba(255, 255, 255, 0.18);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+  .company_box_text {
+    width: 100%;
+  }
 }
 
 /* Muy pequeño */
@@ -604,27 +656,9 @@
   }
 }
 
-/* Responsive: en móvil el botón pasa abajo */
-@media (max-width: 640px) {
-  .companies_search {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .companies_search_clear {
-    width: 100%;
-    text-align: center;
-  }
-
-  .company_box_info {
-    flex-direction: column;
-    font-size: 1.6rem;
-  }
-}
-
 /* Pantallas bajitas: evita que se “corte” con teclado y mantiene aire */
 @media (max-height: 720px) {
-  .pg_admin {
+  .pg_company {
     align-items: flex-start;
     padding-top: 1.3rem;
     padding-bottom: 1.3rem;
@@ -727,7 +761,7 @@
   overflow: auto;
 }
 
-/* OJO: tu .pg_admin centra el contenido, pero ahora queremos padding normal en main */
+/* OJO: tu .pg_company centra el contenido, pero ahora queremos padding normal en main */
 .company_main .pg_company {
   padding: 2.5rem 1.25rem;
   justify-content: flex-start;
@@ -744,5 +778,3 @@
     height: auto;
   }
 }
-
-/* Buena */

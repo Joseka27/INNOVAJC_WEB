@@ -3,6 +3,7 @@
 /* When data is inserted */
 export interface InsertCompany {
   name: string;
+  description: string;
   image_url: string;
 }
 
@@ -10,6 +11,7 @@ export interface InsertCompany {
 export interface Company {
   id: number;
   name: string;
+  description: string;
   image_url: string;
   created_at: string;
 }
@@ -17,5 +19,6 @@ export interface Company {
 /* update Data */
 export interface UpdateCompany {
   name?: string;
+  description?: string;
   image_url?: string;
 }

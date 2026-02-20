@@ -19,7 +19,7 @@ export async function GET(req: Request) {
     /* Query that calls in groups */
     let q = supabase
       .from("CompaniesWorkWith")
-      .select("id,name,image_url", { count: "exact" })
+      .select("id,name,description,image_url", { count: "exact" })
       .order("id", { ascending: true });
 
     if (cursor) {
@@ -54,8 +54,12 @@ export async function POST(req: Request) {
     /* body: { name, image_url } insert information*/
     const { data, error } = await supabase
       .from("CompaniesWorkWith")
-      .insert({ name: body.name, image_url: body.image_url })
-      .select("id,name,image_url")
+      .insert({
+        name: body.name,
+        description: body.description,
+        image_url: body.image_url,
+      })
+      .select("id,name,description,image_url")
       .single();
 
     if (error) throw error;

@@ -42,6 +42,7 @@ export default function AdminDashboardPage() {
   const [query, setQuery] = useState("");
 
   const [name, setName] = useState("");
+  const [description, setDescription] = useState(""); // ✅ NUEVO
   const [file, setFile] = useState<File | null>(null);
   const [creating, setCreating] = useState(false);
 
@@ -54,20 +55,28 @@ export default function AdminDashboardPage() {
   const filteredCompanies = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return companies;
-    return companies.filter((c) => (c.name ?? "").toLowerCase().includes(q));
+
+    return companies.filter((c) => {
+      const n = (c.name ?? "").toLowerCase();
+      const d = ((c as any).description ?? "").toLowerCase(); // por si el type aún no está actualizado
+      return n.includes(q) || d.includes(q);
+    });
   }, [companies, query]);
 
   const [editName, setEditName] = useState("");
+  const [editDescription, setEditDescription] = useState(""); // ✅ NUEVO
   const [editFile, setEditFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
 
   async function resetForms() {
     setName("");
+    setDescription("");
     setFile(null);
     if (createFileRef.current) createFileRef.current.value = "";
 
     setEditingId(null);
     setEditName("");
+    setEditDescription("");
     setEditFile(null);
     if (editFileRef.current) editFileRef.current.value = "";
   }
@@ -125,6 +134,8 @@ export default function AdminDashboardPage() {
     if (creating) return;
 
     const cleanName = name.trim();
+    const cleanDesc = description.trim();
+
     if (!cleanName) {
       push({
         type: "error",
@@ -133,6 +144,17 @@ export default function AdminDashboardPage() {
       });
       return;
     }
+
+    // Si tu DB lo requiere, descomenta esto:
+    // if (!cleanDesc) {
+    //   push({
+    //     type: "error",
+    //     title: "Dato requerido",
+    //     message: "La descripción es requerida.",
+    //   });
+    //   return;
+    // }
+
     if (!file) {
       push({
         type: "error",
@@ -164,7 +186,11 @@ export default function AdminDashboardPage() {
       const res = await fetch("/api/companies", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: cleanName, image_url: publicUrl }),
+        body: JSON.stringify({
+          name: cleanName,
+          description: cleanDesc, // ✅ NUEVO
+          image_url: publicUrl,
+        }),
       });
 
       if (!res.ok) {
@@ -185,6 +211,7 @@ export default function AdminDashboardPage() {
       });
 
       setName("");
+      setDescription("");
       setFile(null);
       if (createFileRef.current) createFileRef.current.value = "";
       await loadCompanies(0);
@@ -202,6 +229,7 @@ export default function AdminDashboardPage() {
   function startEdit(c: Company) {
     setEditingId(c.id);
     setEditName(c.name);
+    setEditDescription(((c as any).description ?? "") as string); // ✅ NUEVO
     setEditFile(null);
     if (editFileRef.current) editFileRef.current.value = "";
   }
@@ -210,6 +238,8 @@ export default function AdminDashboardPage() {
     if (!editingCompany || saving) return;
 
     const cleanName = (editName ?? "").trim();
+    const cleanDesc = (editDescription ?? "").trim();
+
     if (!cleanName) {
       push({
         type: "error",
@@ -248,6 +278,7 @@ export default function AdminDashboardPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: cleanName,
+          description: cleanDesc, // ✅ NUEVO
           image_url: newUrl,
           old_image_url: editingCompany.image_url,
         }),
@@ -365,6 +396,14 @@ export default function AdminDashboardPage() {
                   onChange={(e) => setName(e.target.value)}
                 />
 
+                <textarea
+                  className="name_field"
+                  placeholder="Descripción"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={2}
+                />
+
                 <div className="file_field">
                   <label htmlFor="create_file" className="file_label">
                     <span className="file_icon">🖼️</span>
@@ -419,6 +458,15 @@ export default function AdminDashboardPage() {
                     onChange={(e) => setEditName(e.target.value)}
                   />
 
+                  {/* ✅ NUEVO: editar descripción */}
+                  <textarea
+                    className="name_field"
+                    placeholder="Editar Descripción"
+                    value={editDescription}
+                    onChange={(e) => setEditDescription(e.target.value)}
+                    rows={3}
+                  />
+
                   <div className="file_field">
                     <label htmlFor="edit_file" className="file_label">
                       <span className="file_icon">🖼️</span>
@@ -470,7 +518,7 @@ export default function AdminDashboardPage() {
           <div className="companies_search">
             <input
               className="companies_search_input"
-              placeholder="Buscar empresa por nombre…"
+              placeholder="Buscar empresa por nombre o descripción…"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
@@ -513,7 +561,15 @@ export default function AdminDashboardPage() {
                     className="company_logo"
                     alt={c.name}
                   />
-                  <div>{c.name}</div>
+                  <div className="company_box_text">
+                    <div>{c.name}</div>
+                    {/* ✅ NUEVO: mostrar descripción */}
+                    {!!(c as any).description && (
+                      <div className="company_box_desc">
+                        {(c as any).description}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="company_box_actions">

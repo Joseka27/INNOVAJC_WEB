@@ -1,0 +1,92 @@
+/* =========================
+   RESET BÁSICO
+   ========================= */
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* =========================
+   GLOBAL 404 SIN SCROLL
+   ========================= */
+
+.pg_nf_wrapper {
+  position: fixed; /* 🔥 bloquea totalmente scroll */
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+
+  background: linear-gradient(180deg, #020617, #020617);
+}
+
+.pg_nf {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.pg_nf_card {
+  width: min(520px, 100%);
+  padding: 2.6rem 2.4rem 2.2rem;
+  border-radius: 20px;
+
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  text-align: center;
+}
+
+/* Badge 404 */
+.pg_nf_badge {
+  place-items: center;
+  font-weight: 900;
+  font-size: 4rem;
+  letter-spacing: 0.05em;
+  color: #ffffff;
+}
+
+/* Título */
+.pg_nf_title {
+  margin: 0.35rem 0 0;
+  font-size: 1.6rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  color: #ffffff;
+}
+
+/* Subtítulo */
+.pg_nf_subtitle {
+  margin: 0;
+  font-size: 0.96rem;
+  line-height: 1.35rem;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .pg_nf_card {
+    padding: 2rem 1.5rem 1.7rem;
+    border-radius: 18px;
+  }
+
+  .pg_nf_title {
+    font-size: 1.35rem;
+  }
+
+  .pg_nf_btn {
+    width: 100%;
+  }
+}
