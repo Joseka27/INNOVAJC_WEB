@@ -400,6 +400,7 @@
   margin: 0.45rem 0 0;
   color: rgba(11, 18, 32, 0.72);
   font-size: 0.95rem;
+  font-weight: 600;
   line-height: 1.55;
 }
 
@@ -407,6 +408,7 @@
 .pg_about_servicesFeature-right {
   padding: 1.25rem 1.25rem;
   border-radius: 18px;
+  font-weight: 400;
 
   background: #ffffff;
   border: 1px solid #e9eef6;

@@ -431,20 +431,20 @@ export default function Downloads() {
               <h3>Recomendaciones</h3>
               <ul>
                 <li>
-                  ● Verifica que el sistema siempre este Actualizado a su ultima
+                  Verifica que el sistema siempre este Actualizado a su ultima
                   version por seguridad
                 </li>
-                <li>● No instales desde paginas no oficiales</li>
-                <li>● Si tienes dudas, contáctanos antes de instalar.</li>
+                <li>No instales desde paginas no oficiales</li>
+                <li>Si tienes dudas, contáctanos antes de instalar.</li>
               </ul>
             </div>
 
             <div className="pg_down-safetyCard">
               <h3>Soporte</h3>
               <ul>
-                <li>● Instalación y configuración guiada.</li>
-                <li>● Resolución de errores y actualizaciones.</li>
-                <li>● Capacitación básica para tu equipo.</li>
+                <li>Instalación y configuración guiada.</li>
+                <li>Resolución de errores y actualizaciones.</li>
+                <li>Capacitación básica para tu equipo.</li>
               </ul>
               <Link className="pg_down-safetyCta" href="/contact">
                 Ir a contacto →

@@ -6,6 +6,8 @@ import Image from "next/image";
 import { FaFacebook, FaInstagram, FaTwitter, FaWhatsapp } from "react-icons/fa";
 import { Roboto } from "next/font/google";
 
+import HeaderClient from "./burguerMenu"; // <- crea este archivo al lado
+
 export const metadata: Metadata = {
   title: {
     default: "Innova JC",
@@ -58,84 +60,8 @@ export default function RootLayout({
       <body className={`${roboto.className} antialiased`}>
         <div className="UserLayout">
           <header>
-            <div className="pg_header section-header">
-              <div className="pg_header-principal">
-                <div className="pg_header-logo-img">
-                  <Link href="/" aria-label="Ir al inicio">
-                    <Image
-                      className="pg_header_logo"
-                      src="/images/LogoInnova.png"
-                      alt="Logo"
-                      width={80}
-                      height={80}
-                      priority
-                    />
-                  </Link>
-                </div>
-
-                {/* Desktop links (se ocultan en móvil via CSS) */}
-                <div className="pg_header-linkrouters-links">
-                  <div className="pg_header-linkrouter">
-                    <Link href="/about">Sobre Nosotros</Link>
-                  </div>
-                  <div className="pg_header-linkrouter">
-                    <Link href="/customers">Clientes</Link>
-                  </div>
-                  <div className="pg_header-linkrouter">
-                    <Link href="/downloads">Descargar</Link>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pg_header-right">
-                <div className="pg_header-contactbutton">
-                  <Link href="/contact">Contactanos</Link>
-                </div>
-
-                {/* Mobile menu (CSS-only). NO renombra clases existentes. */}
-                <input
-                  id="nav-toggle"
-                  className="pg_header-navToggle"
-                  type="checkbox"
-                />
-
-                <label
-                  className="pg_header-burger"
-                  htmlFor="nav-toggle"
-                  aria-label="Abrir menú"
-                >
-                  <span />
-                  <span />
-                  <span />
-                </label>
-
-                <div className="pg_header-mobilePanel" aria-label="Menú móvil">
-                  <nav className="pg_header-mobileNav">
-                    <Link className="pg_header-mobileLink" href="/about">
-                      Sobre Nosotros
-                    </Link>
-                    <Link className="pg_header-mobileLink" href="/customers">
-                      Clientes
-                    </Link>
-                    <Link className="pg_header-mobileLink" href="/downloads">
-                      Descargar
-                    </Link>
-
-                    <div className="pg_header-mobileDivider" />
-
-                    <Link className="pg_header-mobileCta" href="/contact">
-                      Contactanos
-                    </Link>
-                  </nav>
-                </div>
-
-                <label
-                  htmlFor="nav-toggle"
-                  className="pg_header-backdrop"
-                  aria-hidden="true"
-                />
-              </div>
-            </div>
+            {/* Header cliente (hamburguesa) */}
+            <HeaderClient />
           </header>
 
           {children}

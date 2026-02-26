@@ -20,6 +20,9 @@
 
   --container: 1180px;
   --px: clamp(1rem, 3vw, 3.5rem);
+
+  /* Anchor offset (sticky header) */
+  --header-h: 80px; /* ajusta si tu header real difiere */
 }
 
 /* =========================
@@ -43,11 +46,6 @@ body {
   background: var(--page);
 }
 
-/* Anchor offset (para sticky header) */
-:root {
-  --header-h: 80px;
-} /* poné el alto real de tu header */
-
 html {
   scroll-behavior: smooth;
   scroll-padding-top: var(--header-h);
@@ -65,10 +63,8 @@ hr {
 }
 
 /* =========================================================
-   HEADER (MISMAS CLASES + nuevas clases para menú móvil)
+   HEADER
 ========================================================= */
-
-/* Header general options (de tu header original, pero pro) */
 header {
   background-color: var(--surface);
   color: #616161;
@@ -79,11 +75,9 @@ header {
   border-bottom: 1px solid var(--border);
   box-shadow: 0 6px 18px rgba(2, 6, 23, 0.08);
 
-  /* clave para que el dropdown no se corte */
   overflow: visible !important;
 }
 
-/* antes tenías padding fijo enorme (15rem). En móvil eso rompe todo */
 .section-header {
   max-width: var(--container);
   margin: 0 auto;
@@ -118,14 +112,14 @@ header {
   display: block;
 }
 
-/* Desktop nav wrapper (tu clase, mejorada) */
+/* Desktop nav wrapper */
 .pg_header-linkrouters-links {
   display: flex;
   align-items: center;
   gap: 0.25rem;
   padding: 6px;
   border-radius: 999px;
-  margin-left: 1.25rem; /* en tu CSS era 4rem, demasiado */
+  margin-left: 1.25rem;
 }
 
 /* Each link container */
@@ -134,7 +128,7 @@ header {
   width: fit-content;
 }
 
-/* Links style (tu regla, pero con hover pro) */
+/* Links style */
 .pg_header-linkrouters-links a {
   position: relative;
   font-size: 17px;
@@ -166,6 +160,7 @@ header {
   transform-origin: center;
   transition: transform 0.18s ease;
 }
+
 .pg_header-linkrouters-links a:hover::after {
   transform: scaleX(1);
 }
@@ -179,7 +174,7 @@ header {
   overflow: visible !important;
 }
 
-/* CTA (tu clase original) */
+/* CTA */
 .pg_header-contactbutton {
   display: inline-flex;
   align-items: center;
@@ -196,20 +191,15 @@ header {
     filter 0.15s ease;
   white-space: nowrap;
 }
+
 .pg_header-contactbutton:hover {
   transform: translateY(-1px);
   filter: brightness(0.98);
 }
 
 /* =========================
-   MOBILE MENU (CSS-only)
-   (nuevas clases)
+   MOBILE MENU (STATE: .is-open)
 ========================= */
-.pg_header-navToggle {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
 
 /* Burger */
 .pg_header-burger {
@@ -224,13 +214,14 @@ header {
 
   position: relative;
   flex: 0 0 46px;
+  padding: 0; /* importante para centrar spans */
 }
 
 .pg_header-burger:hover {
   background: #f7f9fd;
 }
 
-/* Bars: centradas (para que NO salga “a la izquierda” ni cortado) */
+/* Bars centradas */
 .pg_header-burger span {
   position: absolute;
   left: 50%;
@@ -260,6 +251,20 @@ header {
   transform: translate(-50%, calc(-50% + 6px));
 }
 
+/* Burger open animation (antes era :checked, ahora es .is-open) */
+.pg_header-burger.is-open span:nth-child(1) {
+  transform: translate(-50%, -50%) rotate(45deg);
+  width: 14px;
+}
+.pg_header-burger.is-open span:nth-child(2) {
+  opacity: 0;
+  transform: translate(-50%, -50%) scaleX(0.6);
+}
+.pg_header-burger.is-open span:nth-child(3) {
+  transform: translate(-50%, -50%) rotate(-45deg);
+  width: 14px;
+}
+
 /* Panel */
 .pg_header-mobilePanel {
   position: absolute;
@@ -283,6 +288,12 @@ header {
   z-index: 1200;
 }
 
+.pg_header-mobilePanel.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
 .pg_header-mobileNav {
   padding: 0.75rem;
   display: flex;
@@ -302,6 +313,7 @@ header {
     transform 0.15s ease,
     background-color 0.15s ease;
 }
+
 .pg_header-mobileLink:hover {
   background: #eaf1ff;
   transform: translateY(-1px);
@@ -331,34 +343,17 @@ header {
   pointer-events: none;
   transition: opacity 0.2s ease;
   z-index: 1100;
+
+  border: 0; /* es button */
 }
 
-/* Open state */
-.pg_header-navToggle:checked ~ .pg_header-burger span:nth-child(1) {
-  transform: translate(-50%, -50%) rotate(45deg);
-  width: 14px;
-}
-.pg_header-navToggle:checked ~ .pg_header-burger span:nth-child(2) {
-  opacity: 0;
-  transform: translate(-50%, -50%) scaleX(0.6);
-}
-.pg_header-navToggle:checked ~ .pg_header-burger span:nth-child(3) {
-  transform: translate(-50%, -50%) rotate(-45deg);
-  width: 14px;
-}
-
-.pg_header-navToggle:checked ~ .pg_header-mobilePanel {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateY(0) scale(1);
-}
-.pg_header-navToggle:checked ~ .pg_header-backdrop {
+.pg_header-backdrop.is-open {
   opacity: 1;
   pointer-events: auto;
 }
 
 /* =========================================================
-   FOOTER (MISMAS CLASES, diseño pro estable)
+   FOOTER
 ========================================================= */
 footer,
 .footer {
@@ -366,21 +361,18 @@ footer,
   color: #616161;
 }
 
-/* footer padding: antes era fijo 4rem */
 .section-footer {
   width: 100%;
-  max-width: 1700px; /* más amplio */
+  max-width: 1700px;
   margin: 0 auto;
   padding: 3rem clamp(2rem, 5vw, 6rem);
 }
 
-/* wrapper */
 .pg_footer {
   display: flex;
   flex-direction: column;
 }
 
-/* TOP: 4 columnas (grid pro) */
 .pg_footer-information {
   width: 100%;
   display: grid;
@@ -391,7 +383,6 @@ footer,
   text-align: left;
 }
 
-/* column wrapper */
 .pg_footer-information-div {
   display: flex;
   flex-direction: column;
@@ -406,7 +397,6 @@ footer,
   margin: 0;
 }
 
-/* Column 1: brand */
 .pg_footer-logotext {
   display: flex;
   justify-content: flex-start;
@@ -429,7 +419,6 @@ footer,
   margin: 0;
 }
 
-/* Column 2: links */
 .pg_footer-linkrouter {
   display: flex;
   justify-content: flex-start;
@@ -448,7 +437,6 @@ footer,
   text-decoration: underline;
 }
 
-/* Column 3: social */
 .socialmedia {
   display: flex;
   flex-wrap: wrap;
@@ -467,7 +455,7 @@ footer,
   transform: scale(1.12);
 }
 
-/* Column 4: schedule */
+/* schedule */
 .schedule {
   width: 100%;
   max-width: 360px;
@@ -479,12 +467,13 @@ footer,
   margin: 0 0 0.4rem 0;
 }
 
+/* Base: asegura alineación limpia incluso en desktop/mediano */
 .schedule-row {
   width: 100%;
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(110px, 1fr) auto;
   align-items: center;
-  gap: 0.75rem;
+  column-gap: 0.75rem;
 
   padding: 0.45rem 0.6rem;
   border-radius: 0.75rem;
@@ -492,14 +481,15 @@ footer,
 }
 
 .schedule-row span:first-child {
-  white-space: nowrap;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .schedule-row span:last-child {
-  text-align: right;
   white-space: nowrap;
+  text-align: right;
 }
 
 .schedule-row.today {
@@ -516,7 +506,7 @@ footer,
   color: transparent;
 }
 
-/* BOTTOM: terms */
+/* bottom */
 .pg_footer-terms {
   display: flex;
   flex-direction: row;
@@ -639,36 +629,24 @@ footer,
     align-items: center;
     text-align: center;
   }
-}
 
-/* =========================
-   FIX: Schedule ordenado en pantallas pequeñas
-========================= */
+  .schedule-row {
+    grid-template-columns: 1fr;
+    row-gap: 0.15rem;
+    justify-items: start;
+    align-items: start;
+    padding: 0.55rem 0.75rem;
+  }
 
-/* Base: asegura alineación limpia incluso en desktop/mediano */
-.schedule-row {
-  display: grid;
-  grid-template-columns: minmax(110px, 1fr) auto; /* día siempre tiene mínimo */
-  align-items: center;
-  column-gap: 0.75rem;
-}
-
-.schedule-row span:first-child {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.schedule-row span:last-child {
-  white-space: nowrap; /* en grande se mantiene una línea */
-  text-align: right;
+  .schedule-row span:last-child {
+    text-align: left;
+  }
 }
 
 /* En pantallas realmente pequeñas: se apila para que no se “desacomode” */
 @media (max-width: 490px) {
   .schedule-row {
-    grid-template-columns: 1fr; /* 1 columna */
+    grid-template-columns: 1fr;
     row-gap: 0.15rem;
     justify-items: start;
     align-items: start;
@@ -676,12 +654,12 @@ footer,
   }
 
   .schedule-row span:first-child {
-    white-space: nowrap; /* día en una línea */
+    white-space: nowrap;
   }
 
   .schedule-row span:last-child {
-    white-space: normal; /* horas pueden partirse */
-    text-align: left; /* se ve ordenado en 2 líneas */
+    white-space: normal;
+    text-align: left;
     line-height: 1.25;
     opacity: 0.9;
   }
