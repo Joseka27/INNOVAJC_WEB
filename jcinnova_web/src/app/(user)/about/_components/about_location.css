@@ -227,3 +227,17 @@
     height: 100%;
   }
 }
+
+@media (max-width: 760px) {
+  .locmap_right {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .locmap_mapCard {
+    width: 100%;
+    height: auto; /* mata el 450px antes */
+    aspect-ratio: 16 / 10; /* misma lógica que en 620 */
+    border-radius: 16px;
+  }
+}
