@@ -195,12 +195,20 @@
   }
 
   .pg_companies-sort {
-    width: 100%;
+    width: 300px;
     justify-content: center;
+  }
+
+  .pg_companies-sortLabel {
+    min-width: 60px;
   }
 
   .pg_companies-sortSelect {
     width: 100%;
+  }
+
+  .pg_companies-grid {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
   }
 }
 
@@ -346,4 +354,10 @@
   cursor: not-allowed;
   box-shadow: none;
   transform: none;
+}
+
+@media (max-width: 420px) {
+  .pg_companies-grid {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
 }

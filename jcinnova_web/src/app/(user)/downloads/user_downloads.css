@@ -372,11 +372,6 @@
   .pg_down-grid {
     grid-template-columns: 1fr;
   }
-
-  .pg_down-btnPrimary,
-  .pg_down-btnGhost {
-    width: 100%;
-  }
 }
 
 /* card */
@@ -656,10 +651,13 @@
   transform: translateY(-1px);
   opacity: 0.95;
 }
-
 @media (max-width: 980px) {
   .pg_down-safetyGrid {
     grid-template-columns: 1fr;
+  }
+
+  .pg_down-list {
+    padding: 2rem 1.25rem;
   }
 }
 
@@ -746,4 +744,13 @@
   overflow-wrap: anywhere;
   word-break: break-word;
   white-space: normal;
+}
+
+@media (max-width: 620px) {
+  .pg_down-hero {
+    padding: 3.2rem 1.25rem;
+  }
+  .pg_down-heroRight {
+    display: none;
+  }
 }

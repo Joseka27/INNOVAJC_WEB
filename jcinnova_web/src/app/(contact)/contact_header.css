@@ -1,71 +1,143 @@
-/* Header general options */
+/* =========================
+   TOKENS (alineado al layout principal)
+========================= */
+:root {
+  --page: #f6f7fb;
+  --surface: #ffffff;
+  --text: #0f172a;
+  --muted: #475569;
+
+  --brand: #052b69;
+  --brand2: #176aad;
+
+  --border: rgba(15, 23, 42, 0.12);
+  --shadow: 0 12px 34px rgba(2, 6, 23, 0.14);
+
+  --container: 1180px;
+  --px: clamp(1rem, 3vw, 3.5rem);
+}
+
+/* =========================
+   HEADER
+========================= */
+
 header {
-  background-color: #f8f8f8;
-  color: #616161;
+  background-color: var(--surface);
   position: sticky;
   top: 0;
   z-index: 1000;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  border-bottom: 1px solid #e4e4e4;
+
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 6px 18px rgba(2, 6, 23, 0.08);
 }
 
-/* Header separation from borders */
+/* Contenedor centrado profesional */
 .section-header {
-  padding: 0rem 15rem;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--px);
 }
 
-/* Header display content (wrapper) */
+/* Wrapper interno */
 .pg_header {
+  height: 72px;
   display: flex;
-  flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  gap: 1rem;
+  padding-top: 2.8rem;
+  padding-bottom: 2.8rem;
 }
 
-/* ===== Header first part (Logo + Pages Routes) ===== */
-
+/* Parte izquierda */
 .pg_header-principal {
   display: flex;
-  flex-direction: row;
+  align-items: center;
+  gap: 1.5rem;
+  min-width: 0;
 }
 
-/* Pages routes links wrapper */
+/* Logo */
+.pg_header_logo {
+  height: 80px;
+  max-height: 80px;
+  width: auto;
+  display: block;
+}
+
+/* Título */
 .pg_header-text-title {
   display: flex;
   align-items: center;
-  flex-direction: colum;
-  gap: 1rem;
-  margin-left: 4rem;
 }
 
-/* Each link container */
-.pg_header-title {
-  display: flex;
-  width: fit-content;
-}
-
-/* Links style */
-.pg_header-text-title h1 {
-  justify-content: center;
-  font-size: 1.5rem;
+.pg_header-title h1 {
+  font-size: clamp(1rem, 2vw, 1.3rem);
   font-weight: 900;
-  padding: 0.8rem 0.8rem 0.8rem 0.8rem;
-  color: #052b69;
+  color: var(--brand);
+  margin: 0;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
-/* ===== Contact button ===== */
+/* =========================
+   BOTÓN VOLVER
+========================= */
 
 .pg_header-contactbutton {
-  color: #ffffff;
-  background-color: #176aad;
-  padding: 0.8rem 1.3rem 0.8rem 1.3rem;
-  border-radius: 2rem;
-  font-weight: bold;
-  transition: transform 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0.65rem 1.1rem;
+  border-radius: 999px;
+
+  font-weight: 900;
+  color: #fff;
+
+  background: linear-gradient(135deg, #176aad, #0b5ea8, #052b69);
+  box-shadow: 0 10px 22px rgba(23, 106, 173, 0.22);
+
+  transition:
+    transform 0.15s ease,
+    filter 0.15s ease;
+  white-space: nowrap;
 }
 
 .pg_header-contactbutton:hover {
-  color: #ffffff;
-  background-color: #084c83;
-  transform: scale(1.05);
+  transform: translateY(-1px);
+  filter: brightness(0.98);
+}
+
+/* =========================
+   RESPONSIVE (ligero, sin hamburguesa)
+========================= */
+
+@media (max-width: 768px) {
+  .pg_header {
+    height: 72px;
+  }
+
+  .pg_header-title h1 {
+    font-size: 0.95rem;
+  }
+
+  .pg_header-contactbutton {
+    padding: 0.55rem 0.9rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .pg_header-principal {
+    gap: 0.75rem;
+  }
+
+  .pg_header-title h1 {
+    font-size: 0.8rem;
+  }
+
+  .pg_header_logo {
+    max-height: 55px;
+  }
 }

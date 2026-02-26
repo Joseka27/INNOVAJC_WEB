@@ -184,7 +184,7 @@ export default function CompaniesPage() {
   return (
     <div className="pg_companies">
       {/* HERO */}
-      <section className="pg_companies-hero">
+      <section className="pg_companies-hero" id="companies-hero">
         <div className="pg_companies-heroInner">
           <h1 className="pg_companies-title">
             Empresas que trabajan y cerren en nosotros.
@@ -231,7 +231,7 @@ export default function CompaniesPage() {
                 onChange={(e) => setSort(e.target.value as SortKey)}
                 aria-label="Ordenar empresas"
               >
-                <option value="relevance">Relevancia</option>
+                <option value="relevance">Todos</option>
                 <option value="name_asc">Nombre (A–Z)</option>
                 <option value="name_desc">Nombre (Z–A)</option>
                 <option value="newest">Más recientes</option>

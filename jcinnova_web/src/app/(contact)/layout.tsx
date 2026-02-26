@@ -36,8 +36,9 @@ export default function RootLayout({
                       className="pg_header_logo"
                       src="/images/LogoInnova.png"
                       alt="Logo"
-                      width={130}
-                      height={50}
+                      width={80}
+                      height={80}
+                      priority
                     />
                   </Link>
                 </div>

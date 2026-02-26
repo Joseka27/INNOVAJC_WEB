@@ -4,8 +4,8 @@ export async function resizeImageToWebp(
   opts?: { maxW?: number; maxH?: number; quality?: number },
 ): Promise<File> {
   /* Max image size*/
-  const maxW = opts?.maxW ?? 1400;
-  const maxH = opts?.maxH ?? 1400;
+  const maxW = opts?.maxW ?? 1000;
+  const maxH = opts?.maxH ?? 1000;
   const quality = opts?.quality ?? 0.82;
 
   /* Validate that file is an image */

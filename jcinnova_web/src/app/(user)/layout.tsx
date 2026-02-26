@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import "./user_globals.css";
-import "./user_header.css";
-import "./user_footer.css";
+import "./user_layout.css";
+
 import Link from "next/link";
 import Image from "next/image";
 import { FaFacebook, FaInstagram, FaTwitter, FaWhatsapp } from "react-icons/fa";
@@ -17,7 +16,7 @@ export const metadata: Metadata = {
 
 const roboto = Roboto({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"], // Puedes elegir los pesos que necesites
+  weight: ["400", "500", "600", "700", "800", "900"],
 });
 
 const FooterSchedule = () => {
@@ -58,21 +57,23 @@ export default function RootLayout({
     <html lang="es">
       <body className={`${roboto.className} antialiased`}>
         <div className="UserLayout">
-          {/*Cabezera de la pagina, barra de navegacion */}
           <header>
             <div className="pg_header section-header">
               <div className="pg_header-principal">
                 <div className="pg_header-logo-img">
-                  <Link href="/">
+                  <Link href="/" aria-label="Ir al inicio">
                     <Image
                       className="pg_header_logo"
                       src="/images/LogoInnova.png"
                       alt="Logo"
-                      width={130}
-                      height={50}
-                    ></Image>
+                      width={80}
+                      height={80}
+                      priority
+                    />
                   </Link>
                 </div>
+
+                {/* Desktop links (se ocultan en móvil via CSS) */}
                 <div className="pg_header-linkrouters-links">
                   <div className="pg_header-linkrouter">
                     <Link href="/about">Sobre Nosotros</Link>
@@ -85,17 +86,61 @@ export default function RootLayout({
                   </div>
                 </div>
               </div>
-              <div className="pg_header-contactbutton">
-                <Link href="/contact">Contactanos</Link>
+
+              <div className="pg_header-right">
+                <div className="pg_header-contactbutton">
+                  <Link href="/contact">Contactanos</Link>
+                </div>
+
+                {/* Mobile menu (CSS-only). NO renombra clases existentes. */}
+                <input
+                  id="nav-toggle"
+                  className="pg_header-navToggle"
+                  type="checkbox"
+                />
+
+                <label
+                  className="pg_header-burger"
+                  htmlFor="nav-toggle"
+                  aria-label="Abrir menú"
+                >
+                  <span />
+                  <span />
+                  <span />
+                </label>
+
+                <div className="pg_header-mobilePanel" aria-label="Menú móvil">
+                  <nav className="pg_header-mobileNav">
+                    <Link className="pg_header-mobileLink" href="/about">
+                      Sobre Nosotros
+                    </Link>
+                    <Link className="pg_header-mobileLink" href="/customers">
+                      Clientes
+                    </Link>
+                    <Link className="pg_header-mobileLink" href="/downloads">
+                      Descargar
+                    </Link>
+
+                    <div className="pg_header-mobileDivider" />
+
+                    <Link className="pg_header-mobileCta" href="/contact">
+                      Contactanos
+                    </Link>
+                  </nav>
+                </div>
+
+                <label
+                  htmlFor="nav-toggle"
+                  className="pg_header-backdrop"
+                  aria-hidden="true"
+                />
               </div>
             </div>
           </header>
 
-          {/*Cuerpo de la pagina */}
           {children}
 
-          {/*Pie de pagina*/}
-          <footer>
+          <footer className="footer">
             <div className="pg_footer section-footer">
               <div className="pg_footer-information">
                 <div className="pg_footer-information-div">
@@ -106,7 +151,7 @@ export default function RootLayout({
                       alt="Logo"
                       width={130}
                       height={100}
-                    ></Image>
+                    />
                     <h3>Soluciones Integrales InnovaJC</h3>
                   </div>
                   <p>
@@ -117,6 +162,7 @@ export default function RootLayout({
                     administrativo integral y escalable.
                   </p>
                 </div>
+
                 <div className="pg_footer-information-div">
                   <h4>Enlaces Directos</h4>
                   <div className="pg_footer-linkrouter">
@@ -132,28 +178,32 @@ export default function RootLayout({
                     <Link href="/contact">Contactanos</Link>
                   </div>
                 </div>
+
                 <div className="pg_footer-information-div">
                   <h4>Redes Sociales</h4>
                   <div className="socialmedia flex gap-4 text-[#616161] text-4xl">
-                    <a href="https://facebook.com">
+                    <a aria-label="Facebook" href="https://facebook.com">
                       <FaFacebook />
                     </a>
-                    <a href="https://instagram.com">
+                    <a aria-label="Instagram" href="https://instagram.com">
                       <FaInstagram />
                     </a>
-                    <a href="https://Twitter.com">
+                    <a aria-label="Twitter/X" href="https://twitter.com">
                       <FaTwitter />
                     </a>
-                    <a href="https://wa.me/40701423">
+                    <a aria-label="WhatsApp" href="https://wa.me/40701423">
                       <FaWhatsapp />
                     </a>
                   </div>
                 </div>
+
                 <div className="pg_footer-information-div">
                   <FooterSchedule />
                 </div>
               </div>
-              <hr></hr>
+
+              <hr />
+
               <div className="pg_footer-terms">
                 <div className="pg_footer-copyright">
                   <p>

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { slugify } from "@/app/(user)/_utils/helpers";
 
 type ModuleItem = {
@@ -14,10 +15,11 @@ type ModuleItem = {
   image_url: string;
 };
 
-const PER_PAGE = 8;
-
-// Si tu API tiene muchos módulos, puedes subir este número.
 const FETCH_LIMIT = 200;
+
+const DESKTOP_PER_PAGE = 8;
+const MOBILE_PER_PAGE = 4;
+const MOBILE_MAX = 620;
 
 export default function ServicesSection() {
   const [modules, setModules] = useState<ModuleItem[]>([]);
@@ -26,6 +28,33 @@ export default function ServicesSection() {
 
   const [activeCat, setActiveCat] = useState<string>("Todos");
   const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(DESKTOP_PER_PAGE);
+
+  // ✅ Detectar tamaño pantalla
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${MOBILE_MAX}px)`);
+
+    const apply = () =>
+      setPerPage(mq.matches ? MOBILE_PER_PAGE : DESKTOP_PER_PAGE);
+
+    apply();
+    mq.addEventListener("change", apply);
+
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+
+  // ✅ Scroll suave a la sección restando 20px
+  const scrollToSection = () => {
+    const el = document.getElementById("servicios");
+    if (!el) return;
+
+    const y = el.getBoundingClientRect().top + window.scrollY - 20;
+
+    window.scrollTo({
+      top: y,
+      behavior: "smooth",
+    });
+  };
 
   async function fetchAllModules() {
     setLoading(true);
@@ -42,7 +71,7 @@ export default function ServicesSection() {
 
         const res = await fetch(`/api/modules?${qs.toString()}`, {
           method: "GET",
-          cache: "no-store",
+          cache: "force-cache",
         });
 
         const raw = await res.text();
@@ -62,12 +91,9 @@ export default function ServicesSection() {
           : [];
         all.push(...batch);
 
-        // Si ya no vienen más, cortamos
         if (batch.length < FETCH_LIMIT) break;
 
         offset += FETCH_LIMIT;
-
-        // Safety guard por si algo raro devuelve siempre lleno
         if (offset > 5000) break;
       }
 
@@ -84,7 +110,6 @@ export default function ServicesSection() {
     fetchAllModules();
   }, []);
 
-  // Categorías dinámicas según lo que venga en DB
   const categories = useMemo(() => {
     const set = new Set<string>();
     for (const m of modules) {
@@ -99,16 +124,16 @@ export default function ServicesSection() {
     return modules.filter((m) => m.module_category === activeCat);
   }, [modules, activeCat]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
 
   useEffect(() => {
     setPage(1);
-  }, [activeCat]);
+  }, [activeCat, perPage]);
 
   const pageItems = useMemo(() => {
-    const start = (page - 1) * PER_PAGE;
-    return filtered.slice(start, start + PER_PAGE);
-  }, [filtered, page]);
+    const start = (page - 1) * perPage;
+    return filtered.slice(start, start + perPage);
+  }, [filtered, page, perPage]);
 
   const canPrev = page > 1;
   const canNext = page < totalPages;
@@ -132,53 +157,26 @@ export default function ServicesSection() {
           </div>
         </motion.div>
 
-        {/* Estado loading / error */}
         {loading && (
           <div className="pg_main-part4-empty">Cargando módulos…</div>
         )}
+
         {!loading && error && (
           <div className="pg_main-part4-empty">❌ {error}</div>
         )}
 
-        {/* Filtro por categoría */}
-        {!loading && !error && (
-          <div
-            className="pg_main-part4-filters"
-            role="tablist"
-            aria-label="Filtrar módulos"
-          >
-            {categories.map((c) => {
-              const active = c === activeCat;
-              return (
-                <button
-                  key={c}
-                  type="button"
-                  className={`pg_main-part4-filterbtn ${active ? "is-active" : ""}`}
-                  onClick={() => setActiveCat(c)}
-                  role="tab"
-                  aria-selected={active}
-                >
-                  {c}
-                </button>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Grid */}
         {!loading && !error && (
           <div className="pg_main-part4-grid">
-            {pageItems.map((item) => (
+            {pageItems.map((item, idx) => (
               <article key={item.id} className="pg_main-part4-card">
                 <div className="pg_main-part4-media" aria-hidden>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <Image
                     src={item.image_url}
                     alt=""
-                    width={100}
-                    height={100}
+                    fill
                     className="pg_main-part4-img"
-                    loading="lazy"
+                    priority={idx < 2 && page === 1}
+                    sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 320px"
                   />
                 </div>
 
@@ -202,13 +200,15 @@ export default function ServicesSection() {
           </div>
         )}
 
-        {/* Paginación */}
-        {!loading && !error && filtered.length > PER_PAGE && (
+        {!loading && !error && filtered.length > perPage && (
           <div className="pg_main-part4-pagination" aria-label="Paginación">
             <button
               type="button"
               className="pg_main-part4-pagebtn"
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              onClick={() => {
+                setPage((p) => Math.max(1, p - 1));
+                scrollToSection();
+              }}
               disabled={!canPrev}
             >
               ← Anterior
@@ -221,7 +221,10 @@ export default function ServicesSection() {
             <button
               type="button"
               className="pg_main-part4-pagebtn"
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              onClick={() => {
+                setPage((p) => Math.min(totalPages, p + 1));
+                scrollToSection();
+              }}
               disabled={!canNext}
             >
               Siguiente →
@@ -229,7 +232,6 @@ export default function ServicesSection() {
           </div>
         )}
 
-        {/* Estado vacío */}
         {!loading && !error && filtered.length === 0 && (
           <div className="pg_main-part4-empty">
             No hay módulos para esta categoría.

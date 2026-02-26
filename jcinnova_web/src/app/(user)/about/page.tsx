@@ -128,7 +128,7 @@ const About = () => {
                     className="pg_about_servicesFeature-icon"
                     aria-hidden="true"
                   >
-                    <Image src={s.icon} alt={s.title} width={55} height={55} />
+                    <Image src={s.icon} alt={s.title} width={45} height={45} />
                   </div>
                   <div className="pg_about_servicesFeature-cardBody">
                     <h3 className="pg_about_servicesFeature-cardTitle">

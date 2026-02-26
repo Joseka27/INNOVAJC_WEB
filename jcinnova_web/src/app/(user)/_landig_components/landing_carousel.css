@@ -67,12 +67,12 @@
 }
 
 .fadeLeft {
-  left: 0;
+  left: -2;
   background: linear-gradient(to right, #f7faff, transparent);
 }
 
 .fadeRight {
-  right: 0;
+  right: -2;
   background: linear-gradient(to left, #f7faff, transparent);
 }
 

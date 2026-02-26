@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
+import "./user_globals.css";
 import { motion } from "framer-motion";
 import MainCarousel from "@/app/(user)/_landig_components/landing_carousel";
 import ServicesSection from "@/app/(user)/_landig_components/landing_serviceModules";
@@ -38,7 +39,7 @@ const Home = () => {
                 viewport={{ once: true }}
               >
                 <Image
-                  className="presentation_section1"
+                  className="presentation_section2"
                   src="/images/LogoInnova.png"
                   alt="Logo"
                   width={650}

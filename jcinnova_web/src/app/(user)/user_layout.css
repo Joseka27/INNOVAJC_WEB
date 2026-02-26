@@ -1,0 +1,688 @@
+/* =========================
+   TOKENS (PRO)
+========================= */
+:root {
+  --page: #f6f7fb;
+  --surface: #ffffff;
+  --surface2: #f1f4f9;
+
+  --text: #0f172a;
+  --muted: #475569;
+
+  --brand: #052b69;
+  --brand2: #176aad;
+
+  --border: rgba(15, 23, 42, 0.12);
+  --shadow: 0 12px 34px rgba(2, 6, 23, 0.14);
+
+  --radius: 16px;
+  --radius2: 22px;
+
+  --container: 1180px;
+  --px: clamp(1rem, 3vw, 3.5rem);
+}
+
+/* =========================
+   RESET / GLOBAL
+========================= */
+* {
+  box-sizing: border-box;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+.text-center {
+  text-align: center;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--page);
+}
+
+/* Anchor offset (para sticky header) */
+:root {
+  --header-h: 80px;
+} /* poné el alto real de tu header */
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--header-h);
+}
+
+.UserLayout {
+  overflow: visible;
+}
+
+hr {
+  width: 100%;
+  border: none;
+  border-top: 1px solid rgba(15, 23, 42, 0.1);
+  margin: 1rem 0;
+}
+
+/* =========================================================
+   HEADER (MISMAS CLASES + nuevas clases para menú móvil)
+========================================================= */
+
+/* Header general options (de tu header original, pero pro) */
+header {
+  background-color: var(--surface);
+  color: #616161;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 6px 18px rgba(2, 6, 23, 0.08);
+
+  /* clave para que el dropdown no se corte */
+  overflow: visible !important;
+}
+
+/* antes tenías padding fijo enorme (15rem). En móvil eso rompe todo */
+.section-header {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--px);
+}
+
+/* wrapper */
+.pg_header {
+  height: 72px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  overflow: visible !important;
+  padding-top: 2.8rem;
+  padding-bottom: 2.8rem;
+}
+
+.pg_header-principal {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+/* Logo */
+.pg_header_logo {
+  max-height: 80px;
+  width: auto;
+  display: block;
+}
+
+/* Desktop nav wrapper (tu clase, mejorada) */
+.pg_header-linkrouters-links {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 6px;
+  border-radius: 999px;
+  margin-left: 1.25rem; /* en tu CSS era 4rem, demasiado */
+}
+
+/* Each link container */
+.pg_header-linkrouter {
+  display: flex;
+  width: fit-content;
+}
+
+/* Links style (tu regla, pero con hover pro) */
+.pg_header-linkrouters-links a {
+  position: relative;
+  font-size: 17px;
+  font-weight: 900;
+  padding: 0.62rem 0.95rem;
+  color: var(--brand);
+  border-radius: 999px;
+  white-space: nowrap;
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.pg_header-linkrouters-links a:hover {
+  background: rgba(5, 43, 105, 0.1);
+  transform: translateY(-1px);
+}
+
+.pg_header-linkrouters-links a::after {
+  content: "";
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 8px;
+  height: 2px;
+  border-radius: 999px;
+
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.18s ease;
+}
+.pg_header-linkrouters-links a:hover::after {
+  transform: scaleX(1);
+}
+
+/* Right side: CTA + burger */
+.pg_header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  position: relative;
+  overflow: visible !important;
+}
+
+/* CTA (tu clase original) */
+.pg_header-contactbutton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 1.1rem;
+  border-radius: 999px;
+  font-weight: 950;
+  color: #fff;
+
+  background: linear-gradient(135deg, #176aad, #0b5ea8, #052b69);
+  box-shadow: 0 10px 22px rgba(23, 106, 173, 0.22);
+  transition:
+    transform 0.15s ease,
+    filter 0.15s ease;
+  white-space: nowrap;
+}
+.pg_header-contactbutton:hover {
+  transform: translateY(-1px);
+  filter: brightness(0.98);
+}
+
+/* =========================
+   MOBILE MENU (CSS-only)
+   (nuevas clases)
+========================= */
+.pg_header-navToggle {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Burger */
+.pg_header-burger {
+  display: none;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: var(--surface);
+  box-shadow: 0 2px 0 rgba(2, 6, 23, 0.05);
+  cursor: pointer;
+
+  position: relative;
+  flex: 0 0 46px;
+}
+
+.pg_header-burger:hover {
+  background: #f7f9fd;
+}
+
+/* Bars: centradas (para que NO salga “a la izquierda” ni cortado) */
+.pg_header-burger span {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+
+  width: 20px;
+  height: 2px;
+  background: var(--brand);
+  border-radius: 999px;
+  display: block;
+
+  transform: translate(-50%, -50%);
+  transform-origin: center;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease,
+    width 0.2s ease;
+}
+
+.pg_header-burger span:nth-child(1) {
+  transform: translate(-50%, calc(-50% - 6px));
+}
+.pg_header-burger span:nth-child(2) {
+  transform: translate(-50%, -50%);
+}
+.pg_header-burger span:nth-child(3) {
+  transform: translate(-50%, calc(-50% + 6px));
+}
+
+/* Panel */
+.pg_header-mobilePanel {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+
+  width: min(420px, calc(100vw - 28px));
+  background: var(--surface);
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  border-radius: var(--radius2);
+  box-shadow: var(--shadow);
+
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-10px) scale(0.98);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+
+  overflow: hidden;
+  z-index: 1200;
+}
+
+.pg_header-mobileNav {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.pg_header-mobileLink {
+  padding: 0.95rem 1rem;
+  border-radius: 16px;
+  font-weight: 950;
+  color: var(--brand);
+
+  background: #f3f6fd;
+  border: 1px solid rgba(5, 43, 105, 0.1);
+  transition:
+    transform 0.15s ease,
+    background-color 0.15s ease;
+}
+.pg_header-mobileLink:hover {
+  background: #eaf1ff;
+  transform: translateY(-1px);
+}
+
+.pg_header-mobileDivider {
+  height: 1px;
+  background: rgba(15, 23, 42, 0.1);
+  margin: 0.4rem 0.2rem;
+}
+
+.pg_header-mobileCta {
+  padding: 0.95rem 1rem;
+  border-radius: 16px;
+  font-weight: 950;
+  color: #fff;
+  background: linear-gradient(135deg, #176aad, #052b69);
+  text-align: center;
+}
+
+/* Backdrop */
+.pg_header-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.36);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 1100;
+}
+
+/* Open state */
+.pg_header-navToggle:checked ~ .pg_header-burger span:nth-child(1) {
+  transform: translate(-50%, -50%) rotate(45deg);
+  width: 14px;
+}
+.pg_header-navToggle:checked ~ .pg_header-burger span:nth-child(2) {
+  opacity: 0;
+  transform: translate(-50%, -50%) scaleX(0.6);
+}
+.pg_header-navToggle:checked ~ .pg_header-burger span:nth-child(3) {
+  transform: translate(-50%, -50%) rotate(-45deg);
+  width: 14px;
+}
+
+.pg_header-navToggle:checked ~ .pg_header-mobilePanel {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+.pg_header-navToggle:checked ~ .pg_header-backdrop {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* =========================================================
+   FOOTER (MISMAS CLASES, diseño pro estable)
+========================================================= */
+footer,
+.footer {
+  background-color: #f8f8f8;
+  color: #616161;
+}
+
+/* footer padding: antes era fijo 4rem */
+.section-footer {
+  width: 100%;
+  max-width: 1700px; /* más amplio */
+  margin: 0 auto;
+  padding: 3rem clamp(2rem, 5vw, 6rem);
+}
+
+/* wrapper */
+.pg_footer {
+  display: flex;
+  flex-direction: column;
+}
+
+/* TOP: 4 columnas (grid pro) */
+.pg_footer-information {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 2.5fr 1.2fr 1.2fr 1.5fr;
+  gap: clamp(2rem, 3vw, 4rem);
+  align-items: start;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+/* column wrapper */
+.pg_footer-information-div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  min-width: 0;
+}
+
+.pg_footer-information-div h4 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #052b69;
+  margin: 0;
+}
+
+/* Column 1: brand */
+.pg_footer-logotext {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.pg_footer-logotext h3 {
+  font-size: 2rem;
+  color: #052b69;
+  font-weight: 900;
+  margin: 0;
+}
+
+.pg_footer-information-div:first-child p {
+  font-size: 1rem;
+  line-height: 1.5;
+  text-align: justify;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Column 2: links */
+.pg_footer-linkrouter {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.pg_footer-information-div:nth-child(2) a {
+  display: inline-flex;
+  justify-content: flex-start;
+  font-size: 1.05rem;
+  font-weight: 800;
+  transition: color 0.2s ease;
+}
+
+.pg_footer-information-div:nth-child(2) a:hover {
+  color: #052b69;
+  text-decoration: underline;
+}
+
+/* Column 3: social */
+.socialmedia {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  font-size: 1.8rem;
+}
+
+.socialmedia a {
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
+}
+
+.socialmedia a:hover {
+  color: #052b69;
+  transform: scale(1.12);
+}
+
+/* Column 4: schedule */
+.schedule {
+  width: 100%;
+  max-width: 360px;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.schedule h4 {
+  margin: 0 0 0.4rem 0;
+}
+
+.schedule-row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+
+  padding: 0.45rem 0.6rem;
+  border-radius: 0.75rem;
+  min-height: 36px;
+}
+
+.schedule-row span:first-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.schedule-row span:last-child {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.schedule-row.today {
+  font-weight: 900;
+  color: #052b69;
+  background: rgba(5, 43, 105, 0.06);
+  border: 1px solid rgba(5, 43, 105, 0.12);
+}
+
+.schedule-row.today span {
+  background: linear-gradient(90deg, #008cff, #2d9bf5, #1976d2);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* BOTTOM: terms */
+.pg_footer-terms {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.pg_footer-copyright p {
+  font-size: 13px;
+  line-height: 1.35;
+  font-weight: 700;
+  margin: 0;
+}
+
+.pg_footer-termslink {
+  display: flex;
+  flex-direction: row;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.pg_footer-termslink p {
+  font-size: 13px;
+  line-height: 1.35;
+  font-weight: 700;
+  margin: 0;
+  cursor: pointer;
+}
+
+.pg_footer-termslink p:hover {
+  color: #052b69;
+  text-decoration: underline;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+/* ---- Header mobile ---- */
+@media (max-width: 980px) {
+  .pg_header {
+    height: 70px;
+  }
+
+  .pg_header-linkrouters-links {
+    display: none;
+  }
+
+  .pg_header-burger {
+    display: inline-block;
+  }
+
+  .pg_header-contactbutton {
+    display: none !important;
+  }
+}
+
+/* ---- Footer 1200 ---- */
+@media (max-width: 1200px) {
+  .pg_footer-information {
+    grid-template-columns: 2fr 1fr 1fr;
+  }
+
+  .pg_footer-information > :nth-child(4) {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ---- Footer 990 ---- */
+@media (max-width: 990px) {
+  .pg_footer-information {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .pg_footer-logotext h3 {
+    font-size: 1.5rem;
+  }
+
+  .pg_footer-information-div:first-child p {
+    font-size: 0.95rem;
+    text-align: left;
+  }
+
+  .pg_footer-information > :nth-child(4) {
+    grid-column: auto;
+  }
+}
+
+/* ---- Footer 650 ---- */
+@media (max-width: 650px) {
+  .pg_footer-information {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 1.5rem;
+  }
+
+  .pg_footer-information-div {
+    align-items: center;
+  }
+
+  .pg_footer-logotext {
+    justify-content: center;
+    flex-wrap: wrap;
+    text-align: center;
+  }
+
+  .pg_footer-information-div:first-child p {
+    text-align: center;
+  }
+
+  .schedule {
+    max-width: 420px;
+  }
+
+  .pg_footer-terms {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+/* =========================
+   FIX: Schedule ordenado en pantallas pequeñas
+========================= */
+
+/* Base: asegura alineación limpia incluso en desktop/mediano */
+.schedule-row {
+  display: grid;
+  grid-template-columns: minmax(110px, 1fr) auto; /* día siempre tiene mínimo */
+  align-items: center;
+  column-gap: 0.75rem;
+}
+
+.schedule-row span:first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.schedule-row span:last-child {
+  white-space: nowrap; /* en grande se mantiene una línea */
+  text-align: right;
+}
+
+/* En pantallas realmente pequeñas: se apila para que no se “desacomode” */
+@media (max-width: 490px) {
+  .schedule-row {
+    grid-template-columns: 1fr; /* 1 columna */
+    row-gap: 0.15rem;
+    justify-items: start;
+    align-items: start;
+    padding: 0.55rem 0.75rem;
+  }
+
+  .schedule-row span:first-child {
+    white-space: nowrap; /* día en una línea */
+  }
+
+  .schedule-row span:last-child {
+    white-space: normal; /* horas pueden partirse */
+    text-align: left; /* se ve ordenado en 2 líneas */
+    line-height: 1.25;
+    opacity: 0.9;
+  }
+}

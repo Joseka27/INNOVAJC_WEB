@@ -1,55 +1,76 @@
 @import "tailwindcss";
 
-/*page general options*/
+/* =========================
+   TOKENS / GLOBAL
+========================= */
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* layout */
+  --side-pad: clamp(1rem, 3.2vw, 3.25rem);
+  --content-max: 1200px;
 }
 
-/*Body general options*/
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-weight: 500;
 }
 
+/* Anchor offset (para sticky header) */
+:root {
+  --header-h: 80px;
+} /* poné el alto real de tu header */
+
 html {
   scroll-behavior: smooth;
-}
-#servicios {
-  scroll-margin-top: 60px; /* ajusta al alto de tu header */
+  scroll-padding-top: var(--header-h);
 }
 
-/*Footer general display*/
+/* si tenías esto, borrarlo o dejarlo en 0 */
+/* #servicios { scroll-margin-top: 0; } */
+
+/* Contenedor general */
 .pg_main {
   display: flex;
   flex-direction: column;
 }
 
-/*=================First section (Presentation)==============*/
+/* =========================================================
+   SECTION 1 (Presentation)
+========================================================= */
 .pg_main-presentation {
   width: 100%;
-  height: 100%;
+  min-height: auto;
   display: flex;
   justify-content: center;
   align-items: center;
+
   margin: 0;
-  padding: 0;
+  padding: 8rem 0 8rem 0;
+
   background: url("/images/mainpage/MainPagePresentation.png") no-repeat
     center / cover;
 }
 
-/*First section content 1*/
 .pg_main-presentation-sections {
+  width: min(var(--content-max), 100%);
+  padding: 0;
+
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
+
+  gap: 4rem;
 }
 
-/*First section content*/
 .pg_main-presentation-section1 {
-  margin-left: 8rem;
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -96,6 +117,7 @@ html {
   padding: 0.8rem 1rem;
   border-radius: 2rem;
   cursor: pointer;
+  text-decoration: none;
 
   background:
     linear-gradient(#092044, #092044) padding-box,
@@ -117,26 +139,25 @@ html {
     0 0 16px #90caf9;
 }
 
-/*First section content 2*/
 .pg_main-presentation-section2 {
   display: flex;
   flex-direction: row;
 }
 
-.presentation_section1 {
+.presentation_section2 {
   filter: drop-shadow(0 12px 50px rgb(255, 255, 255));
-  margin: 7rem 10rem 10rem 10rem;
+  margin: 0;
+  max-width: 520px;
+  width: 100%;
+  height: auto;
 }
 
-/*================= 2 section (Why us) ==============*/
-
-/* =========================
-   Section 2 - Problema + Solución (NO grid de cards, NO steps)
-   ========================= */
-
+/* =========================================================
+   SECTION 2 (Why us)
+========================================================= */
 .pg_main-presentation-part2 {
   width: 100%;
-  padding: 5.2rem 1.25rem;
+  padding: 5.2rem var(--side-pad);
 
   background:
     radial-gradient(
@@ -148,11 +169,10 @@ html {
 }
 
 .pg_main-part2-inner {
-  width: min(1200px, 100%);
+  width: min(var(--content-max), 100%);
   margin: 0 auto;
 }
 
-/* Head */
 .pg_main-part2-head {
   text-align: center;
   max-width: 66rem;
@@ -199,7 +219,6 @@ html {
   color: rgba(5, 43, 105, 0.78);
 }
 
-/* Compare layout */
 .pg_main-part2-compare {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -207,10 +226,9 @@ html {
   align-items: start;
 }
 
-/* Blocks */
 .pg_main-part2-block {
   border-radius: 22px;
-  padding: 1.25rem 1.25rem;
+  padding: 1.25rem;
 
   background: rgba(255, 255, 255, 0.92);
   border: 1px solid rgba(5, 43, 105, 0.1);
@@ -224,13 +242,13 @@ html {
   font-size: 1.2rem;
 }
 
-/* Badges */
 .pg_main-part2-badge {
   display: inline-flex;
   align-items: center;
   height: 2rem;
   padding: 0 0.85rem;
   border-radius: 999px;
+
   font-weight: 900;
   font-size: 0.85rem;
   letter-spacing: 0.02em;
@@ -248,12 +266,10 @@ html {
   border: 1px solid rgba(0, 140, 255, 0.18);
 }
 
-/* List */
 .pg_main-part2-list {
   margin: 1rem 0 0;
   padding: 0;
   list-style: none;
-
   display: grid;
   gap: 0.75rem;
 }
@@ -286,7 +302,6 @@ html {
   box-shadow: 0 0 0 4px rgba(0, 140, 255, 0.1);
 }
 
-/* Mini CTA */
 .pg_main-part2-miniCta {
   margin-top: 1.1rem;
   display: flex;
@@ -338,7 +353,6 @@ html {
   border-color: rgba(0, 140, 255, 0.22);
 }
 
-/* Outcomes bar */
 .pg_main-part2-outcomes {
   margin-top: 1.2rem;
 
@@ -375,44 +389,12 @@ html {
   justify-content: center;
 }
 
-/* Responsive */
-@media (max-width: 980px) {
-  .pg_main-part2-compare {
-    grid-template-columns: 1fr;
-  }
-
-  .pg_main-part2-miniCta a {
-    width: 100%;
-  }
-
-  .pg_main-part2-outcomes {
-    justify-content: center;
-  }
-
-  .pg_main-part2-outcome {
-    min-width: 140px;
-  }
-}
-
-@media (max-width: 620px) {
-  .pg_main-presentation-part2 {
-    padding: 4.4rem 1rem;
-  }
-}
-
-/*================= 3 section (services) ==============*/
-
-/* =========================
-   Section 3 (White) - Enterprise complement (no redundante con Section 2)
-   ========================= */
-
-/* =========================
-   Section 3 - Split + Steps (white, NO grid)
-   ========================= */
-
+/* =========================================================
+   SECTION 3 (Steps)
+========================================================= */
 .pg_main-presentation-part3 {
   width: 100%;
-  padding: 5.2rem 1.25rem;
+  padding: 5.2rem var(--side-pad);
 
   background:
     radial-gradient(circle at 20% 0%, rgba(0, 140, 255, 0.1), transparent 42%),
@@ -421,7 +403,7 @@ html {
 }
 
 .pg_main-part3-inner {
-  width: min(1200px, 100%);
+  width: min(var(--content-max), 100%);
   margin: 0 auto;
 }
 
@@ -435,7 +417,7 @@ html {
 /* Left */
 .pg_main-part3-left {
   position: sticky;
-  top: 8rem; /* si tienes header fijo, ajusta */
+  top: 8rem;
   align-self: start;
 }
 
@@ -558,12 +540,17 @@ html {
   gap: 0.9rem;
   align-items: start;
 
-  padding: 1rem 1rem;
+  padding: 1rem;
   border-radius: 18px;
 
   background: rgba(255, 255, 255, 0.92);
   border: 1px solid rgba(5, 43, 105, 0.1);
   box-shadow: 0 14px 45px rgba(0, 0, 0, 0.06);
+
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
 }
 
 .pg_main-part3-step:hover {
@@ -622,25 +609,45 @@ html {
   transform: scale(1);
   opacity: 1;
 }
-.pg_main-part3-step:hover .pg_main-part3-stepIcon {
-  border-color: rgba(0, 140, 255, 0.45);
-}
 
+/* ===== Icon swap ===== */
 .pg_main-part3-iconSwap {
   position: relative;
-  z-index: 1;
+  width: 35px;
+  height: 35px;
 }
+
+.pg_main-part3-iconImg {
+  position: absolute;
+  inset: 0;
+  width: 35px;
+  height: 35px;
+  object-fit: contain;
+
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease;
+}
+
+.pg_main-part3-iconImg.icon-hover {
+  opacity: 0;
+  transform: scale(0.92);
+}
+
+.pg_main-part3-step:hover .pg_main-part3-iconImg.icon-default {
+  opacity: 0;
+  transform: scale(0.92);
+}
+
+.pg_main-part3-step:hover .pg_main-part3-iconImg.icon-hover {
+  opacity: 1;
+  transform: scale(1);
+}
+
 .pg_main-part3-stepTop {
   display: flex;
   align-items: center;
   gap: 0.7rem;
-}
-
-.pg_main-part3-stepNum {
-  font-weight: 900;
-  font-size: 0.9rem;
-  letter-spacing: 0.08em;
-  color: rgba(5, 43, 105, 0.55);
 }
 
 .pg_main-part3-stepBody h3 {
@@ -659,7 +666,7 @@ html {
   font-size: 0.95rem;
 }
 
-/* Stats bar (horizontal, no grid de cards) */
+/* Stats bar */
 .pg_main-part3-statsBar {
   display: flex;
   gap: 0.7rem;
@@ -690,88 +697,32 @@ html {
   font-size: 0.92rem;
 }
 
-/* Responsive */
-@media (max-width: 980px) {
-  .pg_main-part3-split {
-    grid-template-columns: 1fr;
-  }
-
-  .pg_main-part3-left {
-    position: static;
-  }
-}
-
-@media (max-width: 620px) {
-  .pg_main-presentation-part3 {
-    padding: 4.4rem 1rem;
-  }
-
-  .pg_main-part3-btnPrimary,
-  .pg_main-part3-btnGhost {
-    width: 100%;
-  }
-
-  .pg_main-part3-step {
-    grid-template-columns: 22px 52px 1fr;
-  }
-}
-/* ===== Icon swap (default -> hover) ===== */
-.pg_main-part3-iconSwap {
-  position: relative;
-  width: 35px;
-  height: 35px;
-}
-
-.pg_main-part3-iconImg {
-  position: absolute;
-  inset: 0;
-  width: 35px;
-  height: 35px;
-  object-fit: contain;
-
-  transition:
-    opacity 0.22s ease,
-    transform 0.22s ease;
-}
-
-.pg_main-part3-iconImg.icon-hover {
-  opacity: 0;
-  transform: scale(0.92);
-}
-
-/* swap on hover del step */
-.pg_main-part3-step:hover .pg_main-part3-iconImg.icon-default {
-  opacity: 0;
-  transform: scale(0.92);
-}
-
-.pg_main-part3-step:hover .pg_main-part3-iconImg.icon-hover {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/*================= 4 section (services) ==============*/
-
+/* =========================================================
+   SECTION 4 (Services)
+========================================================= */
 .pg_main-presentation-part4 {
   width: 100%;
-  padding: 5rem 1.25rem;
+  padding: 5rem var(--side-pad);
   background: linear-gradient(180deg, #041a3b 0%, #020617 100%);
   min-height: 600px;
 }
 
 .pg_main-part4-sections {
-  width: min(1200px, 100%);
+  width: min(var(--content-max), 100%);
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 2rem;
 }
+
 .pg_main-part4-head {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  text-align: center;
 }
+
 .pg_main-part4-head h2 {
   margin: 0;
   color: #ffffff;
@@ -786,23 +737,13 @@ html {
   color: rgba(255, 255, 255, 0.75);
   font-weight: 600;
   line-height: 1.5rem;
+  text-align: center;
 }
 
 .pg_main-part4-grid {
   display: grid;
   gap: 1rem;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-@media (max-width: 980px) {
-  .pg_main-part4-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-@media (max-width: 620px) {
-  .pg_main-part4-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 .pg_main-part4-card {
@@ -836,6 +777,7 @@ html {
 }
 
 .pg_main-part4-media {
+  position: relative;
   width: 100%;
   border-radius: 14px;
   overflow: hidden;
@@ -845,9 +787,6 @@ html {
 }
 
 .pg_main-part4-img {
-  width: 100%;
-  height: 100%;
-  display: block;
   object-fit: cover;
 }
 
@@ -899,23 +838,21 @@ html {
   color: #ffffff6b;
   margin-right: auto;
   transition:
-    transform 1s ease,
-    box-shadow 1s ease,
-    border-color 1s ease;
+    color 0.2s ease,
+    text-decoration-color 0.2s ease;
 }
 
 .pg_main-part4-cardmoreinfo:hover {
   color: #ffffff;
   text-decoration: underline;
   cursor: pointer;
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
 }
 
 .pg_main-part4-filters {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0; /* importante para que el separador se vea limpio */
+  gap: 0;
   border-bottom: 1px solid rgba(219, 219, 219, 0.12);
 }
 
@@ -1016,14 +953,18 @@ html {
   font-weight: 700;
 }
 
-/*================= 5 section (Join Us) ==============*/
+/* =========================================================
+   SECTION 5 (Join Us)
+========================================================= */
 .pg_main-presentation-part5 {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 5.5rem 0;
+
+  padding: 5.5rem var(--side-pad);
   gap: 2rem;
+
   background:
     radial-gradient(
       circle at 50% -30%,
@@ -1034,15 +975,17 @@ html {
 }
 
 .section5-carousel {
-  width: 80vw;
+  width: min(var(--content-max), 100%);
   max-width: none;
 }
 
 .part5-text {
+  width: min(900px, 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.8rem;
+  text-align: center;
 }
 
 .pg_main-part5-title {
@@ -1067,7 +1010,9 @@ html {
   line-height: 1.55rem;
   font-size: clamp(1.05rem, 1.6vw, 1.2rem);
   color: rgba(5, 43, 105, 0.78);
+  text-align: center;
 }
+
 .section5-button a {
   display: inline-flex;
   align-items: center;
@@ -1101,18 +1046,19 @@ html {
   box-shadow: 0 16px 45px rgba(5, 43, 105, 0.18);
 }
 
-/* Si tu MainCarousel no tiene wrapper propio,
-   esto ayuda a que no quede “pegado” y se vea enmarcado sin glass. */
 .pg_main-presentation-part5
   :where(.marquee, .carousel, .mainCarousel, .MainCarousel) {
   width: 100%;
 }
-/*================= 6 section (Join Us) ==============*/
+
+/* =========================================================
+   SECTION 6 (Contact Us)
+========================================================= */
 .pg_main-presentation-part6 {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 0 10rem 0;
+  padding: 0 var(--side-pad) 10rem var(--side-pad);
   background-color: #f8fcff;
 }
 
@@ -1134,6 +1080,7 @@ html {
   font-weight: 800;
   line-height: 3.5rem;
 }
+
 .section6-button {
   display: flex;
   justify-content: center;
@@ -1158,7 +1105,9 @@ html {
 
   background: #ffffff;
   border: 0.2rem solid #052b69;
+
   animation: float 2s ease-in-out infinite;
+
   transition:
     transform 0.15s ease,
     box-shadow 0.15s ease,
@@ -1205,29 +1154,241 @@ html {
   color: transparent;
 }
 
-/* Responsive */
+/* =========================================================
+   RESPONSIVE (ÚNICO)
+========================================================= */
+
+/* <= 980px */
 @media (max-width: 980px) {
+  /* Section 1 */
+  .pg_main-presentation-sections {
+    gap: 1.5rem;
+    padding: 0 var(--side-pad);
+  }
+
+  .pg_main-presentation-section1 {
+    margin-left: 0;
+    gap: 1.4rem;
+  }
+
+  .presentation_section1 {
+    margin: 5rem 0 6rem 0;
+    max-width: 520px;
+    width: 100%;
+    height: auto;
+  }
+
+  .section1-button a {
+    background:
+      linear-gradient(#13224c, #243258) padding-box,
+      linear-gradient(to right, #54b2ff, #2d9bf5, #298ce2, #1976d2, #1565c0)
+        border-box;
+  }
+
+  /* Section 2: 2 columnas -> 1 */
+
+  /* outcomes 1 línea */
+  .pg_main-part2-outcomes {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .pg_main-part2-outcome {
+    flex: 1 0 0;
+    min-width: 0;
+  }
+
+  /* Section 3 */
+  .pg_main-part3-split {
+    grid-template-columns: 1fr;
+  }
+  .pg_main-part3-left {
+    position: static;
+  }
+
+  /* stats 1 línea */
+  .pg_main-part3-statsBar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .pg_main-part3-stat {
+    flex: 1 0 0;
+    min-width: 0;
+  }
+
+  /* Part4 grid */
   .pg_main-part4-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  /* Section 6 */
+  .pg_main-presentation-part6 {
+    padding-bottom: 7rem;
+  }
 }
 
+/* <= 620px */
 @media (max-width: 620px) {
-  .pg_main-presentation-part4 {
-    padding: 4rem 1rem;
+  /* Section 1 */
+  .pg_main-presentation {
+    padding: 4rem 0 4rem 0;
   }
 
-  .pg_main-part4-grid {
+  .pg_main-presentation-sections {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4.25rem var(--side-pad) 4rem var(--side-pad);
+    gap: 1.25rem;
+    text-align: center;
+  }
+
+  .pg_main-presentation-section2 {
+    display: none; /* tu regla: ocultar imagen */
+  }
+
+  .pg_main-presentation-section1 {
+    width: 100%;
+    max-width: 640px;
+    margin-left: 0;
+    align-items: center;
+    gap: 1.1rem;
+  }
+
+  .pg_main-presentation-section1 h1 {
+    max-width: 26rem;
+    font-size: clamp(1.55rem, 5.4vw, 2.15rem);
+    line-height: 1.15;
+    letter-spacing: 0.01em;
+  }
+
+  .section1-button a {
+    background:
+      linear-gradient(#3e5379, #28354e) padding-box,
+      linear-gradient(to right, #54b2ff, #2d9bf5, #298ce2, #1976d2, #1565c0)
+        border-box;
+  }
+
+  .section1-button {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .section1-button a {
+    width: min(220px, 100%);
+    text-align: center;
+    font-size: 1.3rem;
+    padding: 0.7rem 1rem;
+  }
+
+  /* Section 2 */
+  .pg_main-part2-compare {
     grid-template-columns: 1fr;
   }
 
-  .pg_main-part4-card {
-    border-radius: 16px;
+  .pg_main-presentation-part2 {
+    padding: 4.3rem var(--side-pad);
+  }
+
+  .pg_main-part2-miniCta {
+    display: none;
+  }
+  .pg_main-part2-outcomes {
+    align-items: left;
+    text-align: left;
+    justify-content: left;
+  }
+
+  .pg_main-part2-outcomeNum {
+    height: 30px;
+    width: 30px;
+  }
+
+  /* Section 3: ocultar rail + icon, solo texto */
+
+  .pg_main-part3-stepRail {
+    display: none !important;
+  }
+
+  .pg_main-part3-step {
+    display: grid; /* por si acaso */
+    grid-template-columns: 54px 1fr; /* icono + texto */
+    align-items: center;
+    padding: 0.95rem;
+    gap: 0.75rem;
+  }
+
+  .pg_main-part3-statsBar {
+    display: none;
+  }
+
+  /* Section 4: filtros como pills scrolleables */
+  .pg_main-part4-filters {
+    justify-content: flex-start;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+
+    gap: 0.5rem;
+    padding: 0.5rem 0.5rem 0.75rem;
+
+    scroll-snap-type: x mandatory;
   }
 
   .pg_main-part4-filterbtn {
-    width: 100%;
-    text-align: center;
-    justify-content: center;
+    flex: 0 0 auto;
+    padding: 0.75rem 1rem;
+    border-radius: 999px;
+
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+
+    scroll-snap-align: start;
+  }
+
+  .pg_main-part4-filterbtn:not(:last-child)::after {
+    display: none;
+  }
+
+  /* Grid 2 columnas en móvil */
+  .pg_main-part4-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem;
+  }
+
+  /* Section 5 */
+  .pg_main-presentation-part5 {
+    padding: 4.3rem var(--side-pad);
+  }
+
+  .section5-button a {
+    width: min(340px, 100%);
+  }
+
+  /* Section 6 */
+  .pg_main-presentation-part6 {
+    padding-bottom: 5.5rem;
+  }
+
+  .pg_main-joinus h1 {
+    font-size: 2.4rem;
+    line-height: 2.25rem;
+  }
+
+  .section6-button a {
+    width: min(340px, 100%);
+  }
+}
+
+/* <= 420px */
+@media (max-width: 420px) {
+  .pg_main-presentation-section1 h1 {
+    max-width: 24rem;
+  }
+
+  /* aquí sí bajamos a 1 columna para no aplastar cards */
+  .pg_main-part4-grid {
+    grid-template-columns: 1fr;
   }
 }

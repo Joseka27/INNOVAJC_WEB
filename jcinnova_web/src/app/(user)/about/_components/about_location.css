@@ -156,3 +156,74 @@
     align-items: center;
   }
 }
+
+@media (max-width: 620px) {
+  .locmap {
+    padding: 3.25rem 1rem; /* menos aire y menos “pegado” */
+  }
+
+  .locmap_inner {
+    gap: 1.25rem;
+    text-align: left; /* en móvil, centrado suele verse “raro” en direcciones */
+  }
+
+  .locmap_left {
+    align-items: flex-start;
+    gap: 0.9rem;
+  }
+
+  .ubication_section {
+    gap: 0.55rem;
+  }
+
+  .locmap_icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .locmap_title {
+    font-size: clamp(1.55rem, 6vw, 2.05rem);
+    line-height: 1.08;
+  }
+
+  .locmap_block {
+    gap: 0.35rem;
+  }
+
+  .locmap_label {
+    font-size: 0.9rem;
+  }
+
+  .locmap_addr {
+    font-size: 0.95rem;
+    line-height: 1.35;
+  }
+
+  .locmap_actions {
+    width: 100%;
+    margin-top: 0.25rem;
+  }
+
+  .locmap_btn {
+    width: 100%; /* CTA full width */
+    padding: 0.9rem 1rem; /* más cómodo en dedo */
+    border-radius: 14px;
+  }
+
+  .locmap_right {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .locmap_mapCard {
+    width: 100%; /* mata el 700px */
+    height: auto; /* no fuerces 450px */
+    aspect-ratio: 16 / 10; /* tamaño “mobile-friendly” */
+    border-radius: 16px;
+  }
+
+  /* fallback también respeta el aspect ratio */
+  .locmap_placeholder {
+    height: 100%;
+  }
+}
