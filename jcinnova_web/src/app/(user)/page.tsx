@@ -4,6 +4,7 @@ import Image from "next/image";
 import "./user_globals.css";
 import { motion } from "framer-motion";
 import MainCarousel from "@/app/(user)/_landig_components/landing_carousel";
+import StepsInfiniteCarouselMobile from "@/app/(user)/_landig_components/Steps620";
 import ServicesSection from "@/app/(user)/_landig_components/landing_serviceModules";
 import {
   problemItems,
@@ -238,6 +239,8 @@ const Home = () => {
                   </div>
                 </div>
               </motion.div>
+
+              <StepsInfiniteCarouselMobile seceSteps={seceSteps} />
             </div>
           </div>
         </section>

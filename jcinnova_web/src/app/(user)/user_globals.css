@@ -1218,8 +1218,38 @@ html {
   }
 
   /* Part4 grid */
+  .pg_main-part4-sections {
+    /* reserva espacio para paginación/estado para que no “salte” */
+    padding-bottom: 0.5rem;
+  }
+
   .pg_main-part4-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    /* Asegura 3 columnas en este breakpoint */
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    /* Altura estable (8 items => 3 filas en 3 columnas) */
+    --s4-card-h: 280px; /* ajustá a gusto */
+    --s4-rows: 3;
+
+    grid-auto-rows: var(--s4-card-h);
+    align-content: start;
+
+    /* Usa el mismo gap que tengas aquí (si tu gap es distinto, cámbialo) */
+    min-height: calc(
+      (var(--s4-card-h) * var(--s4-rows)) + (1rem * (var(--s4-rows) - 1))
+    );
+  }
+
+  /* evita que el texto alargue una card más que otra */
+  .pg_main-part4-cardtext p {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* (extra importante) deja “Más información” siempre abajo */
+  .pg_main-part4-cardmoreinfo {
+    margin-top: auto;
   }
 
   /* Section 6 */
@@ -1308,7 +1338,18 @@ html {
 
   /* Section 3: ocultar rail + icon, solo texto */
 
+  .pg_main-part3-inner {
+    padding-bottom: -1rem;
+  }
+  .pg_main-part3-right {
+    display: none;
+  }
+  .pg_main-part3-split {
+    gap: 1rem;
+  }
+
   /* Section 4: filtros como pills scrolleables */
+
   .pg_main-part4-filters {
     justify-content: flex-start;
     overflow-x: auto;
@@ -1338,7 +1379,28 @@ html {
   /* Grid 2 columnas en móvil */
   .pg_main-part4-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.9rem;
+    --s4-card-h: 320px; /* ajustá a gusto */
+    --s4-rows: 2; /* 4 items => 2 filas en 2 columnas */
+    grid-auto-rows: var(--s4-card-h);
+    align-content: start;
+
+    min-height: calc(
+      (var(--s4-card-h) * var(--s4-rows)) + (0.9rem * (var(--s4-rows) - 1))
+    );
+  }
+
+  .pg_main-part4-card {
+    height: 100%;
+  }
+
+  .pg_main-part4-cardtext p {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .pg_main-part4-cardmoreinfo {
+    margin-top: auto;
   }
 
   /* Section 5 */
@@ -1374,141 +1436,5 @@ html {
   /* aquí sí bajamos a 1 columna para no aplastar cards */
   .pg_main-part4-grid {
     grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 620px) {
-  /* Card: ahora es una “tarjeta” horizontal compacta */
-
-  /* Anti-bugs de grid/flex */
-  .pg_main-part3-split,
-  .pg_main-part3-left,
-  .pg_main-part3-right,
-  .pg_main-part3-stepBody {
-    min-width: 0;
-  }
-
-  /* Oculta stats bar */
-  .pg_main-part3-statsBar {
-    display: none;
-  }
-
-  /* Shell (contenedor) */
-  .pg_main-part3-right {
-    position: relative;
-    align-items: center; /* lo dejo tal cual lo tenías */
-    overflow: hidden; /* como tu carouselShell */
-    width: 100%;
-  }
-
-  .pg_main-part3-stepIcon {
-    margin: 10px 0 0 0;
-  }
-
-  /* Track scrolleable */
-  .pg_main-part3-steps {
-    display: flex;
-    flex-direction: row;
-    gap: 0.9rem;
-
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-
-    scroll-snap-type: x mandatory;
-
-    width: 400px;
-    max-width: 400px;
-
-    padding: 0.25rem 1rem 0.9rem;
-    margin: 0;
-  }
-
-  /* Scrollbar discreta */
-  .pg_main-part3-steps::-webkit-scrollbar {
-    height: 8px;
-  }
-  .pg_main-part3-steps::-webkit-scrollbar-thumb {
-    background: rgba(0, 140, 255, 0.25);
-    border-radius: 999px;
-  }
-  .pg_main-part3-steps::-webkit-scrollbar-track {
-    background: rgba(5, 43, 105, 0.06);
-    border-radius: 999px;
-  }
-
-  /* Card */
-  .pg_main-part3-step {
-    flex: 0 0 200px;
-    width: 200px;
-    height: auto;
-
-    scroll-snap-align: start;
-
-    display: flex;
-    flex-direction: column;
-
-    justify-content: flex-start; /* 🔥 contenido desde arriba */
-    align-items: flex-start; /* 🔥 alineado a la izquierda */
-
-    gap: 0.65rem;
-
-    padding: 1rem;
-    border-radius: 18px;
-    background: #fff;
-    box-shadow: none;
-
-    border: 3px solid rgba(5, 43, 105, 0.12);
-
-    transform: translateZ(0);
-
-    /* lo dejo como lo tenías */
-    grid-template-columns: 54px 1fr;
-    align-items: center;
-  }
-
-  /* Rail fuera */
-  .pg_main-part3-stepRail {
-    display: none !important;
-  }
-
-  /* Texto */
-  .pg_main-part3-stepBody p {
-    margin: 0.35rem 0 0;
-    font-size: 0.95rem;
-    line-height: 1.35rem;
-    font-weight: 750;
-    color: rgba(5, 43, 105, 0.74);
-    overflow: hidden;
-  }
-
-  /* Icon swap (móvil: usa default) */
-  .pg_main-part3-iconImg.icon-default {
-    opacity: 1 !important;
-  }
-
-  /* Track: que nunca haga wrap y que sea claramente scrolleable */
-  .pg_main-part3-steps {
-    flex-wrap: nowrap; /* clave */
-    overflow-x: auto;
-    overflow-y: hidden;
-    touch-action: pan-x; /* mejora swipe */
-    scroll-snap-type: x proximity; /* menos “tieso” que mandatory */
-    scrollbar-width: thin; /* Firefox */
-  }
-
-  /* Card: más ancha para garantizar overflow */
-
-  .pg_main-presentation-part3,
-  .pg_main-part3-inner,
-  .pg_main-part3-split,
-  .pg_main-part3-left,
-  .pg_main-part3-right {
-    min-width: 0;
-    max-width: 100%;
-  }
-
-  .pg_main-presentation-part3 {
-    overflow-x: clip; /* corta overflow accidental sin matar el carrusel */
   }
 }

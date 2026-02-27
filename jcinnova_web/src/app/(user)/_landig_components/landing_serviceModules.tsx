@@ -18,7 +18,9 @@ type ModuleItem = {
 const FETCH_LIMIT = 200;
 
 const DESKTOP_PER_PAGE = 8;
+
 const MOBILE_PER_PAGE = 4;
+
 const MOBILE_MAX = 620;
 
 export default function ServicesSection() {
@@ -207,7 +209,6 @@ export default function ServicesSection() {
               className="pg_main-part4-pagebtn"
               onClick={() => {
                 setPage((p) => Math.max(1, p - 1));
-                scrollToSection();
               }}
               disabled={!canPrev}
             >
@@ -223,7 +224,6 @@ export default function ServicesSection() {
               className="pg_main-part4-pagebtn"
               onClick={() => {
                 setPage((p) => Math.min(totalPages, p + 1));
-                scrollToSection();
               }}
               disabled={!canNext}
             >
