@@ -456,6 +456,10 @@ footer,
 }
 
 /* schedule */
+/* =========================
+   SCHEDULE
+========================= */
+
 .schedule {
   width: 100%;
   max-width: 360px;
@@ -480,21 +484,9 @@ footer,
   min-height: 36px;
 }
 
-.schedule-row span:first-child {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.schedule-row span:last-child {
-  white-space: nowrap;
-  text-align: right;
-}
-
+/* 🔵 Día actual normal */
 .schedule-row.today {
   font-weight: 900;
-  color: #052b69;
   background: rgba(5, 43, 105, 0.06);
   border: 1px solid rgba(5, 43, 105, 0.12);
 }
@@ -506,6 +498,18 @@ footer,
   color: transparent;
 }
 
+/* 🔴 Si hoy es sábado o domingo */
+.schedule-row.today-closed {
+  background: rgba(185, 28, 28, 0.12);
+  border: 1px solid rgba(185, 28, 28, 0.28);
+}
+
+.schedule-row.today-closed span {
+  background: linear-gradient(90deg, #ef4444, #dc2626);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
 /* bottom */
 .pg_footer-terms {
   display: flex;

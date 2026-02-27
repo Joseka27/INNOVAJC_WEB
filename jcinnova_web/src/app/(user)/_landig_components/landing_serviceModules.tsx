@@ -47,7 +47,7 @@ export default function ServicesSection() {
 
   // ✅ Scroll suave a la sección restando 20px
   const scrollToSection = () => {
-    const el = document.getElementById("servicios");
+    const el = document.getElementById("subtitle");
     if (!el) return;
 
     const y = el.getBoundingClientRect().top + window.scrollY - 20;
@@ -152,7 +152,7 @@ export default function ServicesSection() {
         >
           <div className="pg_main-part4-head">
             <h2>Todo tu negocio en un solo sistema</h2>
-            <p>
+            <p id="subtitle">
               Módulos integrados para controlar las distintas operaciones de tu
               empresa. Totalmente ajustables a tu negocio
             </p>
@@ -168,7 +168,7 @@ export default function ServicesSection() {
         )}
 
         {!loading && !error && (
-          <div className="pg_main-part4-grid">
+          <div className="pg_main-part4-grid " id="cards">
             {pageItems.map((item, idx) => (
               <article key={item.id} className="pg_main-part4-card">
                 <div className="pg_main-part4-media" aria-hidden>
@@ -209,6 +209,7 @@ export default function ServicesSection() {
               className="pg_main-part4-pagebtn"
               onClick={() => {
                 setPage((p) => Math.max(1, p - 1));
+                scrollToSection();
               }}
               disabled={!canPrev}
             >
@@ -224,6 +225,7 @@ export default function ServicesSection() {
               className="pg_main-part4-pagebtn"
               onClick={() => {
                 setPage((p) => Math.min(totalPages, p + 1));
+                scrollToSection();
               }}
               disabled={!canNext}
             >

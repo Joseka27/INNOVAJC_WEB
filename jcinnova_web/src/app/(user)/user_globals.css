@@ -835,8 +835,10 @@ html {
 }
 
 .pg_main-part4-cardmoreinfo {
+  margin-top: auto; /* 👈 esto lo empuja al fondo */
+  padding-top: 0.5rem; /* opcional para aire */
+
   color: #ffffff6b;
-  margin-right: auto;
   transition:
     color 0.2s ease,
     text-decoration-color 0.2s ease;
@@ -1218,38 +1220,8 @@ html {
   }
 
   /* Part4 grid */
-  .pg_main-part4-sections {
-    /* reserva espacio para paginación/estado para que no “salte” */
-    padding-bottom: 0.5rem;
-  }
-
   .pg_main-part4-grid {
-    /* Asegura 3 columnas en este breakpoint */
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-
-    /* Altura estable (8 items => 3 filas en 3 columnas) */
-    --s4-card-h: 280px; /* ajustá a gusto */
-    --s4-rows: 3;
-
-    grid-auto-rows: var(--s4-card-h);
-    align-content: start;
-
-    /* Usa el mismo gap que tengas aquí (si tu gap es distinto, cámbialo) */
-    min-height: calc(
-      (var(--s4-card-h) * var(--s4-rows)) + (1rem * (var(--s4-rows) - 1))
-    );
-  }
-
-  /* evita que el texto alargue una card más que otra */
-  .pg_main-part4-cardtext p {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  /* (extra importante) deja “Más información” siempre abajo */
-  .pg_main-part4-cardmoreinfo {
-    margin-top: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   /* Section 6 */
@@ -1379,28 +1351,7 @@ html {
   /* Grid 2 columnas en móvil */
   .pg_main-part4-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    --s4-card-h: 320px; /* ajustá a gusto */
-    --s4-rows: 2; /* 4 items => 2 filas en 2 columnas */
-    grid-auto-rows: var(--s4-card-h);
-    align-content: start;
-
-    min-height: calc(
-      (var(--s4-card-h) * var(--s4-rows)) + (0.9rem * (var(--s4-rows) - 1))
-    );
-  }
-
-  .pg_main-part4-card {
-    height: 100%;
-  }
-
-  .pg_main-part4-cardtext p {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .pg_main-part4-cardmoreinfo {
-    margin-top: auto;
+    gap: 0.9rem;
   }
 
   /* Section 5 */

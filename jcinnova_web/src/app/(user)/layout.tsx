@@ -6,7 +6,7 @@ import Image from "next/image";
 import { FaFacebook, FaInstagram, FaTwitter, FaWhatsapp } from "react-icons/fa";
 import { Roboto } from "next/font/google";
 
-import HeaderClient from "./burguerMenu"; // <- crea este archivo al lado
+import HeaderClient from "./burguerMenu";
 
 export const metadata: Metadata = {
   title: {
@@ -24,43 +24,51 @@ const roboto = Roboto({
 const FooterSchedule = () => {
   const schedule = [
     { day: "Domingo", hours: "Cerrado" },
-    { day: "Lunes", hours: "6:00 AM - 1:00 PM" },
-    { day: "Martes", hours: "6:00 AM - 1:00 PM" },
-    { day: "Miércoles", hours: "6:00 AM - 1:00 PM" },
-    { day: "Jueves", hours: "6:00 AM - 1:00 PM" },
-    { day: "Viernes", hours: "6:00 AM - 1:00 PM" },
-    { day: "Sábado", hours: "6:00 AM - 1:00 PM" },
+    { day: "Lunes", hours: "8:00 AM - 5:30 PM" },
+    { day: "Martes", hours: "8:00 AM - 5:30 PM" },
+    { day: "Miércoles", hours: "8:00 AM - 5:30 PM" },
+    { day: "Jueves", hours: "8:00 AM - 5:30 PM" },
+    { day: "Viernes", hours: "8:00 AM - 5:30 PM" },
+    { day: "Sábado", hours: "Cerrado" },
   ];
 
   const todayIndex = new Date().getDay();
+  const isWeekend = todayIndex === 0 || todayIndex === 6;
 
   return (
     <div className="schedule">
       <h4 className="text-center">Horario de Atención</h4>
-      {schedule.map((s, index) => (
-        <div
-          key={index}
-          className={`schedule-row ${index === todayIndex ? "today" : ""}`}
-        >
-          <span>{s.day}</span>
-          <span>{s.hours}</span>
-        </div>
-      ))}
+
+      {schedule.map((s, index) => {
+        const isToday = index === todayIndex;
+
+        return (
+          <div
+            key={index}
+            className={`schedule-row 
+              ${isToday ? "today" : ""} 
+              ${isToday && isWeekend ? "today-closed" : ""}
+            `}
+          >
+            <span>{s.day}</span>
+            <span>{s.hours}</span>
+          </div>
+        );
+      })}
     </div>
   );
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="es">
       <body className={`${roboto.className} antialiased`}>
         <div className="UserLayout">
           <header>
-            {/* Header cliente (hamburguesa) */}
             <HeaderClient />
           </header>
 
@@ -82,10 +90,8 @@ export default function RootLayout({
                   </div>
                   <p>
                     Software de Gestión Contable y Administrativa para
-                    optimizacion de negocios con soluciones de contabilidad
+                    optimización de negocios con soluciones de contabilidad
                     electrónica, facturación y control de inventarios.
-                    Automatiza tus procesos financieros con nuestro sistema
-                    administrativo integral y escalable.
                   </p>
                 </div>
 
@@ -101,23 +107,23 @@ export default function RootLayout({
                     <Link href="/downloads">Descargar</Link>
                   </div>
                   <div className="pg_footer-linkrouter">
-                    <Link href="/contact">Contactanos</Link>
+                    <Link href="/contact">Contáctanos</Link>
                   </div>
                 </div>
 
                 <div className="pg_footer-information-div">
                   <h4>Redes Sociales</h4>
-                  <div className="socialmedia flex gap-4 text-[#616161] text-4xl">
-                    <a aria-label="Facebook" href="https://facebook.com">
+                  <div className="socialmedia">
+                    <a href="https://facebook.com">
                       <FaFacebook />
                     </a>
-                    <a aria-label="Instagram" href="https://instagram.com">
+                    <a href="https://instagram.com">
                       <FaInstagram />
                     </a>
-                    <a aria-label="Twitter/X" href="https://twitter.com">
+                    <a href="https://twitter.com">
                       <FaTwitter />
                     </a>
-                    <a aria-label="WhatsApp" href="https://wa.me/40701423">
+                    <a href="https://wa.me/40701423">
                       <FaWhatsapp />
                     </a>
                   </div>
@@ -133,14 +139,14 @@ export default function RootLayout({
               <div className="pg_footer-terms">
                 <div className="pg_footer-copyright">
                   <p>
-                    Soluciones Integrales InnovaJC S.A Derechos Reservados
-                    &copy;{new Date().getFullYear()}
+                    Soluciones Integrales InnovaJC S.A ©
+                    {new Date().getFullYear()}
                   </p>
                 </div>
                 <div className="pg_footer-termslink">
-                  <p>Terminos</p>
+                  <p>Términos</p>
                   <p>Condiciones</p>
-                  <p>Politicas</p>
+                  <p>Políticas</p>
                   <p>Privacidad</p>
                 </div>
               </div>
