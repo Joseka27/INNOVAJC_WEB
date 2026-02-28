@@ -6,7 +6,7 @@
   .m620_stepsLoopWrap {
     display: flex;
   }
-  /* IMPORTANTE: esto evita el “se sale de la pantalla” */
+
   .m620_stepsLoopWrap,
   .m620_stepsLoopShell,
   .m620_stepsLoopTrack,
@@ -20,7 +20,6 @@
     width: 100%;
   }
 
-  /* Fade izquierdo/derecho */
   .m620_stepsLoopWrap::before,
   .m620_stepsLoopWrap::after {
     content: "";
@@ -48,7 +47,6 @@
     );
   }
 
-  /* Shell scrolleable */
   .m620_stepsLoopShell {
     width: 100%;
     overflow-x: auto;
@@ -59,7 +57,6 @@
     scroll-padding-left: 18px;
     padding: 6px 0 38px;
 
-    /* Oculta scrollbar (sin romper scroll) */
     scrollbar-width: none;
   }
   .m620_stepsLoopShell::-webkit-scrollbar {
@@ -74,7 +71,7 @@
     gap: 14px;
     padding: 0 18px;
 
-    width: max-content; /* clave para que el track mida lo que debe */
+    width: max-content;
   }
 
   /* Card */
@@ -82,7 +79,7 @@
     scroll-snap-align: center;
     flex: 0 0 auto;
 
-    width: min(58vw, 200px); /* se adapta al tamaño de pantalla */
+    width: min(58vw, 200px);
     border-radius: 18px;
 
     background: #ffffff;
@@ -155,7 +152,6 @@
     color: rgba(15, 23, 42, 0.78);
   }
 
-  /* Respeta “reduced motion”: no hacemos animación auto, pero esto evita “saltos raros” */
   @media (prefers-reduced-motion: reduce) {
     .m620_iconImg {
       transition: none;

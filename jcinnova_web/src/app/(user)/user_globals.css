@@ -1,8 +1,5 @@
 @import "tailwindcss";
 
-/* =========================
-   TOKENS / GLOBAL
-========================= */
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -22,28 +19,21 @@ body {
   font-weight: 500;
 }
 
-/* Anchor offset (para sticky header) */
 :root {
   --header-h: 80px;
-} /* poné el alto real de tu header */
+}
 
 html {
   scroll-behavior: smooth;
   scroll-padding-top: var(--header-h);
 }
 
-/* si tenías esto, borrarlo o dejarlo en 0 */
-/* #servicios { scroll-margin-top: 0; } */
-
-/* Contenedor general */
 .pg_main {
   display: flex;
   flex-direction: column;
 }
 
-/* =========================================================
-   SECTION 1 (Presentation)
-========================================================= */
+/* SECTION 1 (Presentation) */
 .pg_main-presentation {
   width: 100%;
   min-height: auto;
@@ -152,9 +142,7 @@ html {
   height: auto;
 }
 
-/* =========================================================
-   SECTION 2 (Why us)
-========================================================= */
+/* SECTION 2 (Why us) */
 .pg_main-presentation-part2 {
   width: 100%;
   padding: 5.2rem var(--side-pad);
@@ -389,9 +377,7 @@ html {
   justify-content: center;
 }
 
-/* =========================================================
-   SECTION 3 (Steps)
-========================================================= */
+/* SECTION 3 (Steps) */
 .pg_main-presentation-part3 {
   width: 100%;
   padding: 5.2rem var(--side-pad);
@@ -520,7 +506,6 @@ html {
   font-size: 0.9rem;
 }
 
-/* Right - steps */
 .pg_main-part3-right {
   display: flex;
   flex-direction: column;
@@ -610,7 +595,6 @@ html {
   opacity: 1;
 }
 
-/* ===== Icon swap ===== */
 .pg_main-part3-iconSwap {
   position: relative;
   width: 35px;
@@ -666,7 +650,6 @@ html {
   font-size: 0.95rem;
 }
 
-/* Stats bar */
 .pg_main-part3-statsBar {
   display: flex;
   gap: 0.7rem;
@@ -697,9 +680,7 @@ html {
   font-size: 0.92rem;
 }
 
-/* =========================================================
-   SECTION 4 (Services)
-========================================================= */
+/* SECTION 4 (Services) */
 .pg_main-presentation-part4 {
   width: 100%;
   padding: 5rem var(--side-pad);
@@ -835,8 +816,8 @@ html {
 }
 
 .pg_main-part4-cardmoreinfo {
-  margin-top: auto; /* 👈 esto lo empuja al fondo */
-  padding-top: 0.5rem; /* opcional para aire */
+  margin-top: auto;
+  padding-top: 0.5rem;
 
   color: #ffffff6b;
   transition:
@@ -955,9 +936,7 @@ html {
   font-weight: 700;
 }
 
-/* =========================================================
-   SECTION 5 (Join Us)
-========================================================= */
+/* SECTION 5 (Join Us) */
 .pg_main-presentation-part5 {
   display: flex;
   flex-direction: column;
@@ -1053,9 +1032,7 @@ html {
   width: 100%;
 }
 
-/* =========================================================
-   SECTION 6 (Contact Us)
-========================================================= */
+/* SECTION 6 (Contact Us) */
 .pg_main-presentation-part6 {
   display: flex;
   align-items: center;
@@ -1156,11 +1133,8 @@ html {
   color: transparent;
 }
 
-/* =========================================================
-   RESPONSIVE (ÚNICO)
-========================================================= */
+/* RESPONSIVE (ÚNICO) */
 
-/* <= 980px */
 @media (max-width: 980px) {
   /* Section 1 */
   .pg_main-presentation-sections {
@@ -1187,9 +1161,8 @@ html {
         border-box;
   }
 
-  /* Section 2: 2 columnas -> 1 */
+  /* Section 2 */
 
-  /* outcomes 1 línea */
   .pg_main-part2-outcomes {
     flex-wrap: nowrap;
     overflow-x: auto;
@@ -1208,7 +1181,6 @@ html {
     position: static;
   }
 
-  /* stats 1 línea */
   .pg_main-part3-statsBar {
     flex-wrap: nowrap;
     overflow-x: auto;
@@ -1219,7 +1191,7 @@ html {
     min-width: 0;
   }
 
-  /* Part4 grid */
+  /* Part4 */
   .pg_main-part4-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1230,7 +1202,6 @@ html {
   }
 }
 
-/* <= 620px */
 @media (max-width: 620px) {
   /* Section 1 */
   .pg_main-presentation {
@@ -1247,7 +1218,7 @@ html {
   }
 
   .pg_main-presentation-section2 {
-    display: none; /* tu regla: ocultar imagen */
+    display: none;
   }
 
   .pg_main-presentation-section1 {
@@ -1308,7 +1279,7 @@ html {
     width: 30px;
   }
 
-  /* Section 3: ocultar rail + icon, solo texto */
+  /* Section 3*/
 
   .pg_main-part3-inner {
     padding-bottom: -1rem;
@@ -1320,7 +1291,7 @@ html {
     gap: 1rem;
   }
 
-  /* Section 4: filtros como pills scrolleables */
+  /* Section 4 */
 
   .pg_main-part4-filters {
     justify-content: flex-start;
@@ -1348,7 +1319,6 @@ html {
     display: none;
   }
 
-  /* Grid 2 columnas en móvil */
   .pg_main-part4-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.9rem;
@@ -1378,13 +1348,11 @@ html {
   }
 }
 
-/* <= 420px */
 @media (max-width: 420px) {
   .pg_main-presentation-section1 h1 {
     max-width: 24rem;
   }
 
-  /* aquí sí bajamos a 1 columna para no aplastar cards */
   .pg_main-part4-grid {
     grid-template-columns: 1fr;
   }

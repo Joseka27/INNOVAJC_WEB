@@ -25,7 +25,6 @@ export function useIdleLogout(
 
   async function forceLogout(reason?: "idle" | "max") {
     try {
-      // opcional: toast antes de salir
       if (reason === "idle") {
         push({
           type: "info",

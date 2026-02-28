@@ -1,4 +1,4 @@
-/* Rules before interact whit db */
+/* Rules before interact with db */
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { companiesRepository } from "@/repositories/companiesRepository";
 import type {
@@ -7,68 +7,149 @@ import type {
   UpdateCompany,
 } from "@/models/companiesModel";
 
+function assertPositiveInt(id: number, label = "id") {
+  if (!Number.isInteger(id) || id <= 0) {
+    throw new Error(`${label} inválido`);
+  }
+}
+
+function normText(v: unknown): string {
+  return String(v ?? "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function requireText(
+  value: unknown,
+  {
+    field,
+    min = 1,
+    max = 3000,
+    message,
+  }: { field: string; min?: number; max?: number; message: string },
+): string {
+  const v = normText(value);
+  if (v.length < min) throw new Error(message);
+  if (v.length > max) throw new Error(`${field} excede el máximo de ${max}`);
+  return v;
+}
+
+function validateUrlLike(url: string, fieldName: string) {
+  if (url.startsWith("/")) return; // relativo permitido
+  try {
+    const u = new URL(url);
+    if (u.protocol !== "http:" && u.protocol !== "https:") {
+      throw new Error();
+    }
+  } catch {
+    throw new Error(`${fieldName} inválida`);
+  }
+}
+
 export const companiesService = {
-  /* Create company information (name and file) rules */
-  async createCompany(
+  async create(
     supabase: SupabaseClient,
     data: InsertCompany,
   ): Promise<Company> {
-    if (!data.name || data.name.trim().length < 2)
-      throw new Error("Invalid Name");
-    if (!data.image_url || !data.image_url.trim())
-      throw new Error("URL of image is needed");
-    if (!data.description || !data.description.trim())
-      throw new Error("Description is needed");
+    const name = requireText(data.name, {
+      field: "name",
+      min: 2,
+      max: 120,
+      message: "Nombre inválido",
+    });
+
+    const description = requireText(data.description, {
+      field: "description",
+      min: 2,
+      max: 2000,
+      message: "Descripción requerida",
+    });
+
+    const image_url = requireText(data.image_url, {
+      field: "image_url",
+      min: 2,
+      max: 600,
+      message: "Imagen requerida",
+    });
+    validateUrlLike(image_url, "URL de imagen");
 
     return companiesRepository(supabase).createCompany({
-      name: data.name.trim(),
-      description: data.description.trim(),
-      image_url: data.image_url.trim(),
+      name,
+      description,
+      image_url,
     });
   },
 
-  async CompaniesList(supabase: SupabaseClient): Promise<Company[]> {
-    /* Calls Repository to get all companies */
+  async list(supabase: SupabaseClient): Promise<Company[]> {
     return companiesRepository(supabase).getCompanies();
   },
 
-  async updateCompany(
-    /* Update Company */
+  async update(
     supabase: SupabaseClient,
     id: number,
     patch: UpdateCompany,
   ): Promise<Company> {
-    /* save clean data to update */
+    assertPositiveInt(id);
+
     const clean: UpdateCompany = {};
+
     if (patch.name !== undefined) {
-      /* Comes path name can be undefined */
-      const n = patch.name.trim();
-      if (n.length < 2) throw new Error("Invalid Name");
-      clean.name = n;
-    }
-    if (patch.image_url !== undefined) {
-      /* Comes path url can be undefined */
-      const u = patch.image_url.trim();
-      if (!u) throw new Error("URL of image is needed");
-      clean.image_url = u;
-    }
-    if (patch.description !== undefined) {
-      /* Comes path url can be undefined */
-      const u = patch.description.trim();
-      if (!u) throw new Error("Description is needed");
-      clean.description = u;
+      const v = requireText(patch.name, {
+        field: "name",
+        min: 2,
+        max: 120,
+        message: "Nombre inválido",
+      });
+      clean.name = v;
     }
 
-    /* If there is no information to update, reject and throw error */
-    if (Object.keys(clean).length === 0) throw new Error("No fields to update");
-    return companiesRepository(supabase).updateCompany(
-      id,
-      clean,
-    ); /* Ropositry make the update */
+    if (patch.description !== undefined) {
+      const v = requireText(patch.description, {
+        field: "description",
+        min: 2,
+        max: 2000,
+        message: "Descripción requerida",
+      });
+      clean.description = v;
+    }
+
+    if (patch.image_url !== undefined) {
+      const v = requireText(patch.image_url, {
+        field: "image_url",
+        min: 2,
+        max: 600,
+        message: "Imagen requerida",
+      });
+      validateUrlLike(v, "URL de imagen");
+      clean.image_url = v;
+    }
+
+    if (Object.keys(clean).length === 0) {
+      throw new Error("Nada que actualizar");
+    }
+
+    return companiesRepository(supabase).updateCompany(id, clean);
   },
 
-  /* Delete Compani by id number*/
-  async deleteCompany(supabase: SupabaseClient, id: number) {
+  async remove(supabase: SupabaseClient, id: number) {
+    assertPositiveInt(id);
     return companiesRepository(supabase).removeCompany(id);
+  },
+
+  async createCompany(supabase: SupabaseClient, data: InsertCompany) {
+    return this.create(supabase, data);
+  },
+  async CompaniesList(supabase: SupabaseClient) {
+    return this.list(supabase);
+  },
+  async updateCompany(
+    supabase: SupabaseClient,
+    id: number,
+    patch: UpdateCompany,
+  ) {
+    return this.update(supabase, id, patch);
+  },
+  async deleteCompany(supabase: SupabaseClient, id: number) {
+    return this.remove(supabase, id);
   },
 };

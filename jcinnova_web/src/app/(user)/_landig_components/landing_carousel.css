@@ -3,7 +3,6 @@
   overflow: hidden;
 }
 
-/* --- marquee ajustado al ANCHO REAL de la ventana --- */
 .marquee {
   width: 200vw;
   max-width: 200vw;
@@ -21,7 +20,6 @@
   will-change: transform;
 }
 
-/* Accesibilidad */
 @media (prefers-reduced-motion: reduce) {
   .track {
     animation: none;
@@ -55,7 +53,6 @@
   -webkit-user-drag: none;
 }
 
-/* fades suaves */
 .fadeLeft,
 .fadeRight {
   pointer-events: none;
@@ -76,7 +73,6 @@
   background: linear-gradient(to left, #f7faff, transparent);
 }
 
-/* ✅ Botón general abajo derecha */
 .carouselControl {
   position: absolute;
   right: 1px;

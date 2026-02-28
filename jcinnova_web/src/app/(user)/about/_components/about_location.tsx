@@ -69,7 +69,6 @@ export default function LocationMap({
           </div>
         </div>
 
-        {/* RIGHT */}
         <div className="locmap_right">
           <div className="locmap_mapCard">
             {embed ? (

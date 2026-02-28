@@ -1,4 +1,3 @@
-/* Upload Images in supabase bucket */
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 export async function uploadModuleImage(
@@ -6,11 +5,10 @@ export async function uploadModuleImage(
   file: File,
   userId: string,
 ) {
-  const ext =
-    file.name.split(".").pop() || "webp"; /* Get file extention or webp */
-  const path = `${userId}/${crypto.randomUUID()}.${ext}`; /* Create bucket route */
+  const ext = file.name.split(".").pop() || "webp"; //traer la extension web del archivo
+  const path = `${userId}/${crypto.randomUUID()}.${ext}`;
 
-  /* Load File in the bucket */
+  // Sube los archivos al bucket
   const { error: upErr } = await supabase.storage
     .from("modules")
     .upload(path, file, {
@@ -19,10 +17,10 @@ export async function uploadModuleImage(
       contentType: file.type,
     });
 
-  /* If thers an error in upload */
+  //si hay error al subir
   if (upErr) throw upErr;
 
-  /* Get new bucket public image url */
+  //toma la url publica
   const { data } = supabase.storage.from("modules").getPublicUrl(path);
   return { path, publicUrl: data.publicUrl };
 }

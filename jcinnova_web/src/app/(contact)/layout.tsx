@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { FaWhatsapp } from "react-icons/fa";
 import { Roboto } from "next/font/google";
-import BackButton from "./BackButton"; // ✅ IMPORTAMOS EL COMPONENTE CLIENT
+import BackButton from "./BackButton";
 
 export const metadata: Metadata = {
   title: "INNOVA JC | Contacto",

@@ -15,7 +15,7 @@ import {
 import { useAdminGate } from "@/app/(admin)/admin/_admin_components/useAdmingate";
 import { useIdleLogout } from "@/app/(admin)/admin/_admin_components/useIdlelogout";
 
-/* Max page size */
+//Maximo tamaño de pagina
 const PAGE_SIZE = 10;
 
 export default function AdminDashboardPage() {
@@ -25,7 +25,7 @@ export default function AdminDashboardPage() {
   const { toasts, push, remove, clearAll } = useToasts();
   const { booting, userEmail, isAdmin } = useAdminGate();
 
-  // ✅ TEST: 30 min idle, 60 min hard
+  //30 minutos y saca
   useIdleLogout(push, {
     idleMs: 30 * 60 * 1000,
     sessionMaxMs: 60 * 60 * 1000,
@@ -42,7 +42,7 @@ export default function AdminDashboardPage() {
   const [query, setQuery] = useState("");
 
   const [name, setName] = useState("");
-  const [description, setDescription] = useState(""); // ✅ NUEVO
+  const [description, setDescription] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [creating, setCreating] = useState(false);
 
@@ -58,13 +58,13 @@ export default function AdminDashboardPage() {
 
     return companies.filter((c) => {
       const n = (c.name ?? "").toLowerCase();
-      const d = ((c as any).description ?? "").toLowerCase(); // por si el type aún no está actualizado
+      const d = ((c as any).description ?? "").toLowerCase();
       return n.includes(q) || d.includes(q);
     });
   }, [companies, query]);
 
   const [editName, setEditName] = useState("");
-  const [editDescription, setEditDescription] = useState(""); // ✅ NUEVO
+  const [editDescription, setEditDescription] = useState("");
   const [editFile, setEditFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -85,7 +85,6 @@ export default function AdminDashboardPage() {
     if (!booting && userEmail && isAdmin) {
       loadCompanies(0);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [booting, userEmail, isAdmin]);
 
   async function logout() {
@@ -144,16 +143,6 @@ export default function AdminDashboardPage() {
       });
       return;
     }
-
-    // Si tu DB lo requiere, descomenta esto:
-    // if (!cleanDesc) {
-    //   push({
-    //     type: "error",
-    //     title: "Dato requerido",
-    //     message: "La descripción es requerida.",
-    //   });
-    //   return;
-    // }
 
     if (!file) {
       push({
@@ -278,7 +267,7 @@ export default function AdminDashboardPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: cleanName,
-          description: cleanDesc, // ✅ NUEVO
+          description: cleanDesc,
           image_url: newUrl,
           old_image_url: editingCompany.image_url,
         }),
@@ -458,7 +447,6 @@ export default function AdminDashboardPage() {
                     onChange={(e) => setEditName(e.target.value)}
                   />
 
-                  {/* ✅ NUEVO: editar descripción */}
                   <textarea
                     className="name_field"
                     placeholder="Editar Descripción"
@@ -563,7 +551,7 @@ export default function AdminDashboardPage() {
                   />
                   <div className="company_box_text">
                     <div>{c.name}</div>
-                    {/* ✅ NUEVO: mostrar descripción */}
+
                     {!!(c as any).description && (
                       <div className="company_box_desc">
                         {(c as any).description}
@@ -579,7 +567,6 @@ export default function AdminDashboardPage() {
                     onClick={() => {
                       startEdit(c);
 
-                      // ✅ Scroll SOLO dentro de dashboard_content (no afecta header global)
                       requestAnimationFrame(() => {
                         const container =
                           document.getElementById("dashboard_scroll");
@@ -592,7 +579,7 @@ export default function AdminDashboardPage() {
                             container.scrollTop;
 
                           container.scrollTo({
-                            top: top - 150, // margen superior
+                            top: top - 150,
                             behavior: "smooth",
                           });
                         }

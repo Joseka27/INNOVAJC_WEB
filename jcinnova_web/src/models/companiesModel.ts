@@ -1,13 +1,11 @@
-/* The model of supabase tables */
+//Estructura de la base de datos
 
-/* When data is inserted */
 export interface InsertCompany {
   name: string;
   description: string;
   image_url: string;
 }
 
-/* When data is brought back */
 export interface Company {
   id: number;
   name: string;
@@ -16,7 +14,6 @@ export interface Company {
   created_at: string;
 }
 
-/* update Data */
 export interface UpdateCompany {
   name?: string;
   description?: string;

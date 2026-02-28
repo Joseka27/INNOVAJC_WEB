@@ -6,10 +6,6 @@
   padding: 2.5rem 1rem;
 }
 
-/* =========================
-   Dashboard shell
-   ========================= */
-
 .download_dashboard {
   width: min(1200px, calc(100vw - 2rem));
   display: flex;
@@ -27,7 +23,6 @@
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
 }
 
-/* Header top row */
 .download_dashboard_logaccount {
   display: flex;
   justify-content: space-between;
@@ -56,7 +51,6 @@
   color: rgba(255, 255, 255, 0.72);
 }
 
-/* Logout button */
 .download_logout_button {
   border: none;
   cursor: pointer;
@@ -83,10 +77,6 @@
 .download_logout_button:active {
   transform: translateY(0);
 }
-
-/* =========================
-   Config section (create/edit)
-   ========================= */
 
 .download_config {
   display: grid;
@@ -124,7 +114,6 @@
   gap: 1rem;
 }
 
-/* Inputs */
 .download_name_field {
   width: 100%;
   height: 2.8rem;
@@ -192,16 +181,11 @@
   box-shadow: 0 0 0 3px rgba(0, 140, 255, 0.25);
 }
 
-/* Row (size + version) */
 .download_row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.8rem;
 }
-
-/* =========================
-   File upload (MISMO DISEÑO)
-   ========================= */
 
 .download_create_file {
   display: none;
@@ -271,10 +255,6 @@
   font-size: 0.85rem;
 }
 
-/* =========================
-   Primary action buttons
-   ========================= */
-
 .download_create_button,
 .download_edit_button {
   height: 2.9rem;
@@ -308,7 +288,6 @@
   transform: none;
 }
 
-/* Secondary button */
 .download_cancel_button {
   height: 2.9rem;
   border-radius: 12px;
@@ -338,10 +317,6 @@
   grid-template-columns: 1fr 1fr;
   gap: 0.8rem;
 }
-
-/* =========================
-   Search
-   ========================= */
 
 .downloads_search {
   display: flex;
@@ -401,10 +376,6 @@
   background: rgba(255, 255, 255, 0.18);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
 }
-
-/* =========================
-   Downloads list
-   ========================= */
 
 .downloads_list {
   background: rgba(255, 255, 255, 0.06);
@@ -469,7 +440,6 @@
   font-size: 1.35rem;
 }
 
-/* Card text */
 .download_card_text {
   display: flex;
   flex-direction: column;
@@ -542,7 +512,6 @@
   background: linear-gradient(135deg, #ff3b30, #ff5b4a, #ff2d55);
 }
 
-/* Pagination */
 .download_pageButtons {
   display: flex;
   justify-content: center;
@@ -581,11 +550,8 @@
   cursor: not-allowed;
 }
 
-/* =========================
-   Responsive
-   ========================= */
+/*Responsive*/
 
-/* Tablets y abajo */
 @media (max-width: 980px) {
   .pg_download {
     padding: 1.6rem 1rem;
@@ -616,7 +582,6 @@
   }
 }
 
-/* Móvil */
 @media (max-width: 640px) {
   .download_dashboard_logaccount h1 {
     font-size: 1.35rem;
@@ -627,7 +592,6 @@
     border-radius: 16px;
   }
 
-  /* Cards */
   .downloads_boxes {
     flex-direction: column;
     align-items: stretch;
@@ -655,12 +619,10 @@
     text-align: center;
   }
 
-  /* Botones editar/cancelar en edición */
   .download_dashboard_actions_buttons {
     grid-template-columns: 1fr;
   }
 
-  /* Label de archivo se ordena mejor */
   .download_file_label {
     flex-wrap: wrap;
   }

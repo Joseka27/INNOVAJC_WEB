@@ -10,7 +10,6 @@ export default function HeaderClient() {
   const closeMenu = () => setIsMenuOpen(false);
   const toggleMenu = () => setIsMenuOpen((v) => !v);
 
-  // Cierra con ESC
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape") closeMenu();
@@ -19,7 +18,6 @@ export default function HeaderClient() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
-  // Bloquea scroll del body cuando el menú está abierto (evita “scroll raro”)
   useEffect(() => {
     if (!isMenuOpen) return;
     const prev = document.body.style.overflow;
@@ -45,7 +43,6 @@ export default function HeaderClient() {
           </Link>
         </div>
 
-        {/* Desktop links (se ocultan en móvil via CSS) */}
         <div className="pg_header-linkrouters-links">
           <div className="pg_header-linkrouter">
             <Link href="/about">Sobre Nosotros</Link>
@@ -64,7 +61,6 @@ export default function HeaderClient() {
           <Link href="/contact">Contactanos</Link>
         </div>
 
-        {/* Burger */}
         <button
           type="button"
           className={`pg_header-burger ${isMenuOpen ? "is-open" : ""}`}
@@ -78,7 +74,6 @@ export default function HeaderClient() {
           <span />
         </button>
 
-        {/* Panel */}
         <div
           id="mobile-menu"
           className={`pg_header-mobilePanel ${isMenuOpen ? "is-open" : ""}`}
@@ -119,7 +114,6 @@ export default function HeaderClient() {
           </nav>
         </div>
 
-        {/* Backdrop */}
         <button
           type="button"
           className={`pg_header-backdrop ${isMenuOpen ? "is-open" : ""}`}

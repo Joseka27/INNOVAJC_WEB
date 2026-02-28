@@ -28,7 +28,6 @@ export function useToasts() {
 
     setToasts((prev) => [toast, ...prev].slice(0, 4));
 
-    // si tiene acciones, no autocerrar
     if (toast.actions?.length) return id;
 
     window.setTimeout(() => {

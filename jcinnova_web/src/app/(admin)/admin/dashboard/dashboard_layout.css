@@ -1,7 +1,3 @@
-/* ======================================================
-   HEADER GLOBAL
-====================================================== */
-
 header.pg_header_shell {
   background: rgba(0, 0, 0, 0.22);
   backdrop-filter: blur(14px);
@@ -62,10 +58,6 @@ header.pg_header_shell {
   }
 }
 
-/* ======================================================
-   DASHBOARD LAYOUT (Sidebar + Content)
-====================================================== */
-
 .dashboard_shell {
   display: flex;
   width: 100%;
@@ -73,7 +65,7 @@ header.pg_header_shell {
   overflow: hidden; /* 🔥 el scroll NO va aquí */
 }
 
-/* ================= SIDEBAR ================= */
+/* ================= menu lateral ================= */
 
 .dashboard_sidebar {
   width: 250px;
@@ -124,8 +116,6 @@ header.pg_header_shell {
   transform: translateY(-1px);
 }
 
-/* ===== NAV ===== */
-
 .dashboard_sidebar_nav {
   display: flex;
   flex-direction: column;
@@ -153,19 +143,18 @@ header.pg_header_shell {
   transform: translateX(4px);
 }
 
-/* ================= CONTENT ================= */
+/* ================= contenido ================= */
 
 .dashboard_content {
   flex: 1;
   height: 100%;
-  overflow-y: auto; /* 🔥 Scroll vive aquí */
+  overflow-y: auto;
   padding: 2rem;
   padding-bottom: 7.5rem;
 
-  scroll-behavior: smooth; /* scroll suave */
+  scroll-behavior: smooth;
 }
 
-/* Scroll personalizado */
 .dashboard_content::-webkit-scrollbar {
   width: 8px;
 }
@@ -183,9 +172,7 @@ header.pg_header_shell {
   scrollbar-color: rgba(255, 255, 255, 0.25) #020617;
 }
 
-/* ======================================================
-   RESPONSIVE
-====================================================== */
+/*RESPONSIVE*/
 
 @media (max-width: 980px) {
   .dashboard_shell {

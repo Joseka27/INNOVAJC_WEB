@@ -1,10 +1,9 @@
-/* Direct connection with supabase */
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Module, InsertModule, UpdateModule } from "@/models/modulesModel";
 
-/* All modules actions */
+//acciones
 export const modulesRepository = (supabase: SupabaseClient) => ({
-  /* create method for modules */
+  //crear
   async createModule(data: InsertModule): Promise<Module> {
     const { data: row, error } = await supabase
       .from("Modules") // ⚠️ usa aquí el nombre real de tu tabla
@@ -16,7 +15,7 @@ export const modulesRepository = (supabase: SupabaseClient) => ({
     return row as Module;
   },
 
-  /* call all modules in DB */
+  //llamar
   async getModules(): Promise<Module[]> {
     const { data, error } = await supabase
       .from("Modules")
@@ -27,7 +26,7 @@ export const modulesRepository = (supabase: SupabaseClient) => ({
     return (data ?? []) as Module[];
   },
 
-  /* update module information */
+  //actualizar
   async updateModule(id: number, patch: UpdateModule): Promise<Module> {
     const { data, error } = await supabase
       .from("Modules")
@@ -40,7 +39,7 @@ export const modulesRepository = (supabase: SupabaseClient) => ({
     return data as Module;
   },
 
-  /* remove module from DB */
+  ///borrar
   async removeModule(id: number): Promise<{ id: number }> {
     const { error } = await supabase.from("Modules").delete().eq("id", id);
 

@@ -1,17 +1,16 @@
-/* update / delete download by id */
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/serverClient";
 import { requireAdmin } from "@/lib/auth/requireAdmin";
 import { fileURLToPath } from "node:url";
 
-/* Dynamic params (id) */
+//Parametros Dinamicos
 type Ctx = { params: Promise<{ id: string }> };
 
-/* confirms the received parameter */
+//Confirma parametros recividos
 function parseId(idParam: string) {
   const n = Number(idParam);
 
-  /* validate id */
+  //valida el id
   if (!Number.isInteger(n) || n <= 0) {
     const err = new Error(`Invalid id: "${idParam}"`);
     (err as any).status = 400;
@@ -22,10 +21,10 @@ function parseId(idParam: string) {
 
 export async function PUT(req: Request, ctx: Ctx) {
   try {
-    /* create supabase client */
+    //Crea el supabase Client
     const supabase = await createClient();
 
-    /* validate admin */
+    //Valida admin
     await requireAdmin(supabase);
 
     const { id } = await ctx.params;
@@ -33,7 +32,6 @@ export async function PUT(req: Request, ctx: Ctx) {
 
     const patch = await req.json();
 
-    // Si estás guardando el PATH del archivo en TypeFile:
     const oldPath: string | undefined = patch.old_file_url;
 
     const nextAppImage =
@@ -78,7 +76,7 @@ export async function PUT(req: Request, ctx: Ctx) {
     if (nextTypeFile !== undefined && !nextTypeFile)
       throw new Error("Tipo de archivo requerido");
 
-    /* update row information in db */
+    //Actualiza la linea
     const { data, error } = await supabase
       .from("Downloads")
       .update({
@@ -99,9 +97,8 @@ export async function PUT(req: Request, ctx: Ctx) {
 
     if (error) throw error;
 
-    /* delete the old file from the bucket (only if file changed) */
+    //Borra del bucket
     if (oldPath && nextFileUrl && oldPath !== nextFileUrl) {
-      // OJO: esto borra del bucket aunque sea público (igual se puede borrar server-side)
       await supabase.storage.from("downloads").remove([oldPath]);
     }
 
@@ -115,7 +112,7 @@ export async function DELETE(_: Request, ctx: Ctx) {
   try {
     const supabase = await createClient();
 
-    /* Validate that it is admin */
+    //Valida que es admin
     await requireAdmin(supabase);
 
     const { id } = await ctx.params;
@@ -129,11 +126,11 @@ export async function DELETE(_: Request, ctx: Ctx) {
 
     if (readErr) throw readErr;
 
-    /* file deleted from the bucket */
+    //Borrarlo del bucket
     const path = current?.file_url ? String(current.file_url) : "";
     if (path) await supabase.storage.from("downloads").remove([path]);
 
-    /* row deleted from the database */
+    //Borrar de la base de datos
     const { error: delErr } = await supabase
       .from("Downloads")
       .delete()
@@ -141,7 +138,6 @@ export async function DELETE(_: Request, ctx: Ctx) {
 
     if (delErr) throw delErr;
 
-    /* The deleted ID is returned */
     return NextResponse.json({ id: rowId });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: e.status ?? 400 });

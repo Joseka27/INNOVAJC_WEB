@@ -5,36 +5,34 @@ import { requireAdmin } from "@/lib/auth/requireAdmin";
 
 export async function GET(req: Request) {
   try {
-    /* Create server client */
+    //Crea el server cliente
     const supabase = await createClient();
 
-    /* Read query params */
+    //Lee los parametros del querry
     const url = new URL(req.url);
 
-    /* Results in groups, max 50 */
+    //Trae de 50 en 50
     const limit = Math.min(Number(url.searchParams.get("limit") ?? 10), 50);
     const cursor = url.searchParams.get("cursor");
     const offset = url.searchParams.get("offset");
 
-    /* Base query */
+    //Query
     let q = supabase
-      .from("Downloads") // ✅ TABLA DOWNLOADS
+      .from("Downloads")
       .select(
         "id,app_image,title,description,size,version,type_file,requirements,file_url,created_at",
         { count: "exact" },
       )
       .order("id", { ascending: true });
 
-    /* Cursor pagination */
+    //paginacion
     if (cursor) {
       const c = Number(cursor);
       if (Number.isFinite(c) && c > 0) q = q.gt("id", c);
     } else if (offset) {
-      /* Offset pagination */
       const o = Number(offset);
       if (Number.isFinite(o) && o >= 0) q = q.range(o, o + limit - 1);
     } else {
-      /* Default */
       q = q.range(0, limit - 1);
     }
 
@@ -61,12 +59,12 @@ export async function POST(req: Request) {
   try {
     const supabase = await createClient();
 
-    /* Verify admin */
+    //Verifica Admin
     await requireAdmin(supabase);
 
     const body = await req.json();
 
-    /* Basic validation */
+    //Validaciones
     const app_image = String(body.app_image ?? "").trim();
     const title = String(body.title ?? "").trim();
     const description = String(body.description ?? "").trim();
@@ -85,9 +83,9 @@ export async function POST(req: Request) {
     if (!type_file) throw new Error("Tipo de archivo requerido");
     if (!requirements) throw new Error("Requirements requerido");
 
-    /* Insert download */
+    //Inserta descarga
     const { data, error } = await supabase
-      .from("Downloads") // ✅ TABLA DOWNLOADS
+      .from("Downloads")
       .insert({
         app_image,
         title,
@@ -105,7 +103,7 @@ export async function POST(req: Request) {
 
     if (error) throw error;
 
-    /* Return new row */
+    //Devuelve nueva linea
     return NextResponse.json(data);
   } catch (e: any) {
     return NextResponse.json(

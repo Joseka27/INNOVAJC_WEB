@@ -6,10 +6,6 @@
   padding: 2.5rem 1rem;
 }
 
-/* =========================
-   Dashboard shell
-   ========================= */
-
 .module_dashboard {
   width: min(1200px, calc(100vw - 2rem));
   display: flex;
@@ -56,7 +52,6 @@
   color: rgba(255, 255, 255, 0.72);
 }
 
-/* Logout button (mismo diseño, nuevo classname) */
 .module_logout_button {
   border: none;
   cursor: pointer;
@@ -83,10 +78,6 @@
 .module_logout_button:active {
   transform: translateY(0);
 }
-
-/* =========================
-   Config section (create/edit)
-   ========================= */
 
 .module_config {
   display: grid;
@@ -124,7 +115,6 @@
   gap: 1rem;
 }
 
-/* Inputs (mismo diseño, nuevos classnames) */
 .module_name_field {
   width: 100%;
   height: 2.8rem;
@@ -195,7 +185,6 @@
   box-shadow: 0 0 0 3px rgba(0, 140, 255, 0.25);
 }
 
-/* File upload (mismo diseño, nuevos classnames) */
 .module_create_file {
   display: none;
 }
@@ -264,7 +253,6 @@
   font-size: 0.85rem;
 }
 
-/* Primary action buttons inside cards (mismo diseño, nuevos classnames) */
 .module_create_button,
 .module_edit_button {
   height: 2.9rem;
@@ -298,7 +286,6 @@
   transform: none;
 }
 
-/* Secondary button (mismo diseño, nuevo classname) */
 .module_cancel_button {
   height: 2.9rem;
   border-radius: 12px;
@@ -328,10 +315,6 @@
   grid-template-columns: 1fr 1fr;
   gap: 0.8rem;
 }
-
-/* =========================
-   Search (mismo diseño, nuevos classnames)
-   ========================= */
 
 .modules_search {
   display: flex;
@@ -392,10 +375,6 @@
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
 }
 
-/* =========================
-   Modules list (mismo diseño, nuevos classnames)
-   ========================= */
-
 .modules_list {
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -454,7 +433,6 @@
   background: rgba(255, 255, 255, 0.06);
 }
 
-/* Card text (nuevo, pero mismo look general) */
 .module_card_text {
   display: flex;
   flex-direction: column;
@@ -527,7 +505,6 @@
   background: linear-gradient(135deg, #ff3b30, #ff5b4a, #ff2d55);
 }
 
-/* Pagination (mismo diseño, nuevo classname) */
 .module_pageButtons {
   display: flex;
   justify-content: center;
@@ -566,11 +543,6 @@
   cursor: not-allowed;
 }
 
-/* =========================
-   Responsive - Admin Dashboard
-   ========================= */
-
-/* Tablets y abajo */
 @media (max-width: 980px) {
   .pg_module {
     padding: 1.6rem 1rem;
@@ -597,7 +569,6 @@
   }
 }
 
-/* Móvil */
 @media (max-width: 640px) {
   .module_dashboard_logaccount h1 {
     font-size: 1.35rem;

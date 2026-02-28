@@ -1,10 +1,10 @@
-/* Conection with SupaBase Server Client */
+//conectar a supabase
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
-/* Supabase Cliente for server actions (Route Handlers[APIrest Post,Get,Put,Delete], Server Actions, Server Components)*/
+//Crear Cliente
 export async function createClient() {
-  const cookieStore = await cookies(); /* cookies */
+  const cookieStore = await cookies(); // cookies
 
   const URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const PUBLISH_KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
@@ -17,7 +17,7 @@ export async function createClient() {
 
   return createServerClient(URL, PUBLISH_KEY, {
     cookies: {
-      /* cookies validation*/
+      // cookies validar
       getAll() {
         return cookieStore.getAll();
       },
@@ -29,5 +29,3 @@ export async function createClient() {
     },
   });
 }
-
-/* This is used to authenticate login and logout and to validate permissions */

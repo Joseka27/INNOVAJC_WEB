@@ -1,8 +1,7 @@
 :root {
-  --down-offset: 140px; /* header global + sticky si aplica */
+  --down-offset: 140px;
 }
 
-/* anchors */
 #inicio,
 #descargas,
 #seguridad {
@@ -14,9 +13,6 @@
   flex-direction: column;
 }
 
-/* =========================
-   HERO
-========================= */
 .pg_down-hero {
   width: 100%;
   padding: 5.2rem 1.25rem;
@@ -149,7 +145,6 @@
   pointer-events: none;
 }
 
-/* Right hero card */
 .pg_down-heroCard {
   border-radius: 22px;
   padding: 1.2rem 1.2rem;
@@ -218,9 +213,6 @@
   line-height: 1.35rem;
 }
 
-/* =========================
-   LIST
-========================= */
 .pg_down-list {
   width: 100%;
   padding: 5rem 1.25rem;
@@ -253,7 +245,6 @@
   line-height: 1.5rem;
 }
 
-/* toolbar */
 .pg_down-toolbar {
   display: flex;
   gap: 1rem;
@@ -322,7 +313,6 @@
   background: linear-gradient(to right, #1976d2, #33a3ff, #1c8eff);
 }
 
-/* search */
 .pg_down-search {
   flex: 1;
   min-width: 220px;
@@ -347,7 +337,6 @@
   box-shadow: 0 0 0 4px rgba(0, 140, 255, 0.12);
 }
 
-/* grid */
 .pg_down-grid {
   display: grid;
   gap: 1rem;
@@ -474,7 +463,6 @@
   white-space: nowrap;
 }
 
-/* meta row */
 .pg_down-meta {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -502,7 +490,6 @@
   font-size: 0.95rem;
 }
 
-/* highlights */
 .pg_down-highlights {
   margin: 0;
   padding: 0;
@@ -531,7 +518,6 @@
   box-shadow: 0 0 0 4px rgba(0, 140, 255, 0.1);
 }
 
-/* requirements */
 .pg_down-req {
   border-radius: 16px;
   padding: 0.8rem 0.9rem;
@@ -557,7 +543,6 @@
   flex-wrap: wrap;
 }
 
-/* empty */
 .pg_down-empty {
   margin-top: 0.5rem;
   padding: 1rem;
@@ -569,9 +554,6 @@
   text-align: center;
 }
 
-/* =========================
-   SAFETY
-========================= */
 .pg_down-safety {
   width: 100%;
   padding: 5rem 1.25rem;
@@ -681,16 +663,14 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #1c8eff; /* usa el color del texto */
+  background: #1c8eff;
 }
 
-/* 1) Regla base anti-overflow en flex */
 .pg_down-card,
 .pg_down-card * {
   min-width: 0;
 }
 
-/* 2) Fila nombre + chip */
 .pg_down-appNameRow {
   display: flex;
   align-items: center;
@@ -698,17 +678,15 @@
   min-width: 0;
 }
 
-/* 3) Nombre con ellipsis */
 .pg_down-appName {
   min-width: 0;
   flex: 1;
 
-  white-space: normal; /* permite salto */
-  overflow-wrap: anywhere; /* rompe strings largas */
-  word-break: break-word; /* seguridad extra */
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
-/* 4) Chip no se sale */
 .pg_down-chip {
   flex-shrink: 0;
   max-width: 40%;
@@ -717,15 +695,13 @@
   white-space: nowrap;
 }
 
-/* 5) TAGLINE: aquí está el problema del screenshot */
 .pg_down-appTagline {
   min-width: 0;
   white-space: normal;
-  overflow-wrap: anywhere; /* ✅ rompe strings sin espacios */
+  overflow-wrap: anywhere;
   word-break: break-word;
 }
 
-/* 6) Meta: que nunca desborde */
 .pg_down-meta,
 .pg_down-metaItem,
 .pg_down-metaItem strong,
@@ -739,7 +715,6 @@
   white-space: normal;
 }
 
-/* 7) Requirements (por si acaso) */
 .pg_down-reqList li {
   overflow-wrap: anywhere;
   word-break: break-word;
@@ -778,7 +753,7 @@
   background: #1b8cfd;
 }
 
--------------------------- .pg_down-grid {
+.pg_down-grid {
   gap: 1.25rem;
 }
 
@@ -825,14 +800,12 @@
   gap: 0.95rem;
 }
 
-/* Tipografía: más “enterprise” */
 .pg_down-appName {
   font-size: 1.15rem;
   letter-spacing: 0.01em;
   line-height: 1.15;
 }
 
-/* Tagline con clamp (evita cards desbalanceadas) */
 .pg_down-appTagline {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -853,7 +826,6 @@
   font-size: 0.98rem;
 }
 
-/* Requirements: que se vea integrado y no “pegado” */
 .pg_down-req {
   border-radius: 18px;
   padding: 0.9rem 1rem;
@@ -867,7 +839,6 @@
   letter-spacing: 0.02em;
 }
 
-/* Dots azules ya los tienes: solo subimos el “feel” */
 .pg_down-reqList li {
   padding-left: 1.25rem;
 }
@@ -877,16 +848,15 @@
   box-shadow: 0 0 0 4px rgba(28, 142, 255, 0.12);
 }
 
-/* Botón dentro de card: más “call to action” y alineado al fondo */
 .pg_down-cardActions {
-  margin-top: auto; /* clave: empuja el botón al pie para cards parejas */
+  margin-top: auto;
   padding-top: 0.25rem;
 }
 
 .pg_down-cardActions .pg_down-btnPrimary {
   width: 100%;
   justify-content: center;
-  border-radius: 16px; /* más “card button” */
+  border-radius: 16px;
   padding: 0.85rem 1rem;
 
   box-shadow: 0 18px 50px rgba(0, 140, 255, 0.24);

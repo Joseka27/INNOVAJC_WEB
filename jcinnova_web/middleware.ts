@@ -39,7 +39,7 @@ export async function middleware(request: NextRequest) {
 
   const now = Date.now();
 
-  // 1) Idle timeout (server-side) — solo se valida cuando llega un request
+  //Idle timeout (tiempo inactividad server side) — solo se valida cuando llega un request
   const lastSeenRaw = request.cookies.get("admin_last_seen")?.value;
   if (lastSeenRaw) {
     const lastSeen = Number(lastSeenRaw);
@@ -68,7 +68,7 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // 2) Hard timeout (3 min desde login)
+  // cerrar sesion obligado
   const sessionStartRaw = request.cookies.get("admin_session_start")?.value;
   if (sessionStartRaw) {
     const sessionStart = Number(sessionStartRaw);
@@ -100,7 +100,7 @@ export async function middleware(request: NextRequest) {
       return redirectRes;
     }
   } else {
-    // Si estás en /admin/dashboard y no existe session_start => OUT
+    // Si estás en /admin/dashboard y no existe session saca
     if (pathname.startsWith(ADMIN_DASHBOARD_PREFIX)) {
       const url = request.nextUrl.clone();
       url.pathname = ADMIN_LOGIN_PATH;
@@ -125,8 +125,6 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // ✅ IMPORTANTE:
-  // NO renovamos last_seen en /api/auth/me, porque el Layout hace polling y eso "fingiría actividad".
   const shouldTouchLastSeen =
     pathname.startsWith("/admin") && pathname !== "/api/auth/me";
 
@@ -140,7 +138,7 @@ export async function middleware(request: NextRequest) {
     });
   }
 
-  // Gate extra para /admin/dashboard: requiere cookies sb-* + last_seen válido
+  // Seguridad puerta extra para /admin/dashboard: requiere cookies sb-* + last_seen válido
   if (pathname.startsWith(ADMIN_DASHBOARD_PREFIX)) {
     const hasSessionCookie = request.cookies
       .getAll()

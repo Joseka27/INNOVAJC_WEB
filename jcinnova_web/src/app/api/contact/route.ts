@@ -1,18 +1,15 @@
 import { NextResponse } from "next/server";
 
-export const runtime = "nodejs"; // 🔥 IMPORTANTE para que nodemailer funcione
+export const runtime = "nodejs";
 
-// ===============================
-// Rate limit (1 IP cada X segundos)
-// ===============================
+//Maximo de Mensajes por hora
 type Bucket = { count: number; resetAt: number };
 const buckets = new Map<string, Bucket>();
 
-const WINDOW_MS = 3600_000; // ✅ X segundos (10s). Cambia aquí.
-const MAX_REQUESTS = 2; // ✅ 1 request por ventana
+const WINDOW_MS = 3600_000; //1 hora
+const MAX_REQUESTS = 2; // 2 request
 
 function getIP(req: Request) {
-  // En despliegues con proxy (Vercel, Nginx, etc.)
   const xf = req.headers.get("x-forwarded-for");
   if (xf) return xf.split(",")[0].trim();
 
@@ -41,7 +38,6 @@ function rateLimit(ip: string) {
 }
 
 export async function POST(req: Request) {
-  // ✅ Rate limit antes de procesar
   const ip = getIP(req);
   const rl = rateLimit(ip);
 
@@ -67,7 +63,7 @@ export async function POST(req: Request) {
     const { firstName, lastName, email, phone, region, company, subject } =
       body;
 
-    // ✅ Validación básica
+    //Validacion Basica
     if (
       !firstName ||
       !lastName ||
@@ -83,7 +79,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // ✅ Validar variables de entorno
+    // Validar Variables
     if (
       !process.env.SMTP_HOST ||
       !process.env.SMTP_PORT ||
@@ -98,18 +94,17 @@ export async function POST(req: Request) {
       );
     }
 
-    // ✅ Crear transporter
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: Number(process.env.SMTP_PORT),
-      secure: false, // Gmail usa false con 587
+      secure: false,
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
     });
 
-    // ✅ Enviar correo
+    //Enviar el correo
     await transporter.sendMail({
       from: `"InnovaJC Web" <${process.env.SMTP_USER}>`,
       to: process.env.CONTACT_TO,

@@ -12,15 +12,15 @@ import {
 import { useAdminGate } from "@/app/(admin)/admin/_admin_components/useAdmingate";
 import { useIdleLogout } from "@/app/(admin)/admin/_admin_components/useIdlelogout";
 
-/* Max page size */
+//tamaño de la pagina
 const PAGE_SIZE = 10;
 
-/** Bucket privado */
+//Bucket Division
 const DOWNLOADS_BUCKET = "downloads";
 const FILES_FOLDER = "AppLink";
 const COVERS_FOLDER = "AppImages";
 
-/** select requerido */
+//Opciones en input
 const TYPE_FILE_OPTIONS = [
   "Software",
   "Documentacion",
@@ -35,9 +35,9 @@ type DownloadRow = {
   description: string | null;
   size: string | null;
   version: string | null;
-  file_url: string | null; // path en storage (privado)
-  type_file: string | null; // windows/linux/mac/android
-  app_image: string | null; // path en storage (privado)
+  file_url: string | null;
+  type_file: string | null;
+  app_image: string | null;
   requirements: string | null;
   created_at?: string | null;
 };
@@ -68,7 +68,6 @@ export default function AdminDownloadsPage() {
 
   const [query, setQuery] = useState("");
 
-  /** Signed URLs cache SOLO para IMÁGENES (bucket privado) */
   const [signedUrlByPath, setSignedUrlByPath] = useState<
     Record<string, string>
   >({});
@@ -147,7 +146,6 @@ export default function AdminDownloadsPage() {
     if (!booting && userEmail && isAdmin) {
       loadDownloads(0);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [booting, userEmail, isAdmin]);
 
   async function logout() {

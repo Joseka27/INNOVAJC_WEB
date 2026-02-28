@@ -16,23 +16,15 @@ body {
   margin: 0;
 }
 
-/* =========================
-   Layout general
-   ========================= */
-
 .pg_admin {
-  min-height: 100dvh; /* ✅ altura real del viewport (mejor en móvil) */
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
 
-  padding: 2rem 1rem; /* ✅ evita que se pegue en pantallas pequeñas */
+  padding: 2rem 1rem;
   overflow: hidden;
 }
-
-/* =========================
-   Login card
-   ========================= */
 
 .pg_admin_login {
   width: min(420px, calc(100vw - 2rem));
@@ -56,10 +48,6 @@ body {
   letter-spacing: 0.04em;
   color: #ffffff;
 }
-
-/* =========================
-   Inputs
-   ========================= */
 
 .pg_admin_box {
   position: relative;
@@ -91,7 +79,6 @@ body {
   box-shadow: 0 0 0 3px rgba(0, 140, 255, 0.28);
 }
 
-/* Ícono dentro del input */
 .pg_admin_inputicon {
   position: absolute;
   left: 0.75rem;
@@ -102,10 +89,6 @@ body {
   pointer-events: none;
   opacity: 0.85;
 }
-
-/* =========================
-   Botón
-   ========================= */
 
 .pg_admin_button {
   height: 3rem;
@@ -138,10 +121,6 @@ body {
   box-shadow: none;
   transform: none;
 }
-
-/* =========================
-   Toasts (bottom-right)
-   ========================= */
 
 .pg_toast_container {
   position: fixed;
@@ -197,7 +176,6 @@ body {
   color: rgba(255, 255, 255, 0.88);
 }
 
-/* Botón cerrar */
 .pg_toast_close {
   position: absolute;
   top: 0.45rem;
@@ -213,7 +191,6 @@ body {
   color: #ffffff;
 }
 
-/* Variantes */
 .pg_toast--success {
   border-color: rgba(46, 204, 113, 0.35);
 }
@@ -226,7 +203,6 @@ body {
   border-color: rgba(52, 152, 219, 0.35);
 }
 
-/* Barra de progreso */
 .pg_toast_bar {
   position: absolute;
   left: 0;
@@ -260,11 +236,6 @@ body {
   }
 }
 
-/* =========================
-   Responsive - Admin Login
-   Pegar al final de adminlogin.css
-   ========================= */
-
 @media (max-width: 480px) {
   .pg_admin {
     padding: 1.25rem 0.9rem;
@@ -290,7 +261,6 @@ body {
     font-size: 0.98rem;
   }
 
-  /* Toast width más cómodo en móvil */
   .pg_toast_container {
     right: 0.75rem;
     bottom: 0.75rem;
@@ -308,7 +278,6 @@ body {
   }
 }
 
-/* Mejor soporte en pantallas bajitas (teclado móvil) */
 @media (max-height: 700px) {
   .pg_admin {
     align-items: flex-start;

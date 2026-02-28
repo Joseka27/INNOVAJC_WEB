@@ -5,4 +5,4 @@ export const slugify = (text: string) =>
     .replace(/[\u0300-\u036f]/g, "") // elimina acentos
     .replace(/[^a-z0-9\s-]/g, "") // elimina caracteres raros
     .trim()
-    .replace(/\s+/g, "-"); // espacios → guiones
+    .replace(/\s+/g, "-"); // espacios convierte en guiones

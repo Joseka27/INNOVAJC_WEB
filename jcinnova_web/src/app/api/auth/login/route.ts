@@ -3,16 +3,15 @@ import { createClient } from "@/lib/supabase/serverClient";
 
 const IS_PROD = process.env.NODE_ENV === "production";
 
-// ✅ TEST
-const ADMIN_IDLE_LIMIT = 30 * 60; // seconds (1 min)
-const ADMIN_SESSION_MAX = 60 * 60; // seconds (3 min)
+const ADMIN_IDLE_LIMIT = 30 * 60; //30 min
+const ADMIN_SESSION_MAX = 60 * 60; //1hora max
 
 export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
     if (!email || !password) {
       return NextResponse.json(
-        { error: "Email and password required" },
+        { error: "Email y contraseña requerida" },
         { status: 400 },
       );
     }
@@ -28,7 +27,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: error.message }, { status: 401 });
     }
 
-    // ✅ login OK: setea inicio de sesión (hard timeout)
+    //Si el login esta bien
     const res = NextResponse.json(
       { user: data.user },
       {
@@ -41,7 +40,7 @@ export async function POST(req: Request) {
 
     const now = Date.now();
 
-    // 1) Inicio de sesión (3 min)
+    //Inicio de sesion tiempo
     res.cookies.set("admin_session_start", String(now), {
       httpOnly: true,
       path: "/",
@@ -50,7 +49,7 @@ export async function POST(req: Request) {
       maxAge: ADMIN_SESSION_MAX,
     });
 
-    // 2) last_seen inicial (1 min)
+    //ultimo inicio
     res.cookies.set("admin_last_seen", String(now), {
       httpOnly: true,
       path: "/",

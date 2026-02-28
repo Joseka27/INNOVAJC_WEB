@@ -14,7 +14,6 @@ type ModuleItem = {
   image_url: string;
 };
 
-// Si tu API tiene muchos módulos, puedes subir este número.
 const FETCH_LIMIT = 200;
 
 function parseLongDesc(text: string | null): string[][] {
@@ -23,10 +22,10 @@ function parseLongDesc(text: string | null): string[][] {
 
   return s
     .replace(/\\n/g, "\n")
-    .split(/\n\s*\n/g) // 🔥 divide por doble salto
+    .split(/\n\s*\n/g)
     .map((block) =>
       block
-        .split(/\r?\n/g) // salto simple dentro del bloque
+        .split(/\r?\n/g)
         .map((line) => line.trim())
         .filter(Boolean),
     )
@@ -38,7 +37,7 @@ export default function AboutServices() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [activeCat] = useState<string>("Todos"); // (por ahora no hay UI de filtros)
+  const [activeCat] = useState<string>("Todos");
 
   async function fetchAllModules() {
     setLoading(true);
@@ -76,12 +75,10 @@ export default function AboutServices() {
           : [];
         all.push(...batch);
 
-        // Si ya no vienen más, cortamos
         if (batch.length < FETCH_LIMIT) break;
 
         offset += FETCH_LIMIT;
 
-        // Safety guard por si algo raro devuelve siempre lleno
         if (offset > 5000) break;
       }
 
@@ -129,7 +126,6 @@ export default function AboutServices() {
     return modules.filter((m) => m.module_category === activeCat);
   }, [modules, activeCat]);
 
-  // ✅ Agrupar por categoría (ya filtrado)
   const grouped = useMemo(() => {
     const map = new Map<string, ModuleItem[]>();
 
@@ -139,7 +135,6 @@ export default function AboutServices() {
       map.get(cat)!.push(m);
     }
 
-    // Ordenar categorías + ordenar módulos dentro de cada categoría
     const orderedCats = Array.from(map.keys()).sort((a, b) =>
       a.localeCompare(b),
     );
@@ -174,7 +169,6 @@ export default function AboutServices() {
           </div>
         </motion.div>
 
-        {/* Estado loading / error */}
         {loading && (
           <div className="pg_about_services-empty">Cargando módulos…</div>
         )}
@@ -182,19 +176,16 @@ export default function AboutServices() {
           <div className="pg_about_services-empty">❌ {error}</div>
         )}
 
-        {/* ✅ Categorías + Grid por categoría */}
         {!loading && !error && (
           <div className="pg_about_services-groups">
             {grouped.map(({ cat, items }) => (
               <section key={cat} className="pg_about_services-group">
-                {/* ---Categoria--- */}
                 <div className="pg_about_services-catDivider" id={slugify(cat)}>
                   <span className="pg_about_services-catLine" aria-hidden />
                   <h3 className="pg_about_services-catTitle">{cat}</h3>
                   <span className="pg_about_services-catLine" aria-hidden />
                 </div>
 
-                {/* Grid de esa categoría */}
                 <div className="pg_about_services-grid">
                   {items.map((item) => (
                     <article
@@ -242,7 +233,6 @@ export default function AboutServices() {
           </div>
         )}
 
-        {/* Estado vacío */}
         {!loading && !error && filtered.length === 0 && (
           <div className="pg_about_services-empty">
             No hay módulos para esta categoría.

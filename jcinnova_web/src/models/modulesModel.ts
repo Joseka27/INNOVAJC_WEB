@@ -1,4 +1,5 @@
-/* When data is inserted */
+//Estructura de la base de datos
+
 export interface InsertModule {
   title: string;
   short_desc: string;
@@ -7,7 +8,6 @@ export interface InsertModule {
   module_category: string;
 }
 
-/* When data is brought back */
 export interface Module {
   id: number;
   title: string;
@@ -18,7 +18,6 @@ export interface Module {
   module_category: string;
 }
 
-/* update Data */
 export interface UpdateModule {
   title?: string;
   short_desc?: string;

@@ -73,7 +73,7 @@ export default function ServicesSection() {
 
         const res = await fetch(`/api/modules?${qs.toString()}`, {
           method: "GET",
-          cache: "force-cache",
+          cache: "no-store",
         });
 
         const raw = await res.text();

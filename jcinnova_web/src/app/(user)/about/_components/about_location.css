@@ -27,7 +27,6 @@
   gap: 0.6rem;
 }
 
-/* ✅ Icono pequeño controlado */
 .locmap_icon {
   width: 28px;
   height: 28px;
@@ -97,7 +96,7 @@
 .locmap_mapCard {
   width: 700px;
   height: 450px;
-  max-width: 100%; /* no rompe mobile */
+  max-width: 100%;
   border-radius: 14px;
   overflow: hidden;
   background: #e6f3ff;
@@ -112,7 +111,6 @@
   display: block;
 }
 
-/* Fallback placeholder */
 .locmap_placeholder {
   width: 100%;
   height: 100%;
@@ -159,12 +157,12 @@
 
 @media (max-width: 620px) {
   .locmap {
-    padding: 3.25rem 1rem; /* menos aire y menos “pegado” */
+    padding: 3.25rem 1rem;
   }
 
   .locmap_inner {
     gap: 1.25rem;
-    text-align: left; /* en móvil, centrado suele verse “raro” en direcciones */
+    text-align: left;
   }
 
   .locmap_left {
@@ -205,8 +203,8 @@
   }
 
   .locmap_btn {
-    width: 100%; /* CTA full width */
-    padding: 0.9rem 1rem; /* más cómodo en dedo */
+    width: 100%;
+    padding: 0.9rem 1rem;
     border-radius: 14px;
   }
 
@@ -216,13 +214,12 @@
   }
 
   .locmap_mapCard {
-    width: 100%; /* mata el 700px */
-    height: auto; /* no fuerces 450px */
-    aspect-ratio: 16 / 10; /* tamaño “mobile-friendly” */
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
     border-radius: 16px;
   }
 
-  /* fallback también respeta el aspect ratio */
   .locmap_placeholder {
     height: 100%;
   }
@@ -236,8 +233,8 @@
 
   .locmap_mapCard {
     width: 100%;
-    height: auto; /* mata el 450px antes */
-    aspect-ratio: 16 / 10; /* misma lógica que en 620 */
+    height: auto;
+    aspect-ratio: 16 / 10;
     border-radius: 16px;
   }
 }

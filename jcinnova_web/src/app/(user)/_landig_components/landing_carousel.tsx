@@ -62,7 +62,6 @@ export default function CompaniesInfiniteCarousel() {
 
   useEffect(() => {
     fetchPage(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -72,7 +71,6 @@ export default function CompaniesInfiniteCarousel() {
     if (items.length >= TARGET_ITEMS) return;
 
     fetchPage(nextCursor);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialLoaded, items.length, nextCursor, loading]);
 
   const safe = useMemo(() => {
@@ -91,11 +89,9 @@ export default function CompaniesInfiniteCarousel() {
   return (
     <section className="w-full">
       <div className="carouselShell">
-        {/* fades suaves */}
         <div className="fadeLeft" />
         <div className="fadeRight" />
 
-        {/* ✅ Botón general abajo derecha (pausa/play) */}
         <button
           type="button"
           className="carouselControl"
@@ -126,8 +122,6 @@ export default function CompaniesInfiniteCarousel() {
                   className="tile"
                   aria-hidden={isDup}
                 >
-                  {/* SOLO IMAGEN */}
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={c.image_url}
                     alt={c.name}
@@ -142,7 +136,6 @@ export default function CompaniesInfiniteCarousel() {
         </div>
       </div>
 
-      {/* Si quieres CERO texto siempre, borra este bloque */}
       {error && (
         <div className="px-6 mt-3 text-sm text-red-600">❌ {error}</div>
       )}

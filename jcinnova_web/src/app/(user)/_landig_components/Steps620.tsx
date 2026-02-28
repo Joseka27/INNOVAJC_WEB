@@ -18,13 +18,11 @@ export default function StepsInfiniteCarouselMobile({
 }) {
   const shellRef = useRef<HTMLDivElement | null>(null);
 
-  // 3x para poder “loop” sin que se note
   const loopSteps = useMemo(() => {
     if (!seceSteps?.length) return [];
     return [...seceSteps, ...seceSteps, ...seceSteps];
   }, [seceSteps]);
 
-  // Helpers para “anclar” al bloque del medio
   const getOneSetWidth = () => {
     const el = shellRef.current;
     if (!el || seceSteps.length === 0) return 0;
@@ -49,12 +47,10 @@ export default function StepsInfiniteCarouselMobile({
     let isInteracting = false;
 
     const disableSnapOnceAndJump = (newLeft: number) => {
-      // Apaga snap 1 frame, ajusta scrollLeft, y lo vuelve a prender.
       const prevSnap = el.style.scrollSnapType;
       el.style.scrollSnapType = "none";
       el.scrollLeft = newLeft;
 
-      // doble rAF para que el layout/scroll se asiente antes de reactivar snap
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           el.style.scrollSnapType = prevSnap || "";
@@ -72,14 +68,13 @@ export default function StepsInfiniteCarouselMobile({
     const onScroll = () => {
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
-        if (isInteracting) return; // no reubicar mientras el dedo/drag está activo
+        if (isInteracting) return;
 
         const one = getOneSetWidth();
         if (!one) return;
 
         const x = el.scrollLeft;
 
-        // umbrales: ajusta si quieres
         const leftEdge = one * 0.35;
         const rightEdge = one * 1.65;
 
@@ -107,7 +102,6 @@ export default function StepsInfiniteCarouselMobile({
       window.removeEventListener("pointercancel", onPointerUp);
       window.removeEventListener("resize", onResize);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [seceSteps.length]);
 
   if (!seceSteps?.length) return null;
@@ -130,7 +124,7 @@ export default function StepsInfiniteCarouselMobile({
                     width={34}
                     height={34}
                     className="m620_iconImg m620_iconDefault"
-                    priority={idx < seceSteps.length} // solo el primer set
+                    priority={idx < seceSteps.length}
                   />
                   <Image
                     src={s.iconHover}

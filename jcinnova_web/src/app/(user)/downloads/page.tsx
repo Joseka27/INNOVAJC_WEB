@@ -24,7 +24,6 @@ type DownloadRow = {
 
 const DOWNLOADS_BUCKET = "downloads";
 
-// filtros UI
 const PLATFORMS: Array<Platform | "Todos"> = [
   "Todos",
   "Software",
@@ -33,8 +32,8 @@ const PLATFORMS: Array<Platform | "Todos"> = [
   "Reportes",
 ];
 
-// si hay muchos registros
-const FETCH_LIMIT = 200;
+//limite de 500apps
+const FETCH_LIMIT = 500;
 
 function fmtDate(iso: string) {
   const d = new Date(iso);
@@ -64,7 +63,6 @@ export default function Downloads() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // signed urls SOLO para imagen (porque bucket privado)
   const [signedUrlByPath, setSignedUrlByPath] = useState<
     Record<string, string>
   >({});
@@ -153,7 +151,6 @@ export default function Downloads() {
 
   useEffect(() => {
     fetchAllDownloads();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const downloadsUI = useMemo(() => {
@@ -162,7 +159,6 @@ export default function Downloads() {
       .map((r) => {
         const platform = (r.type_file ?? "windows") as Platform;
 
-        // ✅ coverUrl firmado (si existe), sino fallback local
         const coverUrl =
           r.app_image && signedUrlByPath[r.app_image]
             ? signedUrlByPath[r.app_image]
@@ -180,7 +176,7 @@ export default function Downloads() {
           version: (r.version ?? "—").toString(),
           size: (r.size ?? "—").toString(),
           updatedISO,
-          // ✅ descarga profesional (usa tu endpoint)
+
           fileHref: `/api/downloads/${r.id}/download`,
           coverUrl,
           requirements: parseRequirements(r.requirements),
@@ -285,7 +281,6 @@ export default function Downloads() {
         </div>
       </section>
 
-      {/* DESCARGAS */}
       <section className="pg_down-list" id="descargas">
         <div className="pg_down-listInner">
           <div className="pg_down-head">
@@ -340,7 +335,6 @@ export default function Downloads() {
                   <div className="pg_down-cardTop">
                     <div className="pg_down-app">
                       <div className="pg_down-appLogo">
-                        {/* ✅ IMPORTANTE: para signed urls usa <img>, no next/image */}
                         {d.coverUrl ? (
                           <img
                             src={d.coverUrl}

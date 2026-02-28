@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import Link from "next/link";
 import "./user_customers.css";
 
 type SortKey = "relevance" | "name_asc" | "name_desc" | "newest" | "oldest";
@@ -114,7 +113,6 @@ export default function CompaniesPage() {
 
   useEffect(() => {
     initialLoad();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filteredSorted = useMemo(() => {
@@ -128,7 +126,6 @@ export default function CompaniesPage() {
           return `${name} ${desc}`.includes(qq);
         });
 
-    // “relevance”: si hay query, prioriza “startsWith”, luego “includes”
     if (sort === "relevance") {
       if (!qq) return base;
 
@@ -183,7 +180,6 @@ export default function CompaniesPage() {
 
   return (
     <div className="pg_companies">
-      {/* HERO */}
       <section className="pg_companies-hero" id="companies-hero">
         <div className="pg_companies-heroInner">
           <h1 className="pg_companies-title">
@@ -204,11 +200,9 @@ export default function CompaniesPage() {
                 className="pg_companies-searchBtn"
                 aria-label="Buscar"
                 onClick={() => {
-                  // Solo para UX: enfoca/close mobile keyboard, no hace request
                   (document.activeElement as HTMLElement | null)?.blur?.();
                 }}
               >
-                {/* lupa */}
                 <svg
                   viewBox="0 0 24 24"
                   width="20"
@@ -265,7 +259,6 @@ export default function CompaniesPage() {
         </div>
       </section>
 
-      {/* LIST */}
       <section className="pg_companies-list">
         <div className="pg_companies-listInner">
           {bootError ? (

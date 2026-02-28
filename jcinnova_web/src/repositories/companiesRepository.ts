@@ -1,4 +1,4 @@
-/* Direct connection with supabase */
+//Conexion con la base de datos
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type {
   Company,
@@ -6,9 +6,8 @@ import type {
   UpdateCompany,
 } from "@/models/companiesModel";
 
-/* All companies actions */
+//Acciones
 export const companiesRepository = (supabase: SupabaseClient) => ({
-  /* create method for companys */
   async createCompany(data: InsertCompany): Promise<Company> {
     const { data: row, error } = await supabase
       .from("CompaniesWorkWith")
@@ -20,7 +19,7 @@ export const companiesRepository = (supabase: SupabaseClient) => ({
     return row as Company;
   },
 
-  /* call all companies in DB */
+  //Traer
   async getCompanies(): Promise<Company[]> {
     const { data, error } = await supabase
       .from("CompaniesWorkWith")
@@ -31,7 +30,7 @@ export const companiesRepository = (supabase: SupabaseClient) => ({
     return (data ?? []) as Company[];
   },
 
-  /* update company information */
+  //actualizar
   async updateCompany(id: number, patch: UpdateCompany): Promise<Company> {
     const { data, error } = await supabase
       .from("CompaniesWorkWith")
@@ -44,7 +43,7 @@ export const companiesRepository = (supabase: SupabaseClient) => ({
     return data as Company;
   },
 
-  /* remove company from DB */
+  //borrar
   async removeCompany(id: number): Promise<{ id: number }> {
     const { error } = await supabase
       .from("CompaniesWorkWith")

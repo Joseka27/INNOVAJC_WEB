@@ -1,3 +1,5 @@
+//Estructura de la base de datos
+
 export interface InsertDownload {
   app_image: string;
   title: string;

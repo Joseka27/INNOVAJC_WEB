@@ -1,48 +1,45 @@
-/* Resize Image before send it to supabase bucket */
+//redimensionar el tamaño de la imagen
 export async function resizeImageToWebp(
   file: File,
   opts?: { maxW?: number; maxH?: number; quality?: number },
 ): Promise<File> {
-  /* Max image size*/
+  //tamaño maximo
   const maxW = opts?.maxW ?? 1000;
   const maxH = opts?.maxH ?? 1000;
   const quality = opts?.quality ?? 0.82;
 
-  /* Validate that file is an image */
+  //valida que sea imagen
   if (!file.type.startsWith("image/"))
     throw new Error("El archivo no es una imagen.");
 
-  /*temporal files in memory */
+  //archivo temporal
   const img = document.createElement("img");
   const url = URL.createObjectURL(file);
 
   try {
-    /* wait to file to upload before read the H and W */
+    //esperar archivo antes de leer o escribir
     await new Promise<void>((resolve, reject) => {
-      img.onload = () => resolve(); /* Loaded */
-      img.onerror = () =>
-        reject(new Error("No se pudo leer la imagen.")); /* Error */
+      img.onload = () => resolve();
+      img.onerror = () => reject(new Error("No se pudo leer la imagen."));
       img.src = url;
     });
 
-    /* New size dimensions */
+    //nuevo tamaño
     const ratio = Math.min(maxW / img.width, maxH / img.height, 1);
     const w = Math.round(img.width * ratio);
     const h = Math.round(img.height * ratio);
 
-    /* Create canvas with final dimensions */
+    //crea un canva del nuevo tamaño en 2D para imprimir la imagen y guardar
     const canvas = document.createElement("canvas");
     canvas.width = w;
     canvas.height = h;
 
-    /* canvas context 2D */
     const ctx = canvas.getContext("2d");
     if (!ctx) throw new Error("Canvas no disponible.");
 
-    /* draw image in the canvas */
     ctx.drawImage(img, 0, 0, w, h);
 
-    /* Transform Canvas to .WEBP */
+    //transforma a webp
     const blob: Blob = await new Promise((resolve, reject) => {
       canvas.toBlob(
         (b) =>
@@ -52,7 +49,7 @@ export async function resizeImageToWebp(
       );
     });
 
-    /* Rename the image */
+    //Renombra el archivo
     const newName = file.name.replace(/\.[^.]+$/, "") + ".webp";
     return new File([blob], newName, { type: "image/webp" });
   } finally {

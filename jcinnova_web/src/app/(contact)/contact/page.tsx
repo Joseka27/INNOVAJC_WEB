@@ -66,7 +66,6 @@ export default function ContactPage() {
     msg: string;
   }>(null);
 
-  // ✅ BONUS: si es OK, desaparece solo en 3 segundos
   useEffect(() => {
     if (status?.type === "ok") {
       const timer = setTimeout(() => {
@@ -93,7 +92,6 @@ export default function ContactPage() {
 
   function handleFocus(name: FieldName) {
     setFocused(name);
-    // quita error visual mientras escribe
     setErrors((p) => ({ ...p, [name]: "" }));
   }
 
@@ -131,7 +129,6 @@ export default function ContactPage() {
     e.preventDefault();
     setStatus(null);
 
-    // honeypot anti-bot
     if (form.honey.trim()) {
       setStatus({ type: "ok", msg: "Enviado." });
       return;
@@ -147,7 +144,6 @@ export default function ContactPage() {
       "subject",
     ];
 
-    // forzar touched + validar todo
     const nextTouched = { ...touched };
     const nextErrors = { ...errors };
 
@@ -242,7 +238,6 @@ export default function ContactPage() {
     }
   }
 
-  // helpers visuales por campo
   function fieldUI(name: FieldName) {
     const err = touched[name] ? errors[name] : "";
     const isFocused = focused === name;
@@ -254,7 +249,6 @@ export default function ContactPage() {
     <div className="ct_pg">
       <div className="ct_shell">
         <div className="ct_grid">
-          {/* LEFT */}
           <section className="ct_left">
             <div className="ct_leftInner">
               <h1 className="ct_title">
@@ -265,9 +259,7 @@ export default function ContactPage() {
               <p className="ct_subtitle">Todos los campos son requeridos</p>
 
               <form className="ct_form" onSubmit={onSubmit}>
-                {/* Row 2 */}
                 <div className="ct_row2">
-                  {/* First name */}
                   <div className="ct_field">
                     {(() => {
                       const { err, isFocused, ok } = fieldUI("firstName");
@@ -345,7 +337,6 @@ export default function ContactPage() {
                     })()}
                   </div>
 
-                  {/* Last name */}
                   <div className="ct_field">
                     {(() => {
                       const { err, isFocused, ok } = fieldUI("lastName");

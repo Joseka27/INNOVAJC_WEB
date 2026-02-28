@@ -69,7 +69,6 @@
   color: #fff;
 }
 
-/* Variantes */
 .pg_toast--success {
   border-color: rgba(46, 204, 113, 0.25);
 }
@@ -80,7 +79,6 @@
   border-color: rgba(52, 152, 219, 0.25);
 }
 
-/* Barra de tiempo */
 .pg_toast_bar {
   position: absolute;
   left: 0;
@@ -113,7 +111,6 @@
   }
 }
 
-/* Toast actions (confirm) */
 .pg_toast_actions {
   display: flex;
   gap: 0.5rem;
@@ -252,8 +249,6 @@
     transform: scaleX(0);
   }
 }
-
-/* Toast actions (confirm) */
 .pg_toast_actions {
   display: flex;
   gap: 0.5rem;

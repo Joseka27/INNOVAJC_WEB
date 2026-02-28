@@ -19,7 +19,6 @@ function uid() {
   return `${Date.now()}_${Math.random().toString(16).slice(2)}`;
 }
 
-/** Hook ultra liviano para toasts */
 function useToasts() {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
@@ -71,7 +70,6 @@ function Toasts({
             <div className="pg_toast_msg">{t.message}</div>
           </div>
 
-          {/* Barra de progreso */}
           <div
             className="pg_toast_bar"
             style={{ animationDuration: `${t.durationMs ?? 3500}ms` }}

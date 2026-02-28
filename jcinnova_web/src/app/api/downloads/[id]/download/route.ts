@@ -4,8 +4,7 @@ import { requireAdmin } from "@/lib/auth/requireAdmin";
 
 const BUCKET = "downloads";
 
-/** ✅ CAMBIA ESTO por el nombre REAL de tu tabla en Supabase */
-const TABLE_NAME = "Downloads"; // <-- EJEMPLO: pon aquí el nombre correcto
+const TABLE_NAME = "Downloads";
 
 function sanitizeFilename(name: string) {
   return name

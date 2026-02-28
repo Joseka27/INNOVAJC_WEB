@@ -3,7 +3,6 @@
   --about-sticky-offset-cat: 235px;
 }
 
-/* Para secciones del About */
 #innovajc,
 #WhatWeDo,
 #services,
@@ -14,7 +13,6 @@
   scroll-margin-top: var(--about-sticky-offset-cat);
 }
 
-/* Cada módulo (article) también, por si navegas por hash al módulo */
 .pg_about_services-card {
   scroll-margin-top: var(--about-sticky-offset-cat);
 }
@@ -34,7 +32,6 @@
   margin: 0 auto;
 }
 
-/* ===== LAYOUT ===== */
 .pg_about_innovajc-split {
   display: grid;
   grid-template-columns: 0.95fr 1.05fr;
@@ -42,7 +39,6 @@
   align-items: start;
 }
 
-/* ===== LEFT ===== */
 .pg_about_innovajc-left {
   position: static;
   top: auto;
@@ -61,7 +57,6 @@
   object-fit: contain;
 }
 
-/* ===== RIGHT ===== */
 .pg_about_innovajc-right {
   display: flex;
   flex-direction: column;
@@ -116,7 +111,6 @@
   color: rgb(5, 117, 192);
 }
 
-/* ===== SOCIAL ===== */
 .pg_about_innovajc_socialmedia {
   display: flex;
   align-items: center;
@@ -147,7 +141,6 @@
   font-size: 0.9rem;
 }
 
-/* ===== RESPONSIVE ===== */
 @media (max-width: 980px) {
   .pg_about_innovajc {
     padding: 4rem 1.1rem;
@@ -159,7 +152,7 @@
   }
 
   .pg_about_innovajc-left {
-    position: static; /* quitar sticky en mobile */
+    position: static;
   }
 
   .pg_about_innovajc-logo {
@@ -214,15 +207,10 @@
   border-color: #083e96;
   box-shadow: 0 16px 45px rgba(8, 62, 150, 0.18);
 }
-/* ===============================
-   STICKY MINI NAV (ABOUT)
-================================ */
 
 .pg_about_stickyNav {
   position: sticky;
 
-  /* Si tienes un header global fijo, cambia esto:
-     top: 80px; (o lo que mida tu header) */
   top: 90;
 
   z-index: 80;
@@ -311,10 +299,6 @@
   }
 }
 
-/* ===============================
-   ABOUT - "QUÉ HACEMOS" SECTION
-================================ */
-
 .pg_about_servicesFeature {
   width: 100%;
   padding: 4.5rem 1.25rem;
@@ -342,7 +326,6 @@
   margin: 1rem 0;
 }
 
-/* Layout grid (Left cards + Right list) */
 .pg_about_servicesFeature-grid {
   display: grid;
   grid-template-columns: 1.35fr 0.85fr;
@@ -350,7 +333,6 @@
   align-items: start;
 }
 
-/* LEFT side: 4 cards in 2 columns */
 .pg_about_servicesFeature-left {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -374,7 +356,7 @@
   align-items: center;
   justify-content: center;
 
-  overflow: hidden; /* evita que la imagen sobresalga */
+  overflow: hidden;
 }
 
 .pg_about_servicesFeature-icon img {
@@ -404,7 +386,6 @@
   line-height: 1.55;
 }
 
-/* RIGHT side: list + button */
 .pg_about_servicesFeature-right {
   padding: 1.25rem 1.25rem;
   border-radius: 18px;
@@ -480,10 +461,6 @@
   transform: translateY(-1px);
   filter: brightness(1.05);
 }
-
-/* ===============================
-   RESPONSIVE
-================================ */
 
 @media (max-width: 980px) {
   .pg_about_servicesFeature-grid {

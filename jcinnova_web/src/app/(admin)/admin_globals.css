@@ -1,9 +1,6 @@
 /* admin_global.css */
 @import "tailwindcss";
 
-/* =========================
-   Root theme vars
-========================= */
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -16,9 +13,6 @@
   }
 }
 
-/* =========================
-   Base document
-========================= */
 html,
 body {
   height: 100%;
@@ -31,12 +25,9 @@ body {
   background-attachment: fixed;
   background: linear-gradient(180deg, #020617, #020617);
 
-  /* ✅ la app administra el scroll por contenedores (sidebar/content) */
   overflow: hidden;
 }
 
-/* (Si aún te queda algún wrapper viejo en el JSX, no estorba)
-   Si ya no lo usas, lo puedes borrar sin problema. */
 .AdminLayout {
   display: grid;
   min-height: 100dvh;

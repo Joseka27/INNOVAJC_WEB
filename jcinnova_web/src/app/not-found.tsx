@@ -1,4 +1,3 @@
-import Link from "next/link";
 import "./not-found.css";
 import { Roboto } from "next/font/google";
 

@@ -36,7 +36,6 @@ export default function AdminModulesPage() {
   const { toasts, push, remove, clearAll } = useToasts();
   const { booting, userEmail, isAdmin } = useAdminGate();
 
-  // ✅ TEST: 1 min idle, 3 min hard
   useIdleLogout(push, {
     idleMs: 30 * 60 * 1000,
     sessionMaxMs: 60 * 60 * 1000,
@@ -112,12 +111,10 @@ export default function AdminModulesPage() {
     if (editFileRef.current) editFileRef.current.value = "";
   }
 
-  // ✅ load solo cuando ya pasó gate
   useEffect(() => {
     if (!booting && userEmail && isAdmin) {
       loadModules(0);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [booting, userEmail, isAdmin]);
 
   async function logout() {
@@ -746,7 +743,6 @@ export default function AdminModulesPage() {
                     onClick={() => {
                       startEdit(m);
 
-                      // ✅ Scroll SOLO dentro de dashboard_content (no afecta header global)
                       requestAnimationFrame(() => {
                         const container =
                           document.getElementById("dashboard_scroll");
@@ -759,7 +755,7 @@ export default function AdminModulesPage() {
                             container.scrollTop;
 
                           container.scrollTo({
-                            top: top - 150, // margen superior
+                            top: top - 150,
                             behavior: "smooth",
                           });
                         }

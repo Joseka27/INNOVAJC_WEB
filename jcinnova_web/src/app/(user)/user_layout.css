@@ -1,6 +1,3 @@
-/* =========================
-   TOKENS (PRO)
-========================= */
 :root {
   --page: #f6f7fb;
   --surface: #ffffff;
@@ -21,13 +18,9 @@
   --container: 1180px;
   --px: clamp(1rem, 3vw, 3.5rem);
 
-  /* Anchor offset (sticky header) */
-  --header-h: 80px; /* ajusta si tu header real difiere */
+  --header-h: 80px;
 }
 
-/* =========================
-   RESET / GLOBAL
-========================= */
 * {
   box-sizing: border-box;
 }
@@ -62,9 +55,6 @@ hr {
   margin: 1rem 0;
 }
 
-/* =========================================================
-   HEADER
-========================================================= */
 header {
   background-color: var(--surface);
   color: #616161;
@@ -84,7 +74,6 @@ header {
   padding: 0 var(--px);
 }
 
-/* wrapper */
 .pg_header {
   height: 72px;
   display: flex;
@@ -105,14 +94,12 @@ header {
   min-width: 0;
 }
 
-/* Logo */
 .pg_header_logo {
   max-height: 80px;
   width: auto;
   display: block;
 }
 
-/* Desktop nav wrapper */
 .pg_header-linkrouters-links {
   display: flex;
   align-items: center;
@@ -122,13 +109,11 @@ header {
   margin-left: 1.25rem;
 }
 
-/* Each link container */
 .pg_header-linkrouter {
   display: flex;
   width: fit-content;
 }
 
-/* Links style */
 .pg_header-linkrouters-links a {
   position: relative;
   font-size: 17px;
@@ -165,7 +150,6 @@ header {
   transform: scaleX(1);
 }
 
-/* Right side: CTA + burger */
 .pg_header-right {
   display: flex;
   align-items: center;
@@ -174,7 +158,6 @@ header {
   overflow: visible !important;
 }
 
-/* CTA */
 .pg_header-contactbutton {
   display: inline-flex;
   align-items: center;
@@ -197,10 +180,6 @@ header {
   filter: brightness(0.98);
 }
 
-/* =========================
-   MOBILE MENU (STATE: .is-open)
-========================= */
-
 /* Burger */
 .pg_header-burger {
   display: none;
@@ -214,14 +193,13 @@ header {
 
   position: relative;
   flex: 0 0 46px;
-  padding: 0; /* importante para centrar spans */
+  padding: 0;
 }
 
 .pg_header-burger:hover {
   background: #f7f9fd;
 }
 
-/* Bars centradas */
 .pg_header-burger span {
   position: absolute;
   left: 50%;
@@ -251,7 +229,6 @@ header {
   transform: translate(-50%, calc(-50% + 6px));
 }
 
-/* Burger open animation (antes era :checked, ahora es .is-open) */
 .pg_header-burger.is-open span:nth-child(1) {
   transform: translate(-50%, -50%) rotate(45deg);
   width: 14px;
@@ -265,7 +242,6 @@ header {
   width: 14px;
 }
 
-/* Panel */
 .pg_header-mobilePanel {
   position: absolute;
   top: calc(100% + 12px);
@@ -334,7 +310,6 @@ header {
   text-align: center;
 }
 
-/* Backdrop */
 .pg_header-backdrop {
   position: fixed;
   inset: 0;
@@ -344,7 +319,7 @@ header {
   transition: opacity 0.2s ease;
   z-index: 1100;
 
-  border: 0; /* es button */
+  border: 0;
 }
 
 .pg_header-backdrop.is-open {
@@ -352,9 +327,6 @@ header {
   pointer-events: auto;
 }
 
-/* =========================================================
-   FOOTER
-========================================================= */
 footer,
 .footer {
   background-color: #f8f8f8;
@@ -455,11 +427,6 @@ footer,
   transform: scale(1.12);
 }
 
-/* schedule */
-/* =========================
-   SCHEDULE
-========================= */
-
 .schedule {
   width: 100%;
   max-width: 360px;
@@ -471,7 +438,6 @@ footer,
   margin: 0 0 0.4rem 0;
 }
 
-/* Base: asegura alineación limpia incluso en desktop/mediano */
 .schedule-row {
   width: 100%;
   display: grid;
@@ -484,7 +450,6 @@ footer,
   min-height: 36px;
 }
 
-/* 🔵 Día actual normal */
 .schedule-row.today {
   font-weight: 900;
   background: rgba(5, 43, 105, 0.06);
@@ -498,7 +463,6 @@ footer,
   color: transparent;
 }
 
-/* 🔴 Si hoy es sábado o domingo */
 .schedule-row.today-closed {
   background: rgba(185, 28, 28, 0.12);
   border: 1px solid rgba(185, 28, 28, 0.28);
@@ -510,7 +474,7 @@ footer,
   background-clip: text;
   color: transparent;
 }
-/* bottom */
+
 .pg_footer-terms {
   display: flex;
   flex-direction: row;
@@ -547,11 +511,6 @@ footer,
   text-decoration: underline;
 }
 
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-
-/* ---- Header mobile ---- */
 @media (max-width: 980px) {
   .pg_header {
     height: 70px;
@@ -570,7 +529,6 @@ footer,
   }
 }
 
-/* ---- Footer 1200 ---- */
 @media (max-width: 1200px) {
   .pg_footer-information {
     grid-template-columns: 2fr 1fr 1fr;
@@ -581,7 +539,6 @@ footer,
   }
 }
 
-/* ---- Footer 990 ---- */
 @media (max-width: 990px) {
   .pg_footer-information {
     grid-template-columns: 1fr 1fr;
@@ -602,7 +559,6 @@ footer,
   }
 }
 
-/* ---- Footer 650 ---- */
 @media (max-width: 650px) {
   .pg_footer-information {
     grid-template-columns: 1fr;
@@ -647,7 +603,6 @@ footer,
   }
 }
 
-/* En pantallas realmente pequeñas: se apila para que no se “desacomode” */
 @media (max-width: 490px) {
   .schedule-row {
     grid-template-columns: 1fr;

@@ -5,18 +5,18 @@ import { requireAdmin } from "@/lib/auth/requireAdmin";
 
 export async function GET(req: Request) {
   try {
-    /* Crete client */
+    //Crea el Cliente
     const supabase = await createClient();
-    /* Get URL from request to read query params */
+    //Toma la url de los parametros
     const url = new URL(req.url);
 
-    /* Results are displayed in groups of 15, max 50 */
+    //resultados de 15 en 15 mx de 50
     const limit = Math.min(Number(url.searchParams.get("limit") ?? 15), 50);
 
     const cursor = url.searchParams.get("cursor");
     const offset = url.searchParams.get("offset");
 
-    /* Query that calls in groups */
+    //Llama a los grupos
     let q = supabase
       .from("CompaniesWorkWith")
       .select("id,name,description,image_url", { count: "exact" })
@@ -47,11 +47,11 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const supabase = await createClient();
-    /* verify if user is admin */
+    //Verifica que es admin
     await requireAdmin(supabase);
 
     const body = await req.json();
-    /* body: { name, image_url } insert information*/
+
     const { data, error } = await supabase
       .from("CompaniesWorkWith")
       .insert({
@@ -64,7 +64,7 @@ export async function POST(req: Request) {
 
     if (error) throw error;
 
-    /* return new company */
+    //Devuelve a la company
     return NextResponse.json(data);
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: e.status ?? 400 });

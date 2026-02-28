@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     },
   );
 
-  // borrar admin_last_seen
+  // borrar la ultima accion de admin
   res.cookies.set("admin_last_seen", "", {
     path: "/",
     maxAge: 0,
@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     secure: IS_PROD,
   });
 
-  // borrar admin_session_start (hard timeout cookie)
+  // borrar ultimo inicio de sesion
   res.cookies.set("admin_session_start", "", {
     path: "/",
     maxAge: 0,
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     secure: IS_PROD,
   });
 
-  // borrar todas las sb-* (source: cookies actuales)
+  // borrar todas las cookies
   for (const c of cookieStore.getAll()) {
     if (c.name.startsWith("sb-")) {
       res.cookies.set(c.name, "", {

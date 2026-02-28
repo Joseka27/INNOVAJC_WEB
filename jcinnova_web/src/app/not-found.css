@@ -1,6 +1,4 @@
-/* =========================
-   RESET BÁSICO
-   ========================= */
+/* RESET */
 
 html,
 body {
@@ -9,12 +7,10 @@ body {
   overflow-x: hidden;
 }
 
-/* =========================
-   GLOBAL 404 SIN SCROLL
-   ========================= */
+/* GLOBAL 404 (pagina no encontrada) */
 
 .pg_nf_wrapper {
-  position: fixed; /* 🔥 bloquea totalmente scroll */
+  position: fixed;
   inset: 0;
   width: 100%;
   height: 100dvh;
@@ -49,7 +45,6 @@ body {
   text-align: center;
 }
 
-/* Badge 404 */
 .pg_nf_badge {
   place-items: center;
   font-weight: 900;

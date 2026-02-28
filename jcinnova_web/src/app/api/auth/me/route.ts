@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/serverClient";
 import { cookies } from "next/headers";
 
 const IS_PROD = process.env.NODE_ENV === "production";
-const ADMIN_SESSION_LIMIT = 60 * 60 * 1000; // ms (1 minuto para test) -> en prod: 60*60*1000
+const ADMIN_SESSION_LIMIT = 60 * 60 * 1000; // 1hora
 
 function noStoreHeaders() {
   return {
@@ -18,15 +18,13 @@ export async function GET() {
 
   const startRaw = cookieStore.get("admin_session_start")?.value;
 
-  // ✅ Caso 1: NO existe session_start => tratamos como sesión inválida
-  // (Esto evita que la sesión "reviva" solo porque Supabase aún tiene sb-*)
+  //Si no hay sesion que sea invalida la entrada
   if (!startRaw) {
     const res = NextResponse.json(
       { user: null, isAdmin: false, error: "SESSION_START_MISSING" },
       { status: 200, headers: noStoreHeaders() },
     );
 
-    // limpiar custom
     res.cookies.set("admin_session_start", "", {
       path: "/",
       maxAge: 0,
@@ -40,7 +38,7 @@ export async function GET() {
       secure: IS_PROD,
     });
 
-    // limpiar sb-*
+    // limpiar sb
     for (const c of cookieStore.getAll()) {
       if (c.name.startsWith("sb-")) {
         res.cookies.set(c.name, "", {
@@ -55,7 +53,7 @@ export async function GET() {
     return res;
   }
 
-  // ✅ Caso 2: Existe session_start => aplicar hard timeout
+  // Si hay sesion aplicar el tiempo
   const start = Number(startRaw);
   if (Number.isFinite(start) && Date.now() - start > ADMIN_SESSION_LIMIT) {
     const res = NextResponse.json(
@@ -63,7 +61,6 @@ export async function GET() {
       { status: 200, headers: noStoreHeaders() },
     );
 
-    // limpiar custom
     res.cookies.set("admin_session_start", "", {
       path: "/",
       maxAge: 0,
@@ -77,7 +74,7 @@ export async function GET() {
       secure: IS_PROD,
     });
 
-    // limpiar sb-*
+    // limpiar sb
     for (const c of cookieStore.getAll()) {
       if (c.name.startsWith("sb-")) {
         res.cookies.set(c.name, "", {
@@ -92,10 +89,9 @@ export async function GET() {
     return res;
   }
 
-  // ✅ Sesión actual (si pasa hard timeout)
   const { data: userData } = await supabase.auth.getUser();
 
-  // Si Supabase no tiene user, devolvemos null (normal)
+  // Si no hay ususario devuelve null
   if (!userData.user) {
     return NextResponse.json(
       { user: null, isAdmin: false },

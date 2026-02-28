@@ -1,38 +1,38 @@
-/* Middleware auth */
+// Middleware autenticacion
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-/* Verify if the user is an admin */
+// Verifica que usuario es un admin */
 export async function requireAdmin(supabase: SupabaseClient) {
-  /* got verify user from the actual sesion */
+  //toma el usuario verificado actual
   const { data: userData, error: userError } = await supabase.auth.getUser();
-  /* Validate if user exist or there is an error  */
+  //valida si existe
   if (userError || !userData.user) {
     const err = new Error("Unauthorized");
     (err as any).status = 401;
     throw err;
   }
 
-  /* check db if user is admin */
+  //reviasa la db
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("is_admin")
     .eq("id", userData.user.id)
     .single();
 
-  /* if request fail */
+  //si falla la request
   if (profileError) {
     const err = new Error("Forbidden");
     (err as any).status = 403;
     throw err;
   }
 
-  /* if user isnt admin */
+  //si no es usuario saca
   if (!profile?.is_admin) {
     const err = new Error("Forbidden");
     (err as any).status = 403;
     throw err;
   }
 
-  /* return validated user */
+  //devuelve usuario validado
   return { user: userData.user };
 }

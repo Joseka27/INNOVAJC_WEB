@@ -4,14 +4,14 @@ import { createClient } from "@/lib/supabase/serverClient";
 import { requireAdmin } from "@/lib/auth/requireAdmin";
 import { extractCompanyStoragePath } from "@/lib/storage/companiesBucket";
 
-/* Dynamic params (id)*/
+//Parametros dinamicos
 type Ctx = { params: Promise<{ id: string }> };
 
-/* confirms the received parameter */
+//Confirma los parametros
 function parseId(idParam: string) {
   const n = Number(idParam);
 
-  /* validate id */
+  //valida id
   if (!Number.isInteger(n) || n <= 0) {
     const err = new Error(`Invalid id: "${idParam}"`);
     (err as any).status = 400;
@@ -22,20 +22,20 @@ function parseId(idParam: string) {
 
 export async function PUT(req: Request, ctx: Ctx) {
   try {
-    /* create supabase client */
+    //Crea el cliente
     const supabase = await createClient();
 
-    /* validate admin */
+    //Valida Admin
     await requireAdmin(supabase);
 
     const { id } = await ctx.params;
     const rowId = parseId(id);
 
-    const patch = await req.json(); /* { name?, image_url?, old_image_url? } */
-    /* Delete ol image url*/
+    const patch = await req.json();
+    //Borra la URL
     const oldUrl: string | undefined = patch.old_image_url;
 
-    /* update row information in db */
+    //Actualiza la informacion
     const { data, error } = await supabase
       .from("CompaniesWorkWith")
       .update({
@@ -49,10 +49,10 @@ export async function PUT(req: Request, ctx: Ctx) {
 
     if (error) throw error;
 
-    /* delete the old file from the bucket */
+    //Borra la informacion antigua del bucket
     if (oldUrl && patch.image_url && oldUrl !== patch.image_url) {
       const oldPath = extractCompanyStoragePath(oldUrl);
-      /* if the path could be extracted, it is deleted. */
+
       if (oldPath) {
         await supabase.storage.from("companies").remove([oldPath]);
       }
@@ -67,13 +67,13 @@ export async function PUT(req: Request, ctx: Ctx) {
 export async function DELETE(_: Request, ctx: Ctx) {
   try {
     const supabase = await createClient();
-    /* Validate that it is admin*/
+    //Valida Admin
     await requireAdmin(supabase);
 
     const { id } = await ctx.params;
     const rowId = parseId(id);
 
-    /* Read current URL */
+    //Lee la URL actual
     const { data: current, error: readErr } = await supabase
       .from("CompaniesWorkWith")
       .select("image_url")
@@ -82,11 +82,11 @@ export async function DELETE(_: Request, ctx: Ctx) {
 
     if (readErr) throw readErr;
 
-    /* file deleted from the bucket */
+    //borra archivo del bucket
     const path = extractCompanyStoragePath(current.image_url);
     if (path) await supabase.storage.from("companies").remove([path]);
 
-    /* row deleted from the database */
+    //borra de la DB
     const { error: delErr } = await supabase
       .from("CompaniesWorkWith")
       .delete()
@@ -94,7 +94,6 @@ export async function DELETE(_: Request, ctx: Ctx) {
 
     if (delErr) throw delErr;
 
-    /* The deleted ID is returned */
     return NextResponse.json({ id: rowId });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: e.status ?? 400 });

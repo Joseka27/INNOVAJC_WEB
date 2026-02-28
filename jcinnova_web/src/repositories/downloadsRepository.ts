@@ -5,7 +5,9 @@ import type {
   UpdateDownload,
 } from "@/models/downloadsModel";
 
+//Acciones
 export const downloadsRepository = (supabase: SupabaseClient) => ({
+  //crear
   async create(data: InsertDownload): Promise<Download> {
     const { data: row, error } = await supabase
       .from("Downloads")
@@ -27,6 +29,7 @@ export const downloadsRepository = (supabase: SupabaseClient) => ({
     return (data ?? []) as Download[];
   },
 
+  //llamar
   async getById(id: number): Promise<Download | null> {
     const { data, error } = await supabase
       .from("Downloads")
@@ -38,6 +41,7 @@ export const downloadsRepository = (supabase: SupabaseClient) => ({
     return (data ?? null) as Download | null;
   },
 
+  //actualizar
   async update(id: number, patch: UpdateDownload): Promise<Download> {
     const { data, error } = await supabase
       .from("Downloads")
@@ -50,6 +54,7 @@ export const downloadsRepository = (supabase: SupabaseClient) => ({
     return data as Download;
   },
 
+  //borrar
   async remove(id: number) {
     const { error } = await supabase.from("Downloads").delete().eq("id", id);
     if (error) throw error;

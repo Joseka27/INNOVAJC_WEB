@@ -1,17 +1,17 @@
-/* update / delete module by id */
+// update / delete por id
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/serverClient";
 import { requireAdmin } from "@/lib/auth/requireAdmin";
 import { extractModuleStoragePath } from "@/lib/storage/modulesBucket";
 
-/* Dynamic params (id) */
+//ID dinamico
 type Ctx = { params: Promise<{ id: string }> };
 
-/* confirms the received parameter */
+//Confirma parametros
 function parseId(idParam: string) {
   const n = Number(idParam);
 
-  /* validate id */
+  //valdia id
   if (!Number.isInteger(n) || n <= 0) {
     const err = new Error(`Invalid id: "${idParam}"`);
     (err as any).status = 400;
@@ -22,10 +22,10 @@ function parseId(idParam: string) {
 
 export async function PUT(req: Request, ctx: Ctx) {
   try {
-    /* create supabase client */
+    //Crea el cliente supabase
     const supabase = await createClient();
 
-    /* validate admin */
+    //valida admin
     await requireAdmin(supabase);
 
     const { id } = await ctx.params;
@@ -35,7 +35,8 @@ export async function PUT(req: Request, ctx: Ctx) {
 
     const oldUrl: string | undefined = patch.old_image_url;
 
-    /* update row information in db */
+    //Actualiza la informacion de la linea
+
     const { data, error } = await supabase
       .from("Modules")
       .update({
@@ -51,7 +52,7 @@ export async function PUT(req: Request, ctx: Ctx) {
 
     if (error) throw error;
 
-    /* delete the old file from the bucket (only if image changed) */
+    //Borra antiguo archivo del bucket
     if (oldUrl && patch.image_url && oldUrl !== patch.image_url) {
       const oldPath = extractModuleStoragePath(oldUrl);
       if (oldPath) {
@@ -69,13 +70,13 @@ export async function DELETE(_: Request, ctx: Ctx) {
   try {
     const supabase = await createClient();
 
-    /* Validate that it is admin */
+    //valdia admin
     await requireAdmin(supabase);
 
     const { id } = await ctx.params;
     const rowId = parseId(id);
 
-    /* Read current URL */
+    //Lee el URL
     const { data: current, error: readErr } = await supabase
       .from("Modules")
       .select("image_url")
@@ -84,11 +85,11 @@ export async function DELETE(_: Request, ctx: Ctx) {
 
     if (readErr) throw readErr;
 
-    /* file deleted from the bucket */
+    //Borra del bucket
     const path = extractModuleStoragePath(current.image_url);
     if (path) await supabase.storage.from("modules").remove([path]);
 
-    /* row deleted from the database */
+    //Borra de la DB
     const { error: delErr } = await supabase
       .from("Modules")
       .delete()

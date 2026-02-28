@@ -1,30 +1,30 @@
-/* middleware connection to read and update cookies*/
+//conexion con middleware y actualiza cookies
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function updateSession(request: NextRequest) {
-  /* Function middleware calls */
+  //llama middleware
   let response = NextResponse.next({ request });
 
   const URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const PUBLISH_KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
 
   const supabase = createServerClient(URL, PUBLISH_KEY, {
-    /* Create server client with proxy */
+    //crea el server proxy
     cookies: {
-      /* get cookies */
+      //conseguir la cookies
       getAll() {
         return request.cookies.getAll();
       },
       setAll(cookiesToSet) {
-        /* Set request for the server new token */
+        //solicitar nuevo token
         for (const { name, value } of cookiesToSet) {
           request.cookies.set(name, value);
         }
         response = NextResponse.next({
           request,
         });
-        /* Set response for the server save new token */
+        //responde al nuevo token
         for (const { name, value, options } of cookiesToSet) {
           response.cookies.set(name, value, options);
         }

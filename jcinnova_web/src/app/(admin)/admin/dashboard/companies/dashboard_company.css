@@ -6,10 +6,6 @@
   padding: 2.5rem 1rem;
 }
 
-/* =========================
-   Dashboard shell
-   ========================= */
-
 .company_dashboard {
   width: min(1200px, calc(100vw - 2rem));
   display: flex;
@@ -84,10 +80,6 @@
   transform: translateY(0);
 }
 
-/* =========================
-   Config section (create/edit)
-   ========================= */
-
 .company_config {
   display: grid;
   grid-template-columns: 1fr;
@@ -124,10 +116,6 @@
   gap: 1rem;
 }
 
-/* =========================
-   Inputs (name + description)
-   ========================= */
-
 .name_field {
   width: 100%;
   height: 2.8rem;
@@ -153,16 +141,14 @@
   box-shadow: 0 0 0 3px rgba(0, 140, 255, 0.25);
 }
 
-/* ✅ textarea usando la misma clase */
 textarea.name_field {
-  height: auto; /* deja que el rows mande */
+  height: auto;
   min-height: 3.25rem;
-  padding: 0.75rem 0.9rem; /* padding vertical */
+  padding: 0.75rem 0.9rem;
   line-height: 1.25rem;
-  resize: vertical; /* puedes cambiar a none si no quieres resize */
+  resize: vertical;
 }
 
-/* File */
 .create_file {
   display: none;
 }
@@ -231,7 +217,6 @@ textarea.name_field {
   font-size: 0.85rem;
 }
 
-/* Primary action buttons inside cards */
 .create_button,
 .edit_button {
   height: 2.9rem;
@@ -265,7 +250,6 @@ textarea.name_field {
   transform: none;
 }
 
-/* Secondary button */
 .cancel_button {
   height: 2.9rem;
   border-radius: 12px;
@@ -295,10 +279,6 @@ textarea.name_field {
   grid-template-columns: 1fr 1fr;
   gap: 0.8rem;
 }
-
-/* =========================
-   Companies search
-   ========================= */
 
 .companies_search {
   display: flex;
@@ -359,10 +339,6 @@ textarea.name_field {
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
 }
 
-/* =========================
-   Companies list
-   ========================= */
-
 .companies_list {
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -412,15 +388,13 @@ textarea.name_field {
   color: #ffffff;
 }
 
-/* ✅ NUEVO: nombre + descripción en columna */
 .company_box_text {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  min-width: 0; /* permite ellipsis/clamp */
+  min-width: 0;
 }
 
-/* ✅ NUEVO: descripción (clamp a 2 líneas) */
 .company_box_desc {
   font-size: 0.9rem;
   font-weight: 700;
@@ -473,7 +447,6 @@ textarea.name_field {
   background: linear-gradient(135deg, #ff3b30, #ff5b4a, #ff2d55);
 }
 
-/* Pagination */
 .pageButtons {
   display: flex;
   justify-content: center;
@@ -512,11 +485,6 @@ textarea.name_field {
   cursor: not-allowed;
 }
 
-/* =========================
-   Responsive - Admin Dashboard
-   ========================= */
-
-/* Tablets y abajo */
 @media (max-width: 980px) {
   .pg_company {
     padding: 1.6rem 1rem;
@@ -543,7 +511,6 @@ textarea.name_field {
   }
 }
 
-/* Móvil */
 @media (max-width: 640px) {
   .company_dashboard_logaccount h1 {
     font-size: 1.35rem;
@@ -582,12 +549,10 @@ textarea.name_field {
     text-align: center;
   }
 
-  /* Botones editar/cancelar en edición */
   .company_dashboard_actions_buttons {
     grid-template-columns: 1fr;
   }
 
-  /* Label de archivo se ordena mejor */
   .file_label {
     flex-wrap: wrap;
     gap: 0.75rem;
@@ -598,7 +563,6 @@ textarea.name_field {
     text-align: center;
   }
 
-  /* Paginación en móvil */
   .pageButtons {
     gap: 0.6rem;
   }
@@ -608,14 +572,12 @@ textarea.name_field {
     border-radius: 10px;
   }
 
-  /* Toast a todo el ancho en móvil */
   .pg_toast_container {
     right: 0.75rem;
     bottom: 0.75rem;
     width: calc(100vw - 1.5rem);
   }
 
-  /* Search: botón pasa abajo */
   .companies_search {
     flex-direction: column;
     align-items: stretch;
@@ -626,7 +588,6 @@ textarea.name_field {
     text-align: center;
   }
 
-  /* ✅ tu regla original aumentaba demasiado el font, la dejo más controlada */
   .company_box_info {
     flex-direction: column;
     align-items: flex-start;
@@ -637,7 +598,6 @@ textarea.name_field {
   }
 }
 
-/* Muy pequeño */
 @media (max-width: 380px) {
   .company_dashboard {
     padding: 1.25rem 1rem;
@@ -656,7 +616,6 @@ textarea.name_field {
   }
 }
 
-/* Pantallas bajitas: evita que se “corte” con teclado y mantiene aire */
 @media (max-height: 720px) {
   .pg_company {
     align-items: flex-start;
@@ -665,17 +624,12 @@ textarea.name_field {
   }
 }
 
-/* =========================
-   Admin Shell (Sidebar + Main)
-   ========================= */
-
 .company_shell {
   min-height: 100dvh;
   display: grid;
   grid-template-columns: 280px 1fr;
 }
 
-/* Sidebar */
 .company_sidebar {
   position: sticky;
   top: 0;
@@ -755,19 +709,16 @@ textarea.name_field {
   line-height: 1.2rem;
 }
 
-/* Main */
 .company_main {
   min-height: 100dvh;
   overflow: auto;
 }
 
-/* OJO: tu .pg_company centra el contenido, pero ahora queremos padding normal en main */
 .company_main .pg_company {
   padding: 2.5rem 1.25rem;
   justify-content: flex-start;
 }
 
-/* Responsive: sidebar pasa arriba */
 @media (max-width: 980px) {
   .company_shell {
     grid-template-columns: 1fr;

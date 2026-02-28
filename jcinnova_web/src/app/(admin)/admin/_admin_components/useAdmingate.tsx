@@ -28,7 +28,7 @@ export function useAdminGate() {
           data = null;
         }
 
-        // ✅ Si el server dice que expiró hard-timeout, limpiamos cookies
+        //si expiraron las cookies
         if (data?.error === "SESSION_MAX_EXPIRED") {
           await fetch("/api/auth/logout", {
             method: "POST",
@@ -63,7 +63,6 @@ export function useAdminGate() {
     return () => {
       alive = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return { booting, userEmail, isAdmin };

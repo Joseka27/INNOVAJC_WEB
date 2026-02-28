@@ -10,7 +10,7 @@
   align-items: center;
   justify-content: center;
   box-shadow: 0 0 10px 5px rgba(185, 255, 214, 0.568);
-  z-index: 9999; /* siempre encima */
+  z-index: 9999;
   cursor: pointer;
   transition: transform 0.2s ease-in-out;
 }

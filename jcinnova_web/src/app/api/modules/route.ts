@@ -5,35 +5,33 @@ import { requireAdmin } from "@/lib/auth/requireAdmin";
 
 export async function GET(req: Request) {
   try {
-    /* Create server client */
+    //Crea el cliente server
     const supabase = await createClient();
 
-    /* Read query params */
+    // Leer parametros del query
     const url = new URL(req.url);
 
-    /* Results in groups, max 50 */
+    //resultado en grupos de 50
     const limit = Math.min(Number(url.searchParams.get("limit") ?? 10), 50);
     const cursor = url.searchParams.get("cursor");
     const offset = url.searchParams.get("offset");
 
-    /* Base query */
+    // Querry Base
     let q = supabase
-      .from("Modules") // ✅ TABLA MODULES
+      .from("Modules")
       .select("id,title,module_category,short_desc,long_desc,image_url", {
         count: "exact",
       })
       .order("id", { ascending: true });
 
-    /* Cursor pagination */
+    //Paginacion
     if (cursor) {
       const c = Number(cursor);
       if (Number.isFinite(c) && c > 0) q = q.gt("id", c);
     } else if (offset) {
-      /* Offset pagination */
       const o = Number(offset);
       if (Number.isFinite(o) && o >= 0) q = q.range(o, o + limit - 1);
     } else {
-      /* Default */
       q = q.range(0, limit - 1);
     }
 
@@ -60,14 +58,14 @@ export async function POST(req: Request) {
   try {
     const supabase = await createClient();
 
-    /* Verify admin */
+    //Verifica Admin
     await requireAdmin(supabase);
 
     const body = await req.json();
 
-    /* Insert module */
+    //Inserta modulo
     const { data, error } = await supabase
-      .from("Modules") // ✅ TABLA MODULES
+      .from("Modules")
       .insert({
         title: body.title,
         module_category: body.module_category,
@@ -80,7 +78,7 @@ export async function POST(req: Request) {
 
     if (error) throw error;
 
-    /* Return new module */
+    //Devuelve el nuevo Modulo
     return NextResponse.json(data);
   } catch (e: any) {
     return NextResponse.json(
