@@ -314,7 +314,7 @@ export default function Downloads() {
                 className="pg_down-searchInput"
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                placeholder="Buscar (ej: SECE, Windows, v1.8...)"
+                placeholder="Buscar (ej: SECE, Soporte, v1.8...)"
                 aria-label="Buscar descargas"
               />
             </div>
