@@ -44,6 +44,15 @@ header.pg_header_shell {
   overflow: visible !important;
 }
 
+html,
+body {
+  overflow-x: hidden;
+}
+
+.AdminLayout {
+  overflow-x: hidden;
+}
+
 .section-header {
   max-width: var(--admin-container);
   margin: 0 auto;
@@ -187,6 +196,7 @@ header.pg_header_shell {
   height: calc(100dvh - var(--admin-header-h));
   overflow: hidden;
   background: var(--admin-bg);
+  overflow-x: hidden;
 }
 
 /* sidebar desktop */
