@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/browserClient";
 import "./dashboard_downloads.css";
 
@@ -666,10 +667,16 @@ export default function AdminDownloadsPage() {
                     htmlFor="download_create_image"
                     className="download_file_label"
                   >
-                    <span className="download_file_icon">🖼️</span>
+                    <Image
+                      className="download_file_icon"
+                      src="/images/adminpage/picture.png"
+                      alt="Icon"
+                      width={50}
+                      height={50}
+                    />
                     <div className="download_file_text">
                       <span className="download_file_title">
-                        Subir imagen (AppImages)
+                        Subir imagen (Del Archivo)
                       </span>
                       <span className="download_file_subtitle">
                         {createImage ? createImage.name : "PNG, JPG, WEBP"}
@@ -695,7 +702,13 @@ export default function AdminDownloadsPage() {
                     htmlFor="download_create_file"
                     className="download_file_label"
                   >
-                    <span className="download_file_icon">⬇️</span>
+                    <Image
+                      className="download_file_icon"
+                      src="/images/adminpage/file.png"
+                      alt="Icon"
+                      width={50}
+                      height={50}
+                    />
                     <div className="download_file_text">
                       <span className="download_file_title">
                         Subir archivo de la app
@@ -801,7 +814,14 @@ export default function AdminDownloadsPage() {
                       htmlFor="download_edit_image"
                       className="download_file_label"
                     >
-                      <span className="download_file_icon">🖼️</span>
+                      <Image
+                        className="download_file_icon"
+                        src="/images/adminpage/picture.png"
+                        alt="Icon"
+                        width={50}
+                        height={50}
+                      />
+
                       <div className="download_file_text">
                         <span className="download_file_title">
                           Cambiar imagen
@@ -832,7 +852,13 @@ export default function AdminDownloadsPage() {
                       htmlFor="download_edit_file"
                       className="download_file_label"
                     >
-                      <span className="download_file_icon">📝</span>
+                      <Image
+                        className="download_file_icon"
+                        src="/images/adminpage/replaceFile.png"
+                        alt="Icon"
+                        width={50}
+                        height={50}
+                      />
                       <div className="download_file_text">
                         <span className="download_file_title">
                           Reemplazar archivo
@@ -925,7 +951,6 @@ export default function AdminDownloadsPage() {
               return (
                 <div key={d.id} className="downloads_boxes">
                   <div className="download_box_info">
-                    {/* cover */}
                     {coverUrl ? (
                       <img
                         src={coverUrl}

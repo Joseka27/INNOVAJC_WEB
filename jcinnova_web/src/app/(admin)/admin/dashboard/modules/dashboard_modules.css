@@ -6,6 +6,27 @@
   padding: 2.5rem 1rem;
 }
 
+.module_textarea_field {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(87, 87, 87, 0.75) rgba(0, 0, 0, 0.08);
+}
+
+.module_textarea_field::-webkit-scrollbar {
+  width: 10px;
+}
+.module_textarea_field::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+}
+.module_textarea_field::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.75);
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.08);
+}
+.module_textarea_field::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.95);
+}
+
 .module_dashboard {
   width: min(1200px, calc(100vw - 2rem));
   display: flex;
@@ -214,10 +235,9 @@
 }
 
 .module_file_icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.06);
+  width: 40px;
+  height: 40px;
+
   display: flex;
   align-items: center;
   justify-content: center;

@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/browserClient";
 import { resizeImageToWebp } from "@/lib/images/resizeImage";
 import { uploadCompanyImage } from "@/lib/storage/companiesBucket";
 import "./dashboard_company.css";
+import Image from "next/image";
 
 import {
   Toasts,
@@ -395,7 +396,13 @@ export default function AdminDashboardPage() {
 
                 <div className="file_field">
                   <label htmlFor="create_file" className="file_label">
-                    <span className="file_icon">🖼️</span>
+                    <Image
+                      className="file_icon"
+                      src="/images/adminpage/picture.png"
+                      alt="Icon"
+                      width={50}
+                      height={50}
+                    />
 
                     <div className="file_text">
                       <span className="file_title">Subir imagen</span>
@@ -457,7 +464,13 @@ export default function AdminDashboardPage() {
 
                   <div className="file_field">
                     <label htmlFor="edit_file" className="file_label">
-                      <span className="file_icon">🖼️</span>
+                      <Image
+                        className="file_icon"
+                        src="/images/adminpage/picture.png"
+                        alt="Icon"
+                        width={50}
+                        height={50}
+                      />
 
                       <div className="file_text">
                         <span className="file_title">Cambiar imagen</span>
