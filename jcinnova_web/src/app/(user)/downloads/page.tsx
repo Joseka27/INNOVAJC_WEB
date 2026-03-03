@@ -336,13 +336,13 @@ export default function Downloads() {
                     <div className="pg_down-app">
                       <div className="pg_down-appLogo">
                         {d.coverUrl ? (
-                          <img
+                          <Image
                             src={d.coverUrl}
                             alt={d.name}
-                            className="pg_down-appLogoImg"
                             width={56}
                             height={44}
-                            loading="lazy"
+                            className="pg_down-appLogoImg"
+                            unoptimized
                           />
                         ) : (
                           <Image
