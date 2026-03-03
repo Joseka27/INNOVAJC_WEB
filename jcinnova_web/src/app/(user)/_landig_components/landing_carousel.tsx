@@ -1,5 +1,5 @@
 "use client";
-import "tailwindcss";
+
 import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import "./landing_carousel.css";
@@ -10,8 +10,8 @@ type Company = {
   image_url: string;
 };
 
-const PAGE_SIZE = 10;
-const TARGET_ITEMS = 10;
+const PAGE_SIZE = 15;
+const TARGET_ITEMS = 30;
 
 async function fetchCompaniesPage(
   cursor: number | null,
@@ -19,30 +19,33 @@ async function fetchCompaniesPage(
 ): Promise<{ items: Company[]; nextCursor: number | null }> {
   const qs = new URLSearchParams();
   qs.set("limit", String(pageSize));
-  if (cursor) qs.set("cursor", String(cursor));
+  if (cursor !== null) qs.set("cursor", String(cursor));
 
-  const res = await fetch(`/api/companies?${qs.toString()}`, { method: "GET" });
+  const res = await fetch(`/api/companies?${qs.toString()}`, {
+    // ✅ CACHE SOLO PARA ESTE FETCH
+    next: { revalidate: 600 }, // 5 minutos
+  });
+
   const data = await res.json();
 
   if (!res.ok) {
-    let errMsg = "Error cargando empresas";
-    if (data.error) {
-      errMsg = data.error;
-    }
-    throw new Error(errMsg);
+    throw new Error(data?.error || "Error cargando empresas");
   }
 
-  let items: Company[] = [];
-  if (Array.isArray(data.items)) {
-    items = data.items;
-  }
+  return {
+    items: Array.isArray(data?.items) ? data.items : [],
+    nextCursor:
+      data?.nextCursor !== undefined && data?.nextCursor !== null
+        ? data.nextCursor
+        : null,
+  };
+}
 
-  let nextCursor: number | null = null;
-  if (data.nextCursor !== undefined && data.nextCursor !== null) {
-    nextCursor = data.nextCursor;
-  }
-
-  return { items, nextCursor };
+function repeatToAtLeast<T>(arr: T[], min: number): T[] {
+  if (arr.length === 0) return [];
+  const out: T[] = [];
+  while (out.length < min) out.push(...arr);
+  return out.slice(0, Math.max(min, arr.length));
 }
 
 export default function CompaniesInfiniteCarousel() {
@@ -52,11 +55,9 @@ export default function CompaniesInfiniteCarousel() {
   const [initialLoaded, setInitialLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // ✅ Botón general: pausa / play del carrusel
-  const [isPaused, setIsPaused] = useState(false);
-
   async function fetchPage(cursor: number | null) {
     if (loading) return;
+
     setLoading(true);
     setError(null);
 
@@ -76,19 +77,19 @@ export default function CompaniesInfiniteCarousel() {
       setNextCursor(newCursor);
       setInitialLoaded(true);
     } catch (e: any) {
-      let errMsg = "Error inesperado";
-      if (e && e.message) {
-        errMsg = e.message;
-      }
-      setError(errMsg);
+      setError(e?.message || "Error inesperado");
     }
+
     setLoading(false);
   }
 
+  // ✅ Carga inicial
   useEffect(() => {
     fetchPage(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // ✅ Traer más hasta TARGET_ITEMS
   useEffect(() => {
     if (!initialLoaded) return;
     if (loading) return;
@@ -96,20 +97,27 @@ export default function CompaniesInfiniteCarousel() {
     if (items.length >= TARGET_ITEMS) return;
 
     fetchPage(nextCursor);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialLoaded, items.length, nextCursor, loading]);
 
-  const safe = useMemo(() => {
-    if (items.length >= 8) return items;
-    if (items.length > 0) return [...items, ...items, ...items];
-    return [];
-  }, [items]);
+  // Repetir si hay pocos para que el loop no se rompa
+  const base = useMemo(() => repeatToAtLeast(items, 8), [items]);
 
   const loopItems = useMemo(
-    () => (safe.length ? [...safe, ...safe] : []),
-    [safe],
+    () => (base.length ? [...base, ...base] : []),
+    [base],
   );
 
-  const durationSeconds = Math.max(45, Math.min(60, safe.length * 2));
+  const durationSeconds = useMemo(() => {
+    const s = base.length ? base.length * 2 : 50;
+    return Math.max(35, Math.min(60, s));
+  }, [base.length]);
+
+  // Fuerza reinicio de animación si cambia el contenido
+  const trackKey = useMemo(() => {
+    const ids = base.map((x) => x.id).join("-");
+    return `${base.length}:${ids}`;
+  }, [base]);
 
   return (
     <section className="w-full">
@@ -117,34 +125,23 @@ export default function CompaniesInfiniteCarousel() {
         <div className="fadeLeft" />
         <div className="fadeRight" />
 
-        <button
-          type="button"
-          className="carouselControl"
-          onClick={() => setIsPaused((p) => !p)}
-          aria-label={isPaused ? "Reanudar carrusel" : "Pausar carrusel"}
-          title={isPaused ? "Reanudar" : "Pausar"}
-        >
-          {isPaused ? "▶" : "❚❚"}
-        </button>
-
-        {/* Track */}
         <div
           className="marquee"
           style={
             {
               ["--duration" as any]: `${durationSeconds}s`,
-              ["--play" as any]: isPaused ? "paused" : "running",
             } as React.CSSProperties
           }
           aria-label="Companies carousel"
         >
-          <div className="track">
+          <div className="track" key={trackKey}>
             {loopItems.map((c, loopIdx) => {
-              const isDup = loopIdx >= safe.length;
+              const isDup = loopIdx >= base.length;
               const copy = isDup ? "b" : "a";
+
               return (
                 <div
-                  key={`${c.id}-${copy}`}
+                  key={`${c.id}-${copy}-${loopIdx}`}
                   className="tile"
                   aria-hidden={isDup}
                 >
@@ -152,9 +149,10 @@ export default function CompaniesInfiniteCarousel() {
                     src={c.image_url}
                     alt={c.name}
                     className="img"
-                    width={120}
-                    height={60}
-                    unoptimized
+                    width={140}
+                    height={70}
+                    priority={loopIdx < 8}
+                    loading={loopIdx < 8 ? "eager" : "lazy"}
                   />
                 </div>
               );
@@ -166,6 +164,7 @@ export default function CompaniesInfiniteCarousel() {
       {error && (
         <div className="px-6 mt-3 text-sm text-red-600">❌ {error}</div>
       )}
+
       {!error && initialLoaded && items.length === 0 && (
         <div className="px-6 mt-3 text-sm text-gray-600">
           No hay empresas todavía.
