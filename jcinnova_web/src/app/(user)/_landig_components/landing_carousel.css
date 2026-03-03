@@ -16,12 +16,12 @@
 }
 
 .fadeLeft {
-  left: -2;
+  left: -3;
   background: linear-gradient(to right, #f9fcff, transparent);
 }
 
 .fadeRight {
-  right: -2;
+  right: -3;
   background: linear-gradient(to left, #f9fcff, transparent);
 }
 
@@ -65,7 +65,7 @@
   width: max-content;
   display: flex;
   align-items: center;
-  gap: 0;
+  gap: 1.75;
 
   /* ✅ no metas padding en track (rompe el -50% loop) */
   padding: 0;
@@ -121,11 +121,11 @@
   }
 
   .track {
-    animation-duration: 28s !important; /* ✅ más rápido en iPhone */
+    animation-duration: 40s !important; /* ✅ más rápido en iPhone */
   }
 
   .img {
-    height: 56px; /* ✅ menos trabajo de render */
+    height: 75px; /* ✅ menos trabajo de render */
   }
 
   .tile {
