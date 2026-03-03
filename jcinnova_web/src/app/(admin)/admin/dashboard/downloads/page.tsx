@@ -180,19 +180,31 @@ export default function AdminDownloadsPage() {
       const raw = await res.text();
       let data: any = null;
       try {
-        data = raw ? JSON.parse(raw) : null;
+        if (raw) data = JSON.parse(raw);
       } catch {
         throw new Error(
           `La API no devolvió JSON. Revisa /api/downloads (status ${res.status}).`,
         );
       }
 
-      if (!res.ok)
-        throw new Error(data?.error ?? "Error cargando las aplicaciones");
+      if (!res.ok) {
+        let errMsg = "Error cargando las aplicaciones";
+        if (data && data.error) {
+          errMsg = data.error;
+        }
+        throw new Error(errMsg);
+      }
 
-      const items: DownloadRow[] = data.items ?? [];
+      let items: DownloadRow[] = [];
+      if (data && Array.isArray(data.items)) {
+        items = data.items;
+      }
       setDownloads(items);
-      setTotal(typeof data.count === "number" ? data.count : null);
+      let dlTotal: number | null = null;
+      if (typeof data.count === "number") {
+        dlTotal = data.count;
+      }
+      setTotal(dlTotal);
       setPage(p);
 
       // ✅ Prefetch signed urls SOLO de imágenes
@@ -203,9 +215,8 @@ export default function AdminDownloadsPage() {
         title: "Error",
         message: err?.message ?? "No se pudieron cargar las aplicaciones.",
       });
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   }
 
   async function prefetchCoverSignedUrls(items: DownloadRow[]) {
@@ -342,6 +353,7 @@ export default function AdminDownloadsPage() {
           title: "Sesión inválida",
           message: "Vuelve a iniciar sesión.",
         });
+        setCreating(false);
         return;
       }
 
@@ -375,6 +387,7 @@ export default function AdminDownloadsPage() {
           title: "No se pudo guardar",
           message: (d as any)?.error ?? "Error creando download.",
         });
+        setCreating(false);
         return;
       }
 
@@ -393,9 +406,8 @@ export default function AdminDownloadsPage() {
         title: "Error",
         message: err?.message ?? "Ocurrió un error inesperado.",
       });
-    } finally {
-      setCreating(false);
     }
+    setCreating(false);
   }
 
   function startEdit(d: DownloadRow) {
@@ -510,6 +522,7 @@ export default function AdminDownloadsPage() {
           title: "No se pudo guardar",
           message: (d as any)?.error ?? "Error guardando cambios.",
         });
+        setSaving(false);
         return;
       }
 
@@ -528,9 +541,8 @@ export default function AdminDownloadsPage() {
         title: "Error",
         message: err?.message ?? "Ocurrió un error inesperado.",
       });
-    } finally {
-      setSaving(false);
     }
+    setSaving(false);
   }
 
   async function removeDownload(id: number) {
@@ -952,10 +964,13 @@ export default function AdminDownloadsPage() {
                 <div key={d.id} className="downloads_boxes">
                   <div className="download_box_info">
                     {coverUrl ? (
-                      <img
+                      <Image
                         src={coverUrl}
                         className="download_logo"
                         alt={d.title ?? "Cover"}
+                        width={80}
+                        height={60}
+                        unoptimized
                       />
                     ) : (
                       <div className="download_logo" aria-hidden="true">

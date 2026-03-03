@@ -590,55 +590,40 @@
 }
 
 @media (max-width: 640px) {
-  .module_dashboard_logaccount h1 {
-    font-size: 1.35rem;
-  }
-
-  .module_dashboard_actions {
-    padding: 1.2rem;
-    border-radius: 16px;
-  }
-
-  /* Cards */
+  /* La card completa en columna */
   .modules_boxes {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.9rem;
+  }
+
+  /* 🔥 IMPORTANTE: info también en columna */
+  .module_box_info {
     flex-direction: column;
     align-items: stretch;
     gap: 0.75rem;
   }
 
-  .module_box_info {
-    font-size: 1.05rem;
-  }
-
+  /* Imagen arriba */
   .module_logo {
     width: 100%;
-    height: 140px;
-    border-radius: 16px;
+    height: 180px;
+    object-fit: cover;
   }
 
+  /* Texto debajo */
+  .module_card_text {
+    width: 100%;
+  }
+
+  /* Acciones debajo del todo */
   .module_box_actions {
     width: 100%;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 0.6rem;
   }
 
   .module_box_actions button {
-    width: 49%;
-    justify-content: center;
-    text-align: center;
-  }
-
-  /* Botones editar/cancelar en edición */
-  .module_dashboard_actions_buttons {
-    grid-template-columns: 1fr;
-  }
-
-  /* Label de archivo se ordena mejor */
-  .module_file_label {
-    flex-wrap: wrap;
-  }
-
-  .module_file_button {
     width: 100%;
-    text-align: center;
   }
 }

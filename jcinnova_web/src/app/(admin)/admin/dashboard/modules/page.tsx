@@ -150,17 +150,31 @@ export default function AdminModulesPage() {
       const raw = await res.text();
       let data: any = null;
       try {
-        data = raw ? JSON.parse(raw) : null;
+        if (raw) data = JSON.parse(raw);
       } catch {
         throw new Error(
           `La API no devolvió JSON. Revisa /api/modules (status ${res.status}).`,
         );
       }
 
-      if (!res.ok) throw new Error(data?.error ?? "Error cargando módulos");
+      if (!res.ok) {
+        let errMsg = "Error cargando módulos";
+        if (data && data.error) {
+          errMsg = data.error;
+        }
+        throw new Error(errMsg);
+      }
 
-      setModules(data.items ?? []);
-      setTotal(typeof data.count === "number" ? data.count : null);
+      let moduleItems: Module[] = [];
+      if (data && Array.isArray(data.items)) {
+        moduleItems = data.items;
+      }
+      setModules(moduleItems);
+      let total: number | null = null;
+      if (typeof data.count === "number") {
+        total = data.count;
+      }
+      setTotal(total);
       setPage(p);
     } catch (err: any) {
       push({
@@ -168,9 +182,8 @@ export default function AdminModulesPage() {
         title: "Error",
         message: err?.message ?? "No se pudieron cargar los módulos.",
       });
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   }
 
   async function createModule(e: React.FormEvent) {
@@ -239,6 +252,7 @@ export default function AdminModulesPage() {
           title: "Sesión inválida",
           message: "Vuelve a iniciar sesión.",
         });
+        setCreating(false);
         return;
       }
 
@@ -268,6 +282,7 @@ export default function AdminModulesPage() {
           title: "No se pudo guardar",
           message: d.error ?? "Error creando módulo.",
         });
+        setCreating(false);
         return;
       }
 
@@ -286,9 +301,8 @@ export default function AdminModulesPage() {
         title: "Error",
         message: err?.message ?? "Ocurrió un error inesperado.",
       });
-    } finally {
-      setCreating(false);
     }
+    setCreating(false);
   }
 
   function startEdit(m: Module) {
@@ -361,6 +375,7 @@ export default function AdminModulesPage() {
             title: "Sesión inválida",
             message: "Vuelve a iniciar sesión.",
           });
+          setSaving(false);
           return;
         }
 
@@ -393,6 +408,7 @@ export default function AdminModulesPage() {
           title: "No se pudo guardar",
           message: d.error ?? "Error guardando cambios.",
         });
+        setSaving(false);
         return;
       }
 
@@ -413,9 +429,8 @@ export default function AdminModulesPage() {
         title: "Error",
         message: err?.message ?? "Ocurrió un error inesperado.",
       });
-    } finally {
-      setSaving(false);
     }
+    setSaving(false);
   }
 
   async function removeModule(id: number) {
@@ -727,10 +742,13 @@ export default function AdminModulesPage() {
             {filteredModules.map((m) => (
               <div key={m.id} className="modules_boxes">
                 <div className="module_box_info">
-                  <img
+                  <Image
                     src={m.image_url}
                     className="module_logo"
                     alt={m.title}
+                    width={80}
+                    height={60}
+                    unoptimized
                   />
 
                   <div className="module_card_text">

@@ -2,7 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import "./user_globals.css";
-import { motion } from "framer-motion";
+import { LazyMotion, m, domAnimation } from "framer-motion";
 import MainCarousel from "@/app/(user)/_landig_components/landing_carousel";
 import StepsInfiniteCarouselMobile from "@/app/(user)/_landig_components/Steps620";
 import ServicesSection from "@/app/(user)/_landig_components/landing_serviceModules";
@@ -16,6 +16,7 @@ import {
 
 const Home = () => {
   return (
+    <LazyMotion features={domAnimation}>
     <>
       <div className="pg_main">
         {/*============= Section 1 (Presentation) =============*/}
@@ -33,7 +34,7 @@ const Home = () => {
               </div>
             </div>
             <div className="pg_main-presentation-section2">
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, x: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7 }}
@@ -46,7 +47,7 @@ const Home = () => {
                   width={650}
                   height={500}
                 ></Image>
-              </motion.div>
+              </m.div>
             </div>
           </div>
         </section>
@@ -67,7 +68,7 @@ const Home = () => {
             </div>
 
             <div className="pg_main-part2-compare">
-              <motion.div
+              <m.div
                 className="h1-span-part6"
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -94,8 +95,8 @@ const Home = () => {
                     ))}
                   </ul>
                 </div>
-              </motion.div>
-              <motion.div
+              </m.div>
+              <m.div
                 className="h1-span-part6"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -126,12 +127,12 @@ const Home = () => {
                     <a className="pg_main-part2-btnPrimary" href="#servicios">
                       Ver módulos
                     </a>
-                    <a className="pg_main-part2-btnGhost" href="/contact">
+                    <Link className="pg_main-part2-btnGhost" href="/contact">
                       Ponte en contácto
-                    </a>
+                    </Link>
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
             </div>
 
             <div
@@ -177,16 +178,16 @@ const Home = () => {
                   <a className="pg_main-part3-btnPrimary" href="#servicios">
                     Ver módulos
                   </a>
-                  <a className="pg_main-part3-btnGhost" href="/contact">
+                  <Link className="pg_main-part3-btnGhost" href="/contact">
                     Solicitar más información
-                  </a>
+                  </Link>
                 </div>
 
                 <div className="pg_main-part3-miniNote">
                   Se adapta al tamaño y proceso de tu empresa
                 </div>
               </div>
-              <motion.div
+              <m.div
                 className="h1-span-part6"
                 initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -238,7 +239,7 @@ const Home = () => {
                     ))}
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
 
               <StepsInfiniteCarouselMobile seceSteps={seceSteps} />
             </div>
@@ -270,7 +271,7 @@ const Home = () => {
           <div className="pg_cursor-glow" />
           <div className="pg_main-joinus">
             <h1>
-              <motion.div
+              <m.div
                 className="h1-span-part6"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -278,8 +279,8 @@ const Home = () => {
                 viewport={{ once: true }}
               >
                 Estas interesado?
-              </motion.div>
-              <motion.div
+              </m.div>
+              <m.div
                 className="h1-span-part6"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -287,7 +288,7 @@ const Home = () => {
                 viewport={{ once: true }}
               >
                 Ponte en contacto.
-              </motion.div>
+              </m.div>
             </h1>
             <div className="section6-button">
               <Link href="/contact">Contactanos</Link>
@@ -296,6 +297,7 @@ const Home = () => {
         </section>
       </div>
     </>
+    </LazyMotion>
   );
 };
 

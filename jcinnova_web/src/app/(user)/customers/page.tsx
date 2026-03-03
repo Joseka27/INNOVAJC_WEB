@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import Image from "next/image";
+import { LazyMotion, m, domAnimation } from "framer-motion";
 import "./user_customers.css";
 
 type SortKey = "relevance" | "name_asc" | "name_desc" | "newest" | "oldest";
@@ -42,7 +43,7 @@ export default function CompaniesPage() {
   const [total, setTotal] = useState<number | null>(null);
 
   const [offset, setOffset] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [bootError, setBootError] = useState<string | null>(null);
 
   async function fetchBatch(nextOffset: number) {
@@ -59,14 +60,18 @@ export default function CompaniesPage() {
     let data: any = null;
 
     try {
-      data = raw ? JSON.parse(raw) : null;
+      if (raw) data = JSON.parse(raw);
     } catch {
       throw new Error(
         `La API no devolvió JSON. Revisa /api/companies (status ${res.status}).`,
       );
     }
 
-    if (!res.ok) throw new Error(data?.error ?? "Error cargando empresas");
+    if (!res.ok) {
+      const errMsg =
+        data && data.error ? data.error : "Error cargando empresas";
+      throw new Error(errMsg);
+    }
 
     const batch: CompanyRow[] = Array.isArray(data?.items) ? data.items : [];
     const count: number | null =
@@ -76,21 +81,20 @@ export default function CompaniesPage() {
   }
 
   async function initialLoad() {
-    setLoading(true);
-    setBootError(null);
     try {
       const { batch, count } = await fetchBatch(0);
       setItems(batch);
       setTotal(count);
       setOffset(batch.length);
     } catch (e: any) {
-      setBootError(e?.message ?? "Error inesperado cargando empresas.");
+      const errMsg =
+        e && e.message ? e.message : "Error inesperado cargando empresas.";
+      setBootError(errMsg);
       setItems([]);
       setTotal(null);
       setOffset(0);
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   }
 
   async function loadMore() {
@@ -105,10 +109,11 @@ export default function CompaniesPage() {
       if (typeof count === "number") setTotal(count);
       setOffset((prev) => prev + batch.length);
     } catch (e: any) {
-      setBootError(e?.message ?? "No se pudieron cargar más empresas.");
-    } finally {
-      setLoading(false);
+      const errMsg =
+        e && e.message ? e.message : "No se pudieron cargar más empresas.";
+      setBootError(errMsg);
     }
+    setLoading(false);
   }
 
   useEffect(() => {
@@ -179,6 +184,7 @@ export default function CompaniesPage() {
   const canLoadMore = total === null ? true : offset < total;
 
   return (
+    <LazyMotion features={domAnimation}>
     <div className="pg_companies">
       <section className="pg_companies-hero" id="companies-hero">
         <div className="pg_companies-heroInner">
@@ -269,7 +275,7 @@ export default function CompaniesPage() {
             </div>
           ) : !loading && filteredSorted.length === 0 ? (
             <div className="pg_companies-empty">
-              No se encontraron resultados para “{q.trim()}”.
+              No se encontraron resultados para "{q.trim()}".
             </div>
           ) : (
             <div className="pg_companies-grid">
@@ -278,7 +284,7 @@ export default function CompaniesPage() {
                 const desc = parseRequirements(c.description);
 
                 return (
-                  <motion.article
+                  <m.article
                     key={c.id}
                     className="pg_companies-card"
                     initial={{ opacity: 0, y: 18 }}
@@ -291,11 +297,13 @@ export default function CompaniesPage() {
                   >
                     <div className="pg_companies-media">
                       {c.image_url ? (
-                        <img
+                        <Image
                           src={c.image_url}
                           alt={title}
                           className="pg_companies-mediaImg"
-                          loading="lazy"
+                          width={200}
+                          height={150}
+                          unoptimized
                         />
                       ) : (
                         <div className="pg_companies-mediaFallback">
@@ -311,8 +319,8 @@ export default function CompaniesPage() {
 
                       {desc.length > 0 ? (
                         <ul className="pg_companies-desc">
-                          {desc.map((item, i) => (
-                            <li key={i}>{item}</li>
+                          {desc.map((item) => (
+                            <li key={item}>{item}</li>
                           ))}
                         </ul>
                       ) : (
@@ -321,7 +329,7 @@ export default function CompaniesPage() {
                         </p>
                       )}
                     </div>
-                  </motion.article>
+                  </m.article>
                 );
               })}
             </div>
@@ -346,5 +354,6 @@ export default function CompaniesPage() {
         </div>
       </section>
     </div>
+    </LazyMotion>
   );
 }

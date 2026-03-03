@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { LazyMotion, m, domAnimation } from "framer-motion";
 import "./about_modules.css";
 import { slugify } from "@/app/(user)/_utils/helpers";
 
@@ -32,6 +32,41 @@ function parseLongDesc(text: string | null): string[][] {
     .filter((group) => group.length > 0);
 }
 
+async function fetchModulePage(offset: number, limit: number): Promise<ModuleItem[]> {
+  const qs = new URLSearchParams();
+  qs.set("limit", String(limit));
+  qs.set("offset", String(offset));
+
+  const res = await fetch(`/api/modules?${qs.toString()}`, {
+    method: "GET",
+    cache: "no-store",
+  });
+
+  const raw = await res.text();
+  let data: any = null;
+  try {
+    if (raw) data = JSON.parse(raw);
+  } catch {
+    throw new Error(
+      `La API no devolvió JSON. Revisa /api/modules (status ${res.status}).`,
+    );
+  }
+
+  if (!res.ok) {
+    let errMsg = "Error cargando módulos";
+    if (data && data.error) {
+      errMsg = data.error;
+    }
+    throw new Error(errMsg);
+  }
+
+  let batch: ModuleItem[] = [];
+  if (data && Array.isArray(data.items)) {
+    batch = data.items;
+  }
+  return batch;
+}
+
 export default function AboutServices() {
   const [modules, setModules] = useState<ModuleItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -48,31 +83,7 @@ export default function AboutServices() {
       let offset = 0;
 
       while (true) {
-        const qs = new URLSearchParams();
-        qs.set("limit", String(FETCH_LIMIT));
-        qs.set("offset", String(offset));
-
-        const res = await fetch(`/api/modules?${qs.toString()}`, {
-          method: "GET",
-          cache: "no-store",
-        });
-
-        const raw = await res.text();
-        let data: any = null;
-
-        try {
-          data = raw ? JSON.parse(raw) : null;
-        } catch {
-          throw new Error(
-            `La API no devolvió JSON. Revisa /api/modules (status ${res.status}).`,
-          );
-        }
-
-        if (!res.ok) throw new Error(data?.error ?? "Error cargando módulos");
-
-        const batch: ModuleItem[] = Array.isArray(data?.items)
-          ? data.items
-          : [];
+        const batch = await fetchModulePage(offset, FETCH_LIMIT);
         all.push(...batch);
 
         if (batch.length < FETCH_LIMIT) break;
@@ -84,11 +95,14 @@ export default function AboutServices() {
 
       setModules(all);
     } catch (e: any) {
-      setError(e?.message ?? "Error inesperado cargando módulos.");
+      let errMsg = "Error inesperado cargando módulos.";
+      if (e && e.message) {
+        errMsg = e.message;
+      }
+      setError(errMsg);
       setModules([]);
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   }
 
   useEffect(() => {
@@ -148,9 +162,10 @@ export default function AboutServices() {
   }, [filtered]);
 
   return (
+    <LazyMotion features={domAnimation}>
     <section className="pg_about_services" id="pg_about_services">
       <div className="pg_about_services-sections">
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
@@ -167,7 +182,7 @@ export default function AboutServices() {
               escalabilidad.
             </p>
           </div>
-        </motion.div>
+        </m.div>
 
         {loading && (
           <div className="pg_about_services-empty">Cargando módulos…</div>
@@ -217,8 +232,8 @@ export default function AboutServices() {
                           className="pg_about_services-descGroup"
                         >
                           <ul className="pg_about_services-descList">
-                            {group.map((line, idx) => (
-                              <li key={`${item.id}-desc-${groupIdx}-${idx}`}>
+                            {group.map((line) => (
+                              <li key={`${item.id}-${groupIdx}-${line.slice(0, 60)}`}>
                                 {line}
                               </li>
                             ))}
@@ -240,5 +255,6 @@ export default function AboutServices() {
         )}
       </div>
     </section>
+    </LazyMotion>
   );
 }

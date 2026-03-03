@@ -19,6 +19,30 @@ import { useIdleLogout } from "@/app/(admin)/admin/_admin_components/useIdlelogo
 //Maximo tamaño de pagina
 const PAGE_SIZE = 10;
 
+async function fetchCompanyPage(
+  page: number,
+  pageSize: number,
+): Promise<{ items: any[]; count: number | null }> {
+  const offset = page * pageSize;
+  const res = await fetch(
+    `/api/companies?limit=${pageSize}&offset=${offset}`,
+    { cache: "no-store" },
+  );
+  const data = await res.json();
+  if (!res.ok) {
+    let errMsg = "Error cargando empresas";
+    if (data.error) {
+      errMsg = data.error;
+    }
+    throw new Error(errMsg);
+  }
+  let count: number | null = null;
+  if (typeof data.count === "number") {
+    count = data.count;
+  }
+  return { items: data.items, count };
+}
+
 export default function AdminDashboardPage() {
   const router = useRouter();
   const supabase = createClient();
@@ -103,20 +127,14 @@ export default function AdminDashboardPage() {
   async function loadCompanies(p = page) {
     setLoading(true);
     try {
-      const offset = p * PAGE_SIZE;
-      const res = await fetch(
-        `/api/companies?limit=${PAGE_SIZE}&offset=${offset}`,
-        { cache: "no-store" },
-      );
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Error cargando empresas");
+      const { items, count } = await fetchCompanyPage(p, PAGE_SIZE);
 
       setEditingId(null);
       setEditFile(null);
       if (editFileRef.current) editFileRef.current.value = "";
 
-      setCompanies(data.items);
-      setTotal(data.count);
+      setCompanies(items);
+      setTotal(count);
       setPage(p);
     } catch (err: any) {
       push({
@@ -124,9 +142,8 @@ export default function AdminDashboardPage() {
         title: "Error",
         message: err?.message ?? "No se pudieron cargar las empresas.",
       });
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   }
 
   async function createCompany(e: React.FormEvent) {
@@ -163,6 +180,7 @@ export default function AdminDashboardPage() {
           title: "Sesión inválida",
           message: "Vuelve a iniciar sesión.",
         });
+        setCreating(false);
         return;
       }
 
@@ -190,6 +208,7 @@ export default function AdminDashboardPage() {
           title: "No se pudo guardar",
           message: d.error ?? "Error creando empresa.",
         });
+        setCreating(false);
         return;
       }
 
@@ -211,9 +230,8 @@ export default function AdminDashboardPage() {
         title: "Error",
         message: err?.message ?? "Ocurrió un error inesperado.",
       });
-    } finally {
-      setCreating(false);
     }
+    setCreating(false);
   }
 
   function startEdit(c: Company) {
@@ -251,6 +269,7 @@ export default function AdminDashboardPage() {
             title: "Sesión inválida",
             message: "Vuelve a iniciar sesión.",
           });
+          setSaving(false);
           return;
         }
 
@@ -281,6 +300,7 @@ export default function AdminDashboardPage() {
           title: "No se pudo guardar",
           message: d.error ?? "Error guardando cambios.",
         });
+        setSaving(false);
         return;
       }
 
@@ -301,9 +321,8 @@ export default function AdminDashboardPage() {
         title: "Error",
         message: err?.message ?? "Ocurrió un error inesperado.",
       });
-    } finally {
-      setSaving(false);
     }
+    setSaving(false);
   }
 
   async function removeCompany(id: number) {
@@ -557,10 +576,13 @@ export default function AdminDashboardPage() {
             {filteredCompanies.map((c) => (
               <div key={c.id} className="companies_boxes">
                 <div className="company_box_info">
-                  <img
+                  <Image
                     src={c.image_url}
                     className="company_logo"
                     alt={c.name}
+                    width={80}
+                    height={60}
+                    unoptimized
                   />
                   <div className="company_box_text">
                     <div>{c.name}</div>

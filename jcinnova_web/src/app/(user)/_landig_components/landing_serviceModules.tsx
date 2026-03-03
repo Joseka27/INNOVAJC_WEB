@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { LazyMotion, m, domAnimation } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { slugify } from "@/app/(user)/_utils/helpers";
@@ -23,6 +23,41 @@ const MOBILE_PER_PAGE = 4;
 
 const MOBILE_MAX = 620;
 
+async function fetchModulePage(offset: number, limit: number): Promise<ModuleItem[]> {
+  const qs = new URLSearchParams();
+  qs.set("limit", String(limit));
+  qs.set("offset", String(offset));
+
+  const res = await fetch(`/api/modules?${qs.toString()}`, {
+    method: "GET",
+    cache: "no-store",
+  });
+
+  const raw = await res.text();
+  let data: any = null;
+  try {
+    if (raw) data = JSON.parse(raw);
+  } catch {
+    throw new Error(
+      `La API no devolvió JSON. Revisa /api/modules (status ${res.status}).`,
+    );
+  }
+
+  if (!res.ok) {
+    let errMsg = "Error cargando módulos";
+    if (data && data.error) {
+      errMsg = data.error;
+    }
+    throw new Error(errMsg);
+  }
+
+  let batch: ModuleItem[] = [];
+  if (data && Array.isArray(data.items)) {
+    batch = data.items;
+  }
+  return batch;
+}
+
 export default function ServicesSection() {
   const [modules, setModules] = useState<ModuleItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -36,8 +71,10 @@ export default function ServicesSection() {
   useEffect(() => {
     const mq = window.matchMedia(`(max-width: ${MOBILE_MAX}px)`);
 
-    const apply = () =>
+    const apply = () => {
       setPerPage(mq.matches ? MOBILE_PER_PAGE : DESKTOP_PER_PAGE);
+      setPage(1);
+    };
 
     apply();
     mq.addEventListener("change", apply);
@@ -67,45 +104,26 @@ export default function ServicesSection() {
       let offset = 0;
 
       while (true) {
-        const qs = new URLSearchParams();
-        qs.set("limit", String(FETCH_LIMIT));
-        qs.set("offset", String(offset));
-
-        const res = await fetch(`/api/modules?${qs.toString()}`, {
-          method: "GET",
-          cache: "no-store",
-        });
-
-        const raw = await res.text();
-        let data: any = null;
-        try {
-          data = raw ? JSON.parse(raw) : null;
-        } catch {
-          throw new Error(
-            `La API no devolvió JSON. Revisa /api/modules (status ${res.status}).`,
-          );
-        }
-
-        if (!res.ok) throw new Error(data?.error ?? "Error cargando módulos");
-
-        const batch: ModuleItem[] = Array.isArray(data?.items)
-          ? data.items
-          : [];
+        const batch = await fetchModulePage(offset, FETCH_LIMIT);
         all.push(...batch);
 
         if (batch.length < FETCH_LIMIT) break;
 
         offset += FETCH_LIMIT;
+
         if (offset > 5000) break;
       }
 
       setModules(all);
     } catch (e: any) {
-      setError(e?.message ?? "Error inesperado cargando módulos.");
+      let errMsg = "Error inesperado cargando módulos.";
+      if (e && e.message) {
+        errMsg = e.message;
+      }
+      setError(errMsg);
       setModules([]);
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   }
 
   useEffect(() => {
@@ -128,10 +146,6 @@ export default function ServicesSection() {
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
 
-  useEffect(() => {
-    setPage(1);
-  }, [activeCat, perPage]);
-
   const pageItems = useMemo(() => {
     const start = (page - 1) * perPage;
     return filtered.slice(start, start + perPage);
@@ -141,9 +155,10 @@ export default function ServicesSection() {
   const canNext = page < totalPages;
 
   return (
+    <LazyMotion features={domAnimation}>
     <section className="pg_main-presentation-part4" id="servicios">
       <div className="pg_main-part4-sections">
-        <motion.div
+        <m.div
           className="h1-span-part6"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -157,7 +172,7 @@ export default function ServicesSection() {
               empresa. Totalmente ajustables a tu negocio
             </p>
           </div>
-        </motion.div>
+        </m.div>
 
         {loading && (
           <div className="pg_main-part4-empty">Cargando módulos…</div>
@@ -241,5 +256,6 @@ export default function ServicesSection() {
         )}
       </div>
     </section>
+    </LazyMotion>
   );
 }

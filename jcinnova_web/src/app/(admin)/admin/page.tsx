@@ -146,11 +146,16 @@ export default function AdminLoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
+        let loginErrMsg = "Login error";
+        if (data.error) {
+          loginErrMsg = data.error;
+        }
         push({
           type: "error",
           title: "No se pudo iniciar sesión",
-          message: data.error ?? "Login error",
+          message: loginErrMsg,
         });
+        setChecking(false);
         return;
       }
 
@@ -163,6 +168,7 @@ export default function AdminLoginPage() {
           title: "Sesión inválida",
           message: "No se pudo validar la sesión.",
         });
+        setChecking(false);
         return;
       }
 
@@ -175,6 +181,7 @@ export default function AdminLoginPage() {
           title: "Acceso denegado",
           message: "Tu usuario no tiene permisos de admin.",
         });
+        setChecking(false);
         return;
       }
 
@@ -192,9 +199,8 @@ export default function AdminLoginPage() {
         title: "Error de red",
         message: "Revisa tu conexión e inténtalo de nuevo.",
       });
-    } finally {
-      setChecking(false);
     }
+    setChecking(false);
   }
 
   /* ========= UI ========= */

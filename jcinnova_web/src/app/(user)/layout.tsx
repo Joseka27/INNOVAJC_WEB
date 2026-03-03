@@ -44,7 +44,7 @@ const FooterSchedule = () => {
 
         return (
           <div
-            key={index}
+            key={s.day}
             className={`schedule-row 
               ${isToday ? "today" : ""} 
               ${isToday && isWeekend ? "today-closed" : ""}

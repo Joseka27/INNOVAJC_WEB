@@ -11,11 +11,14 @@ type PushFn = (t: {
   actions?: { label: string; onClick: () => void }[];
 }) => string;
 
+const DEFAULT_IDLE_MS = 30 * 60 * 1000;
+const DEFAULT_SESSION_MAX_MS = 60 * 60 * 1000;
+
 export function useIdleLogout(
   push: PushFn,
   {
-    idleMs = 30 * 60 * 1000, // 30 min
-    sessionMaxMs = 60 * 60 * 1000, // 1 hora
+    idleMs = DEFAULT_IDLE_MS,
+    sessionMaxMs = DEFAULT_SESSION_MAX_MS,
   }: { idleMs?: number; sessionMaxMs?: number } = {},
 ) {
   const router = useRouter();
@@ -24,25 +27,23 @@ export function useIdleLogout(
   const hardTimerRef = useRef<number | null>(null);
 
   async function forceLogout(reason?: "idle" | "max") {
-    try {
-      if (reason === "idle") {
-        push({
-          type: "info",
-          title: "Sesión expirada",
-          message: "Se cerró tu sesión por inactividad.",
-        });
-      } else if (reason === "max") {
-        push({
-          type: "info",
-          title: "Sesión expirada",
-          message: "Tu sesión alcanzó el tiempo máximo (1 hora).",
-        });
-      }
-
-      await fetch("/api/auth/logout", { method: "POST" });
-    } finally {
-      router.replace("/admin");
+    if (reason === "idle") {
+      push({
+        type: "info",
+        title: "Sesión expirada",
+        message: "Se cerró tu sesión por inactividad.",
+      });
+    } else if (reason === "max") {
+      push({
+        type: "info",
+        title: "Sesión expirada",
+        message: "Tu sesión alcanzó el tiempo máximo (1 hora).",
+      });
     }
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch {}
+    router.replace("/admin");
   }
 
   function resetIdleTimer() {

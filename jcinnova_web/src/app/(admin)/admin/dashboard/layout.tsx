@@ -10,6 +10,20 @@ import {
   useToasts,
 } from "@/app/(admin)/admin/_admin_components/useToast";
 
+import AdminBurgerMenu from "./AdminBurguer";
+
+async function fetchSessionData(): Promise<any> {
+  const res = await fetch("/api/auth/me", { cache: "no-store" });
+  const raw = await res.text();
+  let data: any = null;
+  try {
+    if (raw) data = JSON.parse(raw);
+  } catch {
+    data = null;
+  }
+  return data;
+}
+
 export default function DashboardShell({
   children,
 }: {
@@ -25,6 +39,17 @@ export default function DashboardShell({
 
   // Evita que el dashboard se renderice antes de verificar sesión
   const [checkingSession, setCheckingSession] = useState(true);
+
+  // ✅ Burger state (solo afecta móvil; desktop ignora)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const closeSidebar = () => setIsSidebarOpen(false);
+  const toggleSidebar = () => setIsSidebarOpen((v) => !v);
+
+  // Cierra el sidebar si cambias de ruta
+  useEffect(() => {
+    closeSidebar();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   async function logout(withToast = false) {
     if (loggingOutRef.current) return;
@@ -44,11 +69,9 @@ export default function DashboardShell({
         method: "POST",
         cache: "no-store",
       });
-    } catch {
-    } finally {
-      clearAll();
-      router.replace("/admin");
-    }
+    } catch {}
+    clearAll();
+    router.replace("/admin");
   }
 
   //Check de que exista sesion
@@ -62,21 +85,9 @@ export default function DashboardShell({
       }
 
       try {
-        const res = await fetch("/api/auth/me", { cache: "no-store" });
-        const raw = await res.text();
+        const data = await fetchSessionData();
 
-        let data: any = null;
-        try {
-          data = raw ? JSON.parse(raw) : null;
-        } catch {
-          if (!canceled) {
-            setCheckingSession(true);
-            await logout(true);
-          }
-          return;
-        }
-
-        if (!data?.user || data?.error === "SESSION_MAX_EXPIRED") {
+        if (!data || !data.user || data.error === "SESSION_MAX_EXPIRED") {
           if (!canceled) {
             setCheckingSession(true);
             await logout(true);
@@ -95,6 +106,7 @@ export default function DashboardShell({
     return () => {
       canceled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDashboard]);
 
   //Verificar la sesion periodicamente
@@ -107,18 +119,9 @@ export default function DashboardShell({
       if (stopped || loggingOutRef.current) return;
 
       try {
-        const res = await fetch("/api/auth/me", { cache: "no-store" });
-        const raw = await res.text();
+        const data = await fetchSessionData();
 
-        let data: any = null;
-        try {
-          data = raw ? JSON.parse(raw) : null;
-        } catch {
-          await logout(true);
-          return;
-        }
-
-        if (!data?.user || data?.error === "SESSION_MAX_EXPIRED") {
+        if (!data || !data.user || data.error === "SESSION_MAX_EXPIRED") {
           await logout(true);
         }
       } catch {}
@@ -131,6 +134,7 @@ export default function DashboardShell({
       stopped = true;
       window.clearInterval(id);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDashboard]);
 
   return (
@@ -139,7 +143,22 @@ export default function DashboardShell({
 
       <header className="pg_header_shell">
         <div className="pg_header section-header">
+          {/* ✅ Burger visible solo en móvil (CSS) y solo si es dashboard */}
+          {isDashboard && !checkingSession ? (
+            <div className="admin_burgerSlot">
+              <AdminBurgerMenu
+                isOpen={isSidebarOpen}
+                onToggle={toggleSidebar}
+                onClose={closeSidebar}
+                controlsId="admin-sidebar"
+              />
+            </div>
+          ) : null}
+
           <div className="pg_header-principal">
+            <nav className="pg_header-nav" aria-label="Navegación principal">
+              <h1>Panel Administrador</h1>
+            </nav>
             <div className="pg_header-logo-img">
               <Link className="pg_header-logo-link" href="/">
                 <Image
@@ -152,10 +171,6 @@ export default function DashboardShell({
                 />
               </Link>
             </div>
-
-            <nav className="pg_header-nav" aria-label="Navegación principal">
-              <h1>Soluciones Integrales INNOVA JC</h1>
-            </nav>
           </div>
         </div>
       </header>
@@ -169,13 +184,19 @@ export default function DashboardShell({
         </div>
       ) : (
         <div className="dashboard_shell">
-          <aside className="dashboard_sidebar">
-            <div>
+          <aside
+            id="admin-sidebar"
+            className={`dashboard_sidebar ${isSidebarOpen ? "is-open" : ""}`}
+          >
+            <div className="dashboard_sidebar_for_burguer">
               <div className="dashboard_sidebar_brand">
                 <h2>Admin Panel</h2>
 
                 <button
-                  onClick={() => logout(false)}
+                  onClick={() => {
+                    closeSidebar();
+                    logout(false);
+                  }}
                   className="dashboard_logout_under"
                   type="button"
                 >
@@ -187,6 +208,7 @@ export default function DashboardShell({
                 <Link
                   href="/admin/dashboard/companies"
                   className="dashboard_nav_item"
+                  onClick={closeSidebar}
                 >
                   Empresas
                 </Link>
@@ -194,6 +216,7 @@ export default function DashboardShell({
                 <Link
                   href="/admin/dashboard/modules"
                   className="dashboard_nav_item"
+                  onClick={closeSidebar}
                 >
                   Módulos
                 </Link>
@@ -201,6 +224,7 @@ export default function DashboardShell({
                 <Link
                   href="/admin/dashboard/downloads"
                   className="dashboard_nav_item"
+                  onClick={closeSidebar}
                 >
                   Descargas
                 </Link>

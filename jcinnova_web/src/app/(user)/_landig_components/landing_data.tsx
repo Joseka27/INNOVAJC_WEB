@@ -1,31 +1,3 @@
-export const categories = [
-  "Todos",
-  "Finanzas",
-  "Operación",
-  "Comercial",
-  "RRHH",
-  "Control",
-] as const;
-
-export type Category = (typeof categories)[number];
-export type ServiceCategory = Exclude<Category, "Todos">;
-
-export type ServiceItem = {
-  image: string;
-  title: string;
-  text: string;
-  category: ServiceCategory;
-};
-
-export const servicesItems: ServiceItem[] = [
-  {
-    image: "prueba",
-    title: "prueba",
-    text: "hola",
-    category: "RRHH",
-  },
-];
-
 export const seceStats = [
   { value: "200+", label: "Informes" },
   { value: "Excel/PDF", label: "Exportables" },

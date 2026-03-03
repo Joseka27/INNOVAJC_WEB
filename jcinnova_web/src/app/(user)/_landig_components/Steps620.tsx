@@ -110,39 +110,42 @@ export default function StepsInfiniteCarouselMobile({
     <div className="m620_stepsLoopWrap">
       <div className="m620_stepsLoopShell" ref={shellRef}>
         <div className="m620_stepsLoopTrack">
-          {loopSteps.map((s, idx) => (
-            <article
-              key={`${s.title}-${idx}`}
-              className="m620_stepCard"
-              aria-label={`Paso: ${s.title}`}
-            >
-              <div className="m620_stepIcon" aria-hidden>
-                <div className="m620_iconSwap">
-                  <Image
-                    src={s.icon}
-                    alt=""
-                    width={34}
-                    height={34}
-                    className="m620_iconImg m620_iconDefault"
-                    priority={idx < seceSteps.length}
-                  />
-                  <Image
-                    src={s.iconHover}
-                    alt=""
-                    width={34}
-                    height={34}
-                    className="m620_iconImg m620_iconHover"
-                    priority={idx < seceSteps.length}
-                  />
+          {loopSteps.map((s, loopIdx) => {
+            const copy = Math.floor(loopIdx / seceSteps.length);
+            return (
+              <article
+                key={`${s.title}-${copy}`}
+                className="m620_stepCard"
+                aria-label={`Paso: ${s.title}`}
+              >
+                <div className="m620_stepIcon" aria-hidden>
+                  <div className="m620_iconSwap">
+                    <Image
+                      src={s.icon}
+                      alt=""
+                      width={34}
+                      height={34}
+                      className="m620_iconImg m620_iconDefault"
+                      priority={loopIdx < seceSteps.length}
+                    />
+                    <Image
+                      src={s.iconHover}
+                      alt=""
+                      width={34}
+                      height={34}
+                      className="m620_iconImg m620_iconHover"
+                      priority={loopIdx < seceSteps.length}
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div className="m620_stepBody">
-                <h3 className="m620_stepTitle">{s.title}</h3>
-                <p className="m620_stepText">{s.text}</p>
-              </div>
-            </article>
-          ))}
+                <div className="m620_stepBody">
+                  <h3 className="m620_stepTitle">{s.title}</h3>
+                  <p className="m620_stepText">{s.text}</p>
+                </div>
+              </article>
+            );
+          })}
         </div>
       </div>
     </div>

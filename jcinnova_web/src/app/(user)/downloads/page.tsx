@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { LazyMotion, m, domAnimation } from "framer-motion";
 import "./user_downloads.css";
 import { createClient } from "@/lib/supabase/browserClient";
 
@@ -53,6 +53,41 @@ function parseRequirements(req: string | null): string[] {
     .filter(Boolean);
 }
 
+async function fetchDownloadPage(offset: number, limit: number): Promise<DownloadRow[]> {
+  const qs = new URLSearchParams();
+  qs.set("limit", String(limit));
+  qs.set("offset", String(offset));
+
+  const res = await fetch(`/api/downloads?${qs.toString()}`, {
+    method: "GET",
+    cache: "no-store",
+  });
+
+  const raw = await res.text();
+  let data: any = null;
+  try {
+    if (raw) data = JSON.parse(raw);
+  } catch {
+    throw new Error(
+      `La API no devolvió JSON. Revisa /api/downloads (status ${res.status}).`,
+    );
+  }
+
+  if (!res.ok) {
+    let errMsg = "Error cargando downloads";
+    if (data && data.error) {
+      errMsg = data.error;
+    }
+    throw new Error(errMsg);
+  }
+
+  let batch: DownloadRow[] = [];
+  if (data && Array.isArray(data.items)) {
+    batch = data.items;
+  }
+  return batch;
+}
+
 export default function Downloads() {
   const supabase = createClient();
 
@@ -76,31 +111,7 @@ export default function Downloads() {
       let offset = 0;
 
       while (true) {
-        const qs = new URLSearchParams();
-        qs.set("limit", String(FETCH_LIMIT));
-        qs.set("offset", String(offset));
-
-        const res = await fetch(`/api/downloads?${qs.toString()}`, {
-          method: "GET",
-          cache: "no-store",
-        });
-
-        const raw = await res.text();
-        let data: any = null;
-
-        try {
-          data = raw ? JSON.parse(raw) : null;
-        } catch {
-          throw new Error(
-            `La API no devolvió JSON. Revisa /api/downloads (status ${res.status}).`,
-          );
-        }
-
-        if (!res.ok) throw new Error(data?.error ?? "Error cargando downloads");
-
-        const batch: DownloadRow[] = Array.isArray(data?.items)
-          ? data.items
-          : [];
+        const batch = await fetchDownloadPage(offset, FETCH_LIMIT);
         all.push(...batch);
 
         if (batch.length < FETCH_LIMIT) break;
@@ -112,11 +123,14 @@ export default function Downloads() {
       setRows(all);
       void prefetchCovers(all);
     } catch (e: any) {
-      setError(e?.message ?? "Error inesperado cargando downloads.");
+      let errMsg = "Error inesperado cargando downloads.";
+      if (e && e.message) {
+        errMsg = e.message;
+      }
+      setError(errMsg);
       setRows([]);
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   }
 
   async function prefetchCovers(items: DownloadRow[]) {
@@ -202,6 +216,7 @@ export default function Downloads() {
   }, [active, q, downloadsUI]);
 
   return (
+    <LazyMotion features={domAnimation}>
     <div className="pg_down">
       {/* HERO */}
       <section className="pg_down-hero" id="inicio">
@@ -232,7 +247,7 @@ export default function Downloads() {
               </div>
             </div>
 
-            <motion.div
+            <m.div
               className="pg_down-heroRight"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -276,7 +291,7 @@ export default function Downloads() {
                   Pagina oficial de Descargas en InnovaJC
                 </div>
               </div>
-            </motion.div>
+            </m.div>
           </div>
         </div>
       </section>
@@ -387,8 +402,8 @@ export default function Downloads() {
                       <div className="pg_down-reqTitle">Requisitos</div>
 
                       <ul className="pg_down-reqList">
-                        {d.requirements.map((r, idx) => (
-                          <li key={`${d.id}-req-${idx}`}>{r}</li>
+                        {d.requirements.map((r) => (
+                          <li key={`${d.id}-req-${r}`}>{r}</li>
                         ))}
                       </ul>
                     </div>
@@ -448,5 +463,6 @@ export default function Downloads() {
         </div>
       </section>
     </div>
+    </LazyMotion>
   );
 }

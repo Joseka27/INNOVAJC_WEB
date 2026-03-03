@@ -73,6 +73,7 @@ export default function LocationMap({
           <div className="locmap_mapCard">
             {embed ? (
               <iframe
+                title="Mapa de ubicación"
                 className="locmap_iframe"
                 src={finalEmbedUrl}
                 loading="lazy"

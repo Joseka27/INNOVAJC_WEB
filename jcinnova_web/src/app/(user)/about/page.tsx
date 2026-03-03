@@ -1,5 +1,5 @@
 "use client";
-import { motion } from "framer-motion";
+import { LazyMotion, m, domAnimation } from "framer-motion";
 import Image from "next/image";
 import { FaFacebook, FaInstagram, FaTwitter, FaWhatsapp } from "react-icons/fa";
 import "./user_about.css";
@@ -10,13 +10,14 @@ import { section2About, section2RightSide } from "./_components/about_data";
 
 const About = () => {
   return (
+    <LazyMotion features={domAnimation}>
     <>
       <section className="pg_about_innovajc" id="innovajc">
         <div className="pg_about_innovajc-inner">
           <div className="pg_about_innovajc-split">
             {/* LEFT: Logo */}
             <div className="pg_about_innovajc-left">
-              <motion.div
+              <m.div
                 className="pg_about_innovajc-logoWrap"
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -31,7 +32,7 @@ const About = () => {
                   height={500}
                   priority
                 />
-              </motion.div>
+              </m.div>
             </div>
 
             {/* RIGHT: Copy + Social */}
@@ -107,9 +108,9 @@ const About = () => {
             Ubicación
           </a>
 
-          <a className="pg_about_stickyNav-cta" href="/">
+          <Link className="pg_about_stickyNav-cta" href="/">
             Inicio
-          </a>
+          </Link>
         </div>
       </nav>
 
@@ -142,7 +143,7 @@ const About = () => {
               ))}
             </div>
 
-            <motion.div
+            <m.div
               className="pg_about_innovajc-logoWrap"
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -175,7 +176,7 @@ const About = () => {
                   MÁS INFORMACIÓN
                 </a>
               </aside>
-            </motion.div>
+            </m.div>
           </div>
         </div>
       </section>
@@ -188,6 +189,7 @@ const About = () => {
         <LocationMap />
       </section>
     </>
+    </LazyMotion>
   );
 };
 

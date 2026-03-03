@@ -26,6 +26,36 @@ function clean(s: string) {
   return s.trim();
 }
 
+async function postContact(body: {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  region: string;
+  company: string;
+  subject: string;
+}): Promise<void> {
+  const res = await fetch("/api/contact", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  const raw = await res.text();
+  let data: any = null;
+  try {
+    if (raw) data = JSON.parse(raw);
+  } catch {}
+
+  if (!res.ok) {
+    let errMsg = "No se pudo enviar el mensaje. Intenta de nuevo.";
+    if (data && data.error) {
+      errMsg = data.error;
+    }
+    throw new Error(errMsg);
+  }
+}
+
 export default function ContactPage() {
   const [form, setForm] = useState<FormState>({
     firstName: "",
@@ -166,33 +196,15 @@ export default function ContactPage() {
 
     setSending(true);
     try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          firstName: clean(form.firstName),
-          lastName: clean(form.lastName),
-          email: clean(form.email),
-          phone: clean(form.phone),
-          region: clean(form.region),
-          company: clean(form.company),
-          subject: clean(form.subject),
-        }),
+      await postContact({
+        firstName: clean(form.firstName),
+        lastName: clean(form.lastName),
+        email: clean(form.email),
+        phone: clean(form.phone),
+        region: clean(form.region),
+        company: clean(form.company),
+        subject: clean(form.subject),
       });
-
-      const raw = await res.text();
-      let data: any = null;
-      try {
-        data = raw ? JSON.parse(raw) : null;
-      } catch {}
-
-      if (!res.ok) {
-        setStatus({
-          type: "err",
-          msg: data?.error ?? "No se pudo enviar el mensaje. Intenta de nuevo.",
-        });
-        return;
-      }
 
       setStatus({ type: "ok", msg: "¡Listo! Tu mensaje fue enviado." });
 
@@ -229,13 +241,13 @@ export default function ContactPage() {
 
       setFocused(null);
     } catch (err: any) {
-      setStatus({
-        type: "err",
-        msg: err?.message ?? "Error inesperado enviando el mensaje.",
-      });
-    } finally {
-      setSending(false);
+      let errMsg = "Error inesperado enviando el mensaje.";
+      if (err && err.message) {
+        errMsg = err.message;
+      }
+      setStatus({ type: "err", msg: errMsg });
     }
+    setSending(false);
   }
 
   function fieldUI(name: FieldName) {
