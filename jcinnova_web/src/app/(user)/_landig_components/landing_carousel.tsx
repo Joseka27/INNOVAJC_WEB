@@ -11,7 +11,7 @@ type Company = {
 };
 
 const PAGE_SIZE = 15;
-const TARGET_ITEMS = 30;
+const TARGET_ITEMS = 18;
 
 async function fetchCompaniesPage(
   cursor: number | null,
