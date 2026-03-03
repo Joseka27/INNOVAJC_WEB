@@ -67,6 +67,9 @@ header {
 
   overflow: visible !important;
 }
+.pg_footer-termslink p {
+  display: none;
+}
 
 .section-header {
   max-width: var(--container);

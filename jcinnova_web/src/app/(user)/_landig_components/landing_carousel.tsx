@@ -19,7 +19,6 @@ async function fetchCompaniesPage(
 ): Promise<{ items: Company[]; nextCursor: number | null }> {
   const qs = new URLSearchParams();
   qs.set("limit", String(pageSize));
-  // ✅ cursor puede ser 0, así que NO uses "if (cursor)"
   if (cursor !== null) qs.set("cursor", String(cursor));
 
   const res = await fetch(`/api/companies?${qs.toString()}`, { method: "GET" });
@@ -46,9 +45,6 @@ export default function CompaniesInfiniteCarousel() {
   const [loading, setLoading] = useState(false);
   const [initialLoaded, setInitialLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // ✅ Botón pausa/play
-  const [isPaused, setIsPaused] = useState(false);
 
   async function fetchPage(cursor: number | null) {
     if (loading) return;
@@ -77,13 +73,13 @@ export default function CompaniesInfiniteCarousel() {
     }
   }
 
-  // primera carga
+  // Primera carga (cuando entra a la página)
   useEffect(() => {
     fetchPage(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // seguir paginando hasta TARGET_ITEMS (si hay más)
+  // Seguir paginando hasta TARGET_ITEMS (si hay más)
   useEffect(() => {
     if (!initialLoaded) return;
     if (loading) return;
@@ -94,27 +90,24 @@ export default function CompaniesInfiniteCarousel() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialLoaded, items.length, nextCursor, loading]);
 
-  // “safe”: evita carrusel vacío o demasiado corto
+  // Safe: evita carrusel vacío
   const safe = useMemo(() => {
     if (items.length >= 8) return items;
     if (items.length > 0) return [...items, ...items, ...items];
     return [];
   }, [items]);
 
-  // duplicado para loop continuo
+  // Loop continuo
   const loopItems = useMemo(
     () => (safe.length ? [...safe, ...safe] : []),
     [safe],
   );
 
-  // ✅ clave: NO arranques animación hasta que el ancho deje de cambiar
-  // (o sea, ya llegaste a TARGET_ITEMS o ya no hay más páginas)
-  const ready =
-    safe.length >= 8 && (items.length >= TARGET_ITEMS || nextCursor === null);
+  // ✅ Arranca apenas haya algo decente (no esperes TARGET_ITEMS)
+  const ready = safe.length >= 8;
 
-  // duración estable
+  // Duración estable
   const durationSeconds = useMemo(() => {
-    // si no está listo, igual define algo (pero no animamos)
     const base = safe.length ? safe.length * 2 : 50;
     return Math.max(45, Math.min(60, base));
   }, [safe.length]);
@@ -125,29 +118,12 @@ export default function CompaniesInfiniteCarousel() {
         <div className="fadeLeft" />
         <div className="fadeRight" />
 
-        {ready && (
-          <button
-            type="button"
-            className="carouselControl"
-            onClick={() => setIsPaused((p) => !p)}
-            aria-label={isPaused ? "Reanudar carrusel" : "Pausar carrusel"}
-            title={isPaused ? "Reanudar" : "Pausar"}
-          >
-            {isPaused ? "▶" : "❚❚"}
-          </button>
-        )}
-
         <div
           className="marquee"
           style={
             {
               ["--duration" as any]: `${durationSeconds}s`,
-              // ✅ si no está listo, forzamos paused para evitar bug en móvil
-              ["--play" as any]: !ready
-                ? "paused"
-                : isPaused
-                  ? "paused"
-                  : "running",
+              ["--play" as any]: ready ? "running" : "paused",
             } as React.CSSProperties
           }
           aria-label="Companies carousel"
@@ -169,6 +145,7 @@ export default function CompaniesInfiniteCarousel() {
                     width={120}
                     height={120}
                     unoptimized
+                    priority={loopIdx < 6} /* ✅ fuerza primeras a cargar */
                   />
                 </div>
               );
