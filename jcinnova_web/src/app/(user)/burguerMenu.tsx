@@ -82,6 +82,13 @@ export default function HeaderClient() {
           <nav className="pg_header-mobileNav">
             <Link
               className="pg_header-mobileLink"
+              href="/"
+              onClick={closeMenu}
+            >
+              Inicio
+            </Link>
+            <Link
+              className="pg_header-mobileLink"
               href="/about"
               onClick={closeMenu}
             >
