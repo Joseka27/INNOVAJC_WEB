@@ -45,7 +45,7 @@ export default function RootLayout({
 
                 <div className="pg_header-text-title">
                   <div className="pg_header-title">
-                    <h1>INNOVA JC CENTRO DE CONTACTO</h1>
+                    <h1>CONTACTO</h1>
                   </div>
                 </div>
               </div>
