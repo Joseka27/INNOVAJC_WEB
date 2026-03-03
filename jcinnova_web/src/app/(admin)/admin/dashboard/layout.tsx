@@ -40,7 +40,7 @@ export default function DashboardShell({
   // Evita que el dashboard se renderice antes de verificar sesión
   const [checkingSession, setCheckingSession] = useState(true);
 
-  // ✅ Burger state (solo afecta móvil; desktop ignora)
+  // Burger state (solo afecta móvil; desktop ignora)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const closeSidebar = () => setIsSidebarOpen(false);
   const toggleSidebar = () => setIsSidebarOpen((v) => !v);
@@ -74,7 +74,7 @@ export default function DashboardShell({
     router.replace("/admin");
   }
 
-  //Check de que exista sesion
+  // Check de que exista sesión
   useEffect(() => {
     let canceled = false;
 
@@ -109,7 +109,7 @@ export default function DashboardShell({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDashboard]);
 
-  //Verificar la sesion periodicamente
+  // Verificar la sesión periódicamente
   useEffect(() => {
     if (!isDashboard) return;
 
@@ -128,7 +128,7 @@ export default function DashboardShell({
     };
 
     tick();
-    const id = window.setInterval(tick, 60_000); //manda un ping cada minuto
+    const id = window.setInterval(tick, 60_000);
 
     return () => {
       stopped = true;
@@ -141,9 +141,10 @@ export default function DashboardShell({
     <div className="AdminLayout">
       <Toasts items={toasts} onClose={remove} />
 
+      {/* Header estilo Main (estructura), color Admin (CSS) */}
       <header className="pg_header_shell">
         <div className="pg_header section-header">
-          {/* ✅ Burger visible solo en móvil (CSS) y solo si es dashboard */}
+          {/* Burger visible solo en móvil (CSS) y solo si es dashboard */}
           {isDashboard && !checkingSession ? (
             <div className="admin_burgerSlot">
               <AdminBurgerMenu
@@ -159,6 +160,7 @@ export default function DashboardShell({
             <nav className="pg_header-nav" aria-label="Navegación principal">
               <h1>Panel Administrador</h1>
             </nav>
+
             <div className="pg_header-logo-img">
               <Link className="pg_header-logo-link" href="/">
                 <Image
@@ -175,6 +177,7 @@ export default function DashboardShell({
         </div>
       </header>
 
+      {/* Si NO estás en dashboard, no renderiza shell con sidebar */}
       {!isDashboard ? (
         <>{children}</>
       ) : checkingSession ? (

@@ -45,6 +45,7 @@ export default function AdminBurgerMenu({
         <span />
       </button>
 
+      {/* Backdrop para cerrar al tocar fuera (solo activo cuando isOpen) */}
       <button
         type="button"
         className={`dashboard_backdrop ${isOpen ? "is-open" : ""}`}

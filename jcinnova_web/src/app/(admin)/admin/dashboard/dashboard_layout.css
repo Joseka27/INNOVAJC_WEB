@@ -1,31 +1,71 @@
+:root {
+  --admin-container: 1200px;
+  --admin-px: clamp(1rem, 3vw, 2.5rem);
+  --admin-header-h: 90px;
+
+  --admin-bg: #020617;
+  --admin-surface: rgba(2, 6, 23, 0.55);
+  --admin-border: rgba(255, 255, 255, 0.12);
+  --admin-text: #ffffff;
+  --admin-muted: rgba(255, 255, 255, 0.82);
+
+  --admin-shadow: 0 14px 40px rgba(0, 0, 0, 0.25);
+
+  /* tamaños burger para calcular top centrado */
+  --admin-burger-size: 46px;
+  --admin-burger-left: 14px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* =========================
+   HEADER (estructura Main)
+========================= */
+
 header.pg_header_shell {
+  position: sticky;
+  top: 0;
+  z-index: 1400; /* ↑ importante: por encima del contenido */
+
   background: rgba(0, 0, 0, 0.22);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--admin-shadow);
+
+  overflow: visible !important;
 }
 
 .section-header {
-  padding: 0.75rem clamp(1rem, 4vw, 2.5rem);
+  max-width: var(--admin-container);
+  margin: 0 auto;
+  padding: 0 var(--admin-px);
 }
 
 .pg_header {
+  height: var(--admin-header-h);
   display: flex;
   align-items: center;
   justify-content: center;
-
-  /* ✅ para posicionar el burger */
   position: relative;
+  overflow: visible !important;
 }
 
 .pg_header-principal {
-  width: min(1200px, 100%);
+  width: min(var(--admin-container), 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 5rem;
+  min-width: 0;
 }
 
 .pg_header-logo-link {
@@ -36,31 +76,42 @@ header.pg_header_shell {
 .pg_header_logo {
   width: auto;
   height: auto;
+  display: block;
+}
+
+.pg_header-nav {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .pg_header-nav h1 {
-  color: #ffffff;
+  color: var(--admin-text);
   font-size: 2rem;
   font-weight: 900;
+  margin: 0;
+  white-space: nowrap;
 }
 
-/* ✅ slot del burger */
+/* ===== Burger slot =====
+   Desktop: no se muestra
+   Mobile: se vuelve FIXED (para que el sidebar nunca lo tape)
+*/
 .admin_burgerSlot {
   position: absolute;
   left: clamp(0.8rem, 2vw, 1.4rem);
   top: 50%;
   transform: translateY(-50%);
-  z-index: 1300;
+  z-index: 1600;
 }
 
-/* ✅ burger (solo se muestra en móvil con media query) */
+/* burger */
 .admin_burger {
-  display: none;
-  width: 46px;
-  height: 46px;
+  display: none; /* desktop hidden */
+  width: var(--admin-burger-size);
+  height: var(--admin-burger-size);
   border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(2, 6, 23, 0.55);
+  background: var(--admin-surface);
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
   cursor: pointer;
   position: relative;
@@ -113,32 +164,32 @@ header.pg_header_shell {
   width: 14px;
 }
 
-/* Responsive Header */
 @media (max-width: 860px) {
   .pg_header-principal {
     justify-content: center;
+    gap: 1.25rem;
   }
 }
 
 @media (max-width: 420px) {
-  .section-header {
-    padding: 0.65rem 0.9rem;
-  }
-
   .pg_header-nav h1 {
     font-size: 1.4rem;
   }
 }
 
+/* =========================
+   LAYOUT: sidebar + content
+========================= */
+
 .dashboard_shell {
   display: flex;
   width: 100%;
-  height: calc(100dvh - 90px); /* 👈 resta el header */
+  height: calc(100dvh - var(--admin-header-h));
   overflow: hidden;
+  background: var(--admin-bg);
 }
 
-/* ================= menu lateral ================= */
-
+/* sidebar desktop */
 .dashboard_sidebar {
   width: 250px;
   min-width: 250px;
@@ -149,6 +200,8 @@ header.pg_header_shell {
   padding: 1.5rem 1rem;
   display: flex;
   flex-direction: column;
+
+  z-index: 10; /* en desktop no importa, en mobile se redefine */
 }
 
 .dashboard_sidebar_brand {
@@ -163,6 +216,7 @@ header.pg_header_shell {
 .dashboard_sidebar_brand h2 {
   font-size: 1.2rem;
   font-weight: 800;
+  margin: 0;
 }
 
 .dashboard_logout_under {
@@ -203,7 +257,6 @@ header.pg_header_shell {
   background-color: #ffffff0a;
 
   color: #e5e7eb;
-  text-decoration: none;
 
   transition:
     background 0.2s,
@@ -215,15 +268,13 @@ header.pg_header_shell {
   transform: translateX(4px);
 }
 
-/* ================= contenido ================= */
-
+/* contenido */
 .dashboard_content {
   flex: 1;
   height: 100%;
   overflow-y: auto;
   padding: 2rem;
   padding-bottom: 7.5rem;
-
   scroll-behavior: smooth;
 }
 
@@ -244,14 +295,15 @@ header.pg_header_shell {
   scrollbar-color: rgba(255, 255, 255, 0.25) #020617;
 }
 
-/* ✅ backdrop (lo usa AdminBurgerMenu) */
+/* Backdrop */
 .dashboard_backdrop {
   position: fixed;
   inset: 0;
+  background: rgba(2, 6, 23, 0.42);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease;
-  z-index: 1150;
+  z-index: 1100; /* debajo del sidebar y debajo del burgerSlot */
   border: 0;
 }
 
@@ -260,29 +312,24 @@ header.pg_header_shell {
   pointer-events: auto;
 }
 
-/* RESPONSIVE: ahora sidebar off-canvas con burger */
+/* =========================
+   MOBILE/TABLET
+   Sidebar off-canvas + burger visible
+========================= */
 @media (max-width: 980px) {
+  /* deja espacio visual para que el título no choque con burger fijo */
   .pg_header {
-    padding-left: 66px; /* 46px botón + ~20px aire */
+    padding-left: calc(var(--admin-burger-size) + 22px);
   }
 
-  /* Permití que el bloque principal se encoja sin romper */
   .pg_header-principal {
     min-width: 0;
     gap: 1.25rem;
   }
 
-  /* El título debe truncarse en móvil (si no, inevitablemente choca) */
-  .pg_header-nav {
-    min-width: 0;
-    max-width: 100%;
-  }
-
   .pg_header-nav h1 {
-    margin: 0;
     font-size: 1.15rem;
     line-height: 1.1;
-
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -292,11 +339,16 @@ header.pg_header_shell {
     display: inline-block;
   }
 
-  /* el contenido ocupa todo; el sidebar va por encima (overlay) */
-  .dashboard_shell {
-    flex-direction: row;
+  /* ✅ la clave: el SLOT es fijo SIEMPRE en mobile (no salta al abrir) */
+  .admin_burgerSlot {
+    position: fixed;
+    left: var(--admin-burger-left);
+    top: calc((var(--admin-header-h) - var(--admin-burger-size)) / 2);
+    transform: none;
+    z-index: 1600; /* encima del sidebar */
   }
 
+  /* sidebar overlay off-canvas */
   .dashboard_sidebar {
     position: fixed;
     top: 0;
@@ -306,11 +358,10 @@ header.pg_header_shell {
     min-width: 0;
 
     border-right: 1px solid #1c1e2a;
-    border-bottom: none;
 
     transform: translateX(-105%);
     transition: transform 0.22s ease;
-    z-index: 1200;
+    z-index: 1200; /* debajo del burgerSlot (1600), encima del backdrop (1100) */
   }
 
   .dashboard_sidebar.is-open {
@@ -320,8 +371,60 @@ header.pg_header_shell {
   .dashboard_content {
     padding: 1.5rem;
   }
+}
 
-  .dashboard_sidebar_for_burguer {
-    margin-top: 4rem;
+/* =========================
+   OVERLAY ESTABLE (sin bugs)
+   header + burger arriba, sidebar debajo del header
+========================= */
+@media (max-width: 980px) {
+  /* 1) Header arriba de TODO (incluye burger) */
+  header.pg_header_shell {
+    z-index: 3000 !important;
+  }
+
+  /* 2) Burger NO fixed (evita bugs por stacking contexts)
+        Se queda dentro del header y siempre encima */
+  .admin_burgerSlot {
+    position: absolute !important;
+    left: clamp(0.8rem, 2vw, 1.4rem) !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    z-index: 3100 !important;
+    pointer-events: auto !important;
+  }
+
+  .admin_burger {
+    display: inline-block;
+    z-index: 3100 !important;
+  }
+
+  /* 3) Sidebar overlay: encima del contenido, pero ARRANCA debajo del header
+        (así jamás tapa el burger/X) */
+  .dashboard_sidebar {
+    position: fixed !important;
+    top: var(--admin-header-h) !important;
+    left: 0 !important;
+    height: calc(100dvh - var(--admin-header-h)) !important;
+    width: min(280px, 86vw) !important;
+
+    z-index: 2900 !important; /* debajo del header/burger */
+    transform: translateX(-105%);
+    transition: transform 0.22s ease;
+    will-change: transform;
+  }
+
+  .dashboard_sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  /* 4) Backdrop: debajo del sidebar pero encima del contenido */
+  .dashboard_backdrop {
+    z-index: 2800 !important;
+  }
+
+  /* 5) Evita que el contenido “salte” */
+  .dashboard_shell {
+    height: calc(100dvh - var(--admin-header-h));
   }
 }
