@@ -185,175 +185,175 @@ export default function CompaniesPage() {
 
   return (
     <LazyMotion features={domAnimation}>
-    <div className="pg_companies">
-      <section className="pg_companies-hero" id="companies-hero">
-        <div className="pg_companies-heroInner">
-          <h1 className="pg_companies-title">
-            Empresas que trabajan y cerren en nosotros.
-          </h1>
+      <div className="pg_companies">
+        <section className="pg_companies-hero" id="companies-hero">
+          <div className="pg_companies-heroInner">
+            <h1 className="pg_companies-title">
+              Empresas que trabajan y cerren en nosotros.
+            </h1>
 
-          <div className="pg_companies-toolbar">
-            <div className="pg_companies-search">
-              <input
-                className="pg_companies-searchInput"
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="Buscar empresa o descripción…"
-                aria-label="Buscar empresas"
-              />
-              <button
-                type="button"
-                className="pg_companies-searchBtn"
-                aria-label="Buscar"
-                onClick={() => {
-                  (document.activeElement as HTMLElement | null)?.blur?.();
-                }}
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  width="20"
-                  height="20"
-                  aria-hidden="true"
+            <div className="pg_companies-toolbar">
+              <div className="pg_companies-search">
+                <input
+                  className="pg_companies-searchInput"
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  placeholder="Buscar empresa o descripción…"
+                  aria-label="Buscar empresas"
+                />
+                <button
+                  type="button"
+                  className="pg_companies-searchBtn"
+                  aria-label="Buscar"
+                  onClick={() => {
+                    (document.activeElement as HTMLElement | null)?.blur?.();
+                  }}
                 >
-                  <path
-                    fill="currentColor"
-                    d="M10 4a6 6 0 104.472 10.03l3.249 3.25a1 1 0 001.415-1.415l-3.25-3.249A6 6 0 0010 4zm-4 6a4 4 0 117.999.001A4 4 0 016 10z"
-                  />
-                </svg>
-              </button>
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="20"
+                    height="20"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M10 4a6 6 0 104.472 10.03l3.249 3.25a1 1 0 001.415-1.415l-3.25-3.249A6 6 0 0010 4zm-4 6a4 4 0 117.999.001A4 4 0 016 10z"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="pg_companies-sort">
+                <span className="pg_companies-sortLabel">Sort by:</span>
+                <select
+                  className="pg_companies-sortSelect"
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value as SortKey)}
+                  aria-label="Ordenar empresas"
+                >
+                  <option value="relevance">Todos</option>
+                  <option value="name_asc">Nombre (A–Z)</option>
+                  <option value="name_desc">Nombre (Z–A)</option>
+                  <option value="newest">Más recientes</option>
+                  <option value="oldest">Más antiguas</option>
+                </select>
+              </div>
             </div>
 
-            <div className="pg_companies-sort">
-              <span className="pg_companies-sortLabel">Sort by:</span>
-              <select
-                className="pg_companies-sortSelect"
-                value={sort}
-                onChange={(e) => setSort(e.target.value as SortKey)}
-                aria-label="Ordenar empresas"
-              >
-                <option value="relevance">Todos</option>
-                <option value="name_asc">Nombre (A–Z)</option>
-                <option value="name_desc">Nombre (Z–A)</option>
-                <option value="newest">Más recientes</option>
-                <option value="oldest">Más antiguas</option>
-              </select>
-            </div>
-          </div>
+            <div className="pg_companies-metaRow">
+              <div className="pg_companies-results">
+                {loading && items.length === 0 ? (
+                  <>Cargando…</>
+                ) : (
+                  <>
+                    Resultados <strong>{shownCount}</strong> de{" "}
+                    <strong>{totalLabel}</strong>
+                  </>
+                )}
+              </div>
 
-          <div className="pg_companies-metaRow">
-            <div className="pg_companies-results">
-              {loading && items.length === 0 ? (
-                <>Cargando…</>
-              ) : (
-                <>
-                  Resultados <strong>{shownCount}</strong> de{" "}
-                  <strong>{totalLabel}</strong>
-                </>
+              {q.trim() && (
+                <button
+                  type="button"
+                  className="pg_companies-clear"
+                  onClick={() => setQ("")}
+                >
+                  Limpiar
+                </button>
               )}
             </div>
-
-            {q.trim() && (
-              <button
-                type="button"
-                className="pg_companies-clear"
-                onClick={() => setQ("")}
-              >
-                Limpiar
-              </button>
-            )}
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="pg_companies-list">
-        <div className="pg_companies-listInner">
-          {bootError ? (
-            <div className="pg_companies-empty">❌ {bootError}</div>
-          ) : !loading && items.length === 0 ? (
-            <div className="pg_companies-empty">
-              No hay empresas registradas.
-            </div>
-          ) : !loading && filteredSorted.length === 0 ? (
-            <div className="pg_companies-empty">
-              No se encontraron resultados para "{q.trim()}".
-            </div>
-          ) : (
-            <div className="pg_companies-grid">
-              {filteredSorted.map((c, idx) => {
-                const title = safeStr(c.name) || "Empresa";
-                const desc = parseRequirements(c.description);
+        <section className="pg_companies-list">
+          <div className="pg_companies-listInner">
+            {bootError ? (
+              <div className="pg_companies-empty">❌ {bootError}</div>
+            ) : !loading && items.length === 0 ? (
+              <div className="pg_companies-empty">
+                No hay empresas registradas.
+              </div>
+            ) : !loading && filteredSorted.length === 0 ? (
+              <div className="pg_companies-empty">
+                No se encontraron resultados para "{q.trim()}".
+              </div>
+            ) : (
+              <div className="pg_companies-grid">
+                {filteredSorted.map((c, idx) => {
+                  const title = safeStr(c.name) || "Empresa";
+                  const desc = parseRequirements(c.description);
 
-                return (
-                  <m.article
-                    key={c.id}
-                    className="pg_companies-card"
-                    initial={{ opacity: 0, y: 18 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: 0.5,
-                      delay: Math.min(idx, 10) * 0.03,
-                    }}
-                    viewport={{ once: true }}
-                  >
-                    <div className="pg_companies-media">
-                      {c.image_url ? (
-                        <Image
-                          src={c.image_url}
-                          alt={title}
-                          className="pg_companies-mediaImg"
-                          width={200}
-                          height={150}
-                          unoptimized
-                        />
-                      ) : (
-                        <div className="pg_companies-mediaFallback">
-                          {title.slice(0, 1).toUpperCase()}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="pg_companies-cardBody">
-                      <div className="pg_companies-brand">
-                        <div className="pg_companies-brandName">{title}</div>
+                  return (
+                    <m.article
+                      key={c.id}
+                      className="pg_companies-card"
+                      initial={{ opacity: 0, y: 18 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{
+                        duration: 0.5,
+                        delay: Math.min(idx, 10) * 0.03,
+                      }}
+                      viewport={{ once: true }}
+                    >
+                      <div className="pg_companies-media">
+                        {c.image_url ? (
+                          <Image
+                            src={c.image_url}
+                            alt={title}
+                            className="pg_companies-mediaImg"
+                            width={200}
+                            height={150}
+                            unoptimized
+                          />
+                        ) : (
+                          <div className="pg_companies-mediaFallback">
+                            {title.slice(0, 1).toUpperCase()}
+                          </div>
+                        )}
                       </div>
 
-                      {desc.length > 0 ? (
-                        <ul className="pg_companies-desc">
-                          {desc.map((item) => (
-                            <li key={item}>{item}</li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p className="pg_companies-desc is-empty">
-                          Sin descripción.
-                        </p>
-                      )}
-                    </div>
-                  </m.article>
-                );
-              })}
+                      <div className="pg_companies-cardBody">
+                        <div className="pg_companies-brand">
+                          <div className="pg_companies-brandName">{title}</div>
+                        </div>
+
+                        {desc.length > 0 ? (
+                          <ul className="pg_companies-desc">
+                            {desc.map((item) => (
+                              <li key={item}>{item}</li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="pg_companies-desc is-empty">
+                            Sin descripción.
+                          </p>
+                        )}
+                      </div>
+                    </m.article>
+                  );
+                })}
+              </div>
+            )}
+
+            <div className="pg_companies-footer">
+              <div className="pg_companies-footerLine" />
+
+              <button
+                type="button"
+                className="pg_companies-loadMore"
+                onClick={loadMore}
+                disabled={!canLoadMore || loading}
+              >
+                {loading
+                  ? "Cargando…"
+                  : canLoadMore
+                    ? "Load More Results"
+                    : "No hay más resultados"}
+              </button>
             </div>
-          )}
-
-          <div className="pg_companies-footer">
-            <div className="pg_companies-footerLine" />
-
-            <button
-              type="button"
-              className="pg_companies-loadMore"
-              onClick={loadMore}
-              disabled={!canLoadMore || loading}
-            >
-              {loading
-                ? "Cargando…"
-                : canLoadMore
-                  ? "Load More Results"
-                  : "No hay más resultados"}
-            </button>
           </div>
-        </div>
-      </section>
-    </div>
+        </section>
+      </div>
     </LazyMotion>
   );
 }

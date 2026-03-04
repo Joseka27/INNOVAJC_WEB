@@ -7,10 +7,11 @@ import { FaFacebook, FaInstagram, FaTwitter, FaWhatsapp } from "react-icons/fa";
 import { Roboto } from "next/font/google";
 
 import HeaderClient from "./burguerMenu";
+import FooterSchedule from "./footercalendar";
 
 export const metadata: Metadata = {
   title: {
-    default: "Innova JC",
+    default: "Innova JC | %s",
     template: "Innova JC | %s",
   },
   description: "Software de Gestión Contable y Administrativa",
@@ -20,44 +21,6 @@ const roboto = Roboto({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800", "900"],
 });
-
-const FooterSchedule = () => {
-  const schedule = [
-    { day: "Domingo", hours: "Cerrado" },
-    { day: "Lunes", hours: "8:00 AM - 5:30 PM" },
-    { day: "Martes", hours: "8:00 AM - 5:30 PM" },
-    { day: "Miércoles", hours: "8:00 AM - 5:30 PM" },
-    { day: "Jueves", hours: "8:00 AM - 5:30 PM" },
-    { day: "Viernes", hours: "8:00 AM - 5:30 PM" },
-    { day: "Sábado", hours: "Cerrado" },
-  ];
-
-  const todayIndex = new Date().getDay();
-  const isWeekend = todayIndex === 0 || todayIndex === 6;
-
-  return (
-    <div className="schedule">
-      <h4 className="text-center">Horario de Atención</h4>
-
-      {schedule.map((s, index) => {
-        const isToday = index === todayIndex;
-
-        return (
-          <div
-            key={s.day}
-            className={`schedule-row 
-              ${isToday ? "today" : ""} 
-              ${isToday && isWeekend ? "today-closed" : ""}
-            `}
-          >
-            <span>{s.day}</span>
-            <span>{s.hours}</span>
-          </div>
-        );
-      })}
-    </div>
-  );
-};
 
 export default function RootLayout({
   children,
@@ -88,6 +51,7 @@ export default function RootLayout({
                     />
                     <h3>Soluciones Integrales InnovaJC</h3>
                   </div>
+
                   <p>
                     Software de Gestión Contable y Administrativa para
                     optimización de negocios con soluciones de contabilidad
@@ -97,15 +61,19 @@ export default function RootLayout({
 
                 <div className="pg_footer-information-div">
                   <h4>Enlaces Directos</h4>
+
                   <div className="pg_footer-linkrouter">
                     <Link href="/about">Sobre Nosotros</Link>
                   </div>
+
                   <div className="pg_footer-linkrouter">
                     <Link href="/customers">Clientes</Link>
                   </div>
+
                   <div className="pg_footer-linkrouter">
                     <Link href="/downloads">Descargar</Link>
                   </div>
+
                   <div className="pg_footer-linkrouter">
                     <Link href="/contact">Contáctanos</Link>
                   </div>
@@ -113,16 +81,20 @@ export default function RootLayout({
 
                 <div className="pg_footer-information-div">
                   <h4>Redes Sociales</h4>
+
                   <div className="socialmedia">
                     <a href="https://facebook.com">
                       <FaFacebook />
                     </a>
+
                     <a href="https://instagram.com">
                       <FaInstagram />
                     </a>
+
                     <a href="https://twitter.com">
                       <FaTwitter />
                     </a>
+
                     <a href="https://wa.me/40701423">
                       <FaWhatsapp />
                     </a>
@@ -143,6 +115,7 @@ export default function RootLayout({
                     {new Date().getFullYear()}
                   </p>
                 </div>
+
                 <div className="pg_footer-termslink">
                   <p>Términos</p>
                   <p>Condiciones</p>

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
-import "./admin_globals.css"; // ✅ si quieres que aplique a TODO admin (incluye dashboard y login)
+import "./admin_globals.css";
 
 export const metadata: Metadata = {
   title: "INNOVA JC | Admin",
