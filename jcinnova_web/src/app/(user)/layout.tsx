@@ -11,7 +11,7 @@ import FooterSchedule from "./footercalendar";
 
 export const metadata: Metadata = {
   title: {
-    default: "Innova JC | %s",
+    default: "Innova JC",
     template: "Innova JC | %s",
   },
   description: "Software de Gestión Contable y Administrativa",

@@ -13,29 +13,56 @@ export default function FooterSchedule() {
     { day: "Sábado", hours: "Cerrado" },
   ];
 
-  const [todayIndex, setTodayIndex] = useState(() => new Date().getDay());
+  const [todayIndex, setTodayIndex] = useState<number | null>(null);
+
+  function getCostaRicaDayIndex() {
+    const dayName = new Intl.DateTimeFormat("es-CR", {
+      weekday: "long",
+      timeZone: "America/Costa_Rica",
+    }).format(new Date());
+
+    const normalized = dayName.toLowerCase();
+
+    const dayMap: Record<string, number> = {
+      domingo: 0,
+      lunes: 1,
+      martes: 2,
+      miércoles: 3,
+      miercoles: 3,
+      jueves: 4,
+      viernes: 5,
+      sábado: 6,
+      sabado: 6,
+    };
+
+    return dayMap[normalized];
+  }
 
   useEffect(() => {
-    function scheduleNextUpdate() {
-      const now = new Date();
-
-      const nextMidnight = new Date();
-      nextMidnight.setHours(24, 0, 0, 0);
-
-      const msUntilMidnight = nextMidnight.getTime() - now.getTime();
-
-      const timeout = setTimeout(() => {
-        setTodayIndex(new Date().getDay());
-        scheduleNextUpdate();
-      }, msUntilMidnight);
-
-      return timeout;
+    function updateToday() {
+      setTodayIndex(getCostaRicaDayIndex());
     }
 
-    const timeout = scheduleNextUpdate();
+    updateToday();
 
-    return () => clearTimeout(timeout);
+    const interval = setInterval(updateToday, 60 * 1000);
+
+    return () => clearInterval(interval);
   }, []);
+
+  if (todayIndex === null) {
+    return (
+      <div className="schedule">
+        <h4 className="text-center">Horario de Atención</h4>
+        {schedule.map((s) => (
+          <div key={s.day} className="schedule-row">
+            <span>{s.day}</span>
+            <span>{s.hours}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   const isWeekend = todayIndex === 0 || todayIndex === 6;
 
@@ -49,10 +76,9 @@ export default function FooterSchedule() {
         return (
           <div
             key={s.day}
-            className={`schedule-row 
-              ${isToday ? "today" : ""} 
-              ${isToday && isWeekend ? "today-closed" : ""}
-            `}
+            className={`schedule-row ${
+              isToday ? "today" : ""
+            } ${isToday && isWeekend ? "today-closed" : ""}`}
           >
             <span>{s.day}</span>
             <span>{s.hours}</span>

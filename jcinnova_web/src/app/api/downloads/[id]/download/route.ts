@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/serverClient";
-import { requireAdmin } from "@/lib/auth/requireAdmin";
 
 const BUCKET = "downloads";
-
 const TABLE_NAME = "Downloads";
 
 function sanitizeFilename(name: string) {
@@ -22,94 +20,65 @@ function extFromPath(path: string | null) {
   return last.slice(dot);
 }
 
+export const dynamic = "force-dynamic";
+
 export async function GET(
   _req: Request,
   ctx: { params: Promise<{ id: string }> },
 ) {
-  try {
-    const { id } = await ctx.params;
-    const downloadId = Number(id);
-    if (!Number.isFinite(downloadId)) {
-      return NextResponse.json({ error: "ID inválido" }, { status: 400 });
-    }
+  const { id } = await ctx.params;
+  const downloadId = Number(id);
 
-    const supabase = await createClient();
-    await requireAdmin(supabase);
+  if (!Number.isFinite(downloadId)) {
+    return NextResponse.json({ error: "ID inválido" }, { status: 400 });
+  }
 
-    const { data, error } = await supabase
-      .from(TABLE_NAME)
-      .select("id,title,file_url")
-      .eq("id", downloadId)
-      .single();
+  const supabase = await createClient();
 
-    if (error) {
-      return NextResponse.json(
-        { error: "No se pudo leer el download (DB).", detail: error.message },
-        { status: 500 },
-      );
-    }
+  const { data, error } = await supabase
+    .from(TABLE_NAME)
+    .select("id,title,file_url")
+    .eq("id", downloadId)
+    .single();
 
-    if (!data) {
-      return NextResponse.json(
-        { error: "Download no encontrado" },
-        { status: 404 },
-      );
-    }
-
-    if (!data.file_url) {
-      return NextResponse.json(
-        { error: "Este download no tiene archivo asignado" },
-        { status: 400 },
-      );
-    }
-
-    const filePath = String(data.file_url).trim();
-
-    const { data: signed, error: signErr } = await supabase.storage
-      .from(BUCKET)
-      .createSignedUrl(filePath, 60 * 10);
-
-    if (signErr || !signed?.signedUrl) {
-      return NextResponse.json(
-        {
-          error: "No se pudo firmar el archivo.",
-          detail: signErr?.message ?? "",
-        },
-        { status: 500 },
-      );
-    }
-
-    const upstream = await fetch(signed.signedUrl);
-    if (!upstream.ok || !upstream.body) {
-      return NextResponse.json(
-        {
-          error: "Archivo no encontrado en Storage.",
-          detail: `Status: ${upstream.status}`,
-          path: filePath,
-        },
-        { status: 404 },
-      );
-    }
-
-    const title = sanitizeFilename(data.title ?? "download");
-    const ext = extFromPath(filePath);
-    const filename = `${title}${ext}`;
-
-    const contentType =
-      upstream.headers.get("content-type") ?? "application/octet-stream";
-
-    return new Response(upstream.body, {
-      status: 200,
-      headers: {
-        "Content-Type": contentType,
-        "Content-Disposition": `attachment; filename="${filename}"`,
-        "Cache-Control": "no-store",
-      },
-    });
-  } catch (err: any) {
+  if (error) {
     return NextResponse.json(
-      { error: err?.message ?? "Error inesperado" },
+      { error: "No se pudo leer el download (DB).", detail: error.message },
       { status: 500 },
     );
   }
+
+  if (!data?.file_url) {
+    return NextResponse.json(
+      { error: "Este download no tiene archivo asignado" },
+      { status: 404 },
+    );
+  }
+
+  const filePath = String(data.file_url).trim();
+
+  const { data: signed, error: signErr } = await supabase.storage
+    .from(BUCKET)
+    .createSignedUrl(filePath, 60 * 10);
+
+  if (signErr || !signed?.signedUrl) {
+    return NextResponse.json(
+      {
+        error: "No se pudo firmar el archivo.",
+        detail: signErr?.message ?? "",
+      },
+      { status: 500 },
+    );
+  }
+
+  const title = sanitizeFilename(data.title ?? "download");
+  const ext = extFromPath(filePath);
+  const filename = `${title}${ext}`;
+
+  const url = new URL(signed.signedUrl);
+  url.searchParams.set("download", filename);
+
+  const res = NextResponse.redirect(url.toString(), 302);
+  res.headers.set("Cache-Control", "no-store");
+  return res;
 }
