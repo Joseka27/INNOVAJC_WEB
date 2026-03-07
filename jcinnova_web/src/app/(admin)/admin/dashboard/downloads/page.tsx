@@ -13,21 +13,22 @@ import {
 import { useAdminGate } from "@/app/(admin)/admin/_admin_components/useAdmingate";
 import { useIdleLogout } from "@/app/(admin)/admin/_admin_components/useIdlelogout";
 
-//tamaño de la pagina
+// tamaño de la pagina
 const PAGE_SIZE = 10;
 
-//Bucket Division
+// Bucket Division
 const DOWNLOADS_BUCKET = "downloads";
 const FILES_FOLDER = "AppLink";
 const COVERS_FOLDER = "AppImages";
 
-//Opciones en input
+// Opciones en input
 const TYPE_FILE_OPTIONS = [
   "Software",
   "Documentacion",
   "Soporte",
   "Reportes",
 ] as const;
+
 type TypeFile = (typeof TYPE_FILE_OPTIONS)[number];
 
 type DownloadRow = {
@@ -68,6 +69,7 @@ export default function AdminDownloadsPage() {
   const [total, setTotal] = useState<number | null>(null);
 
   const [query, setQuery] = useState("");
+  const [filterCategory, setFilterCategory] = useState("Todos");
 
   const [signedUrlByPath, setSignedUrlByPath] = useState<
     Record<string, string>
@@ -113,14 +115,21 @@ export default function AdminDownloadsPage() {
 
   const filteredDownloads = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return downloads;
 
     return downloads.filter((d) => {
+      const matchesCategory =
+        filterCategory === "Todos" || d.type_file === filterCategory;
+
+      if (!matchesCategory) return false;
+
+      if (!q) return true;
+
       const hay =
         `${d.title ?? ""} ${d.description ?? ""} ${d.size ?? ""} ${d.version ?? ""} ${d.type_file ?? ""} ${d.requirements ?? ""}`.toLowerCase();
+
       return hay.includes(q);
     });
-  }, [downloads, query]);
+  }, [downloads, query, filterCategory]);
 
   async function resetForms() {
     setTitle("");
@@ -199,15 +208,17 @@ export default function AdminDownloadsPage() {
       if (data && Array.isArray(data.items)) {
         items = data.items;
       }
+
       setDownloads(items);
+
       let dlTotal: number | null = null;
       if (typeof data.count === "number") {
         dlTotal = data.count;
       }
+
       setTotal(dlTotal);
       setPage(p);
 
-      // ✅ Prefetch signed urls SOLO de imágenes
       void prefetchCoverSignedUrls(items);
     } catch (err: any) {
       push({
@@ -231,13 +242,14 @@ export default function AdminDownloadsPage() {
     if (paths.length === 0) return;
 
     const next: Record<string, string> = {};
+
     await Promise.all(
       paths.map(async (path) => {
         if (signedUrlByPath[path]) return;
 
         const { data, error } = await supabase.storage
           .from(DOWNLOADS_BUCKET)
-          .createSignedUrl(path, 60 * 30); // 30 min
+          .createSignedUrl(path, 60 * 30);
 
         if (!error && data?.signedUrl) {
           next[path] = data.signedUrl;
@@ -250,7 +262,6 @@ export default function AdminDownloadsPage() {
     }
   }
 
-  /** Sube a Storage y retorna PATH (bucket privado) */
   async function uploadToDownloadsBucket(file: File, folder: string) {
     const clean = safeFileName(file.name);
     const path = `${folder}/${Date.now()}_${clean}`;
@@ -265,7 +276,7 @@ export default function AdminDownloadsPage() {
 
     if (up.error) throw new Error(up.error.message);
 
-    return path; // guardamos path, no publicUrl
+    return path;
   }
 
   async function createDownload(e: React.FormEvent) {
@@ -357,14 +368,12 @@ export default function AdminDownloadsPage() {
         return;
       }
 
-      // 1) subir imagen + archivo (paths)
       const imagePath = await uploadToDownloadsBucket(
         createImage,
         COVERS_FOLDER,
       );
       const filePath = await uploadToDownloadsBucket(createFile, FILES_FOLDER);
 
-      // 2) guardar fila
       const res = await fetch("/api/downloads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -488,12 +497,10 @@ export default function AdminDownloadsPage() {
       let nextFilePath: string | null = editingDownload.file_url ?? null;
       let nextImagePath: string | null = editingDownload.app_image ?? null;
 
-      // si seleccionó archivo nuevo, lo subimos
       if (editFile) {
         nextFilePath = await uploadToDownloadsBucket(editFile, FILES_FOLDER);
       }
 
-      // si seleccionó imagen nueva, la subimos
       if (editImage) {
         nextImagePath = await uploadToDownloadsBucket(editImage, COVERS_FOLDER);
       }
@@ -546,10 +553,12 @@ export default function AdminDownloadsPage() {
   }
 
   async function removeDownload(id: number) {
+    const download = downloads.find((d) => d.id === id);
+
     const confirmId = push({
       type: "info",
       title: "Confirmación",
-      message: "¿Eliminar este archivo? Esta acción no se puede deshacer.",
+      message: `¿Eliminar el archivo "${download?.title ?? "este archivo"}"? Esta acción no se puede deshacer.`,
       actions: [
         { label: "Cancelar", onClick: () => remove(confirmId) },
         {
@@ -574,7 +583,7 @@ export default function AdminDownloadsPage() {
               push({
                 type: "success",
                 title: "Eliminado",
-                message: "Archivo eliminado.",
+                message: `Archivo "${download?.title ?? ""}" eliminado.`,
                 durationMs: 1800,
               });
 
@@ -611,7 +620,6 @@ export default function AdminDownloadsPage() {
           </div>
 
           <section className="download_config">
-            {/* CREATE */}
             <div className="download_dashboard_actions">
               <h2>Agregar Archivo o Aplicacion</h2>
 
@@ -673,7 +681,6 @@ export default function AdminDownloadsPage() {
                   rows={4}
                 />
 
-                {/* IMAGE UPLOAD */}
                 <div className="download_file_field">
                   <label
                     htmlFor="download_create_image"
@@ -708,7 +715,6 @@ export default function AdminDownloadsPage() {
                   />
                 </div>
 
-                {/* APP FILE UPLOAD */}
                 <div className="download_file_field">
                   <label
                     htmlFor="download_create_file"
@@ -752,7 +758,6 @@ export default function AdminDownloadsPage() {
               </form>
             </div>
 
-            {/* EDIT */}
             {editingDownload && (
               <div ref={editBoxRef} className="download_dashboard_actions">
                 <h2>Editando: {editingDownload.title}</h2>
@@ -820,7 +825,6 @@ export default function AdminDownloadsPage() {
                     rows={4}
                   />
 
-                  {/* EDIT IMAGE */}
                   <div className="download_file_field">
                     <label
                       htmlFor="download_edit_image"
@@ -858,7 +862,6 @@ export default function AdminDownloadsPage() {
                     />
                   </div>
 
-                  {/* EDIT FILE */}
                   <div className="download_file_field">
                     <label
                       htmlFor="download_edit_file"
@@ -914,7 +917,6 @@ export default function AdminDownloadsPage() {
             )}
           </section>
 
-          {/* SEARCH */}
           <div className="downloads_search">
             <input
               className="downloads_search_input"
@@ -922,6 +924,7 @@ export default function AdminDownloadsPage() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
+
             {query.trim() && (
               <button
                 type="button"
@@ -932,9 +935,22 @@ export default function AdminDownloadsPage() {
                 Limpiar
               </button>
             )}
+
+            <select
+              className="downloads_select_field"
+              value={filterCategory}
+              onChange={(e) => setFilterCategory(e.target.value)}
+              style={{ maxWidth: 260 }}
+            >
+              <option value="Todos">Todos</option>
+              {TYPE_FILE_OPTIONS.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
+                </option>
+              ))}
+            </select>
           </div>
 
-          {/* LIST */}
           <section className="downloads_list">
             {loading && (
               <div className="downloads_loading">Cargando downloads…</div>
@@ -950,7 +966,7 @@ export default function AdminDownloadsPage() {
               downloads.length > 0 &&
               filteredDownloads.length === 0 && (
                 <div className="downloads_loading_status">
-                  No se encontraron downloads para “{query.trim()}”.
+                  No se encontraron resultados para este tipo archivo
                 </div>
               )}
 
@@ -1004,7 +1020,6 @@ export default function AdminDownloadsPage() {
                         {d.size ?? "—"}
                       </div>
 
-                      {/* ✅ DESCARGA PROFESIONAL (usa tu endpoint) */}
                       {d.file_url ? (
                         <div className="download_card_desc">
                           <span className="download_card_short_desc">

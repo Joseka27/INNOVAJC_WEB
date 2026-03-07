@@ -135,6 +135,20 @@
   gap: 1rem;
 }
 
+.downloads_select_field {
+  width: 100%;
+  height: 2.8rem;
+  padding: 0 0.9rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+}
+
+.downloads_select_field option {
+  color: #0b1220;
+}
+
 .download_name_field {
   width: 100%;
   height: 2.8rem;

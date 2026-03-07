@@ -15,23 +15,28 @@ export default function FooterSchedule() {
 
   const [todayIndex, setTodayIndex] = useState<number | null>(null);
 
+  function normalize(str: string) {
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
+  }
+
   function getCostaRicaDayIndex() {
     const dayName = new Intl.DateTimeFormat("es-CR", {
       weekday: "long",
       timeZone: "America/Costa_Rica",
     }).format(new Date());
 
-    const normalized = dayName.toLowerCase();
+    const normalized = normalize(dayName);
 
     const dayMap: Record<string, number> = {
       domingo: 0,
       lunes: 1,
       martes: 2,
-      miércoles: 3,
       miercoles: 3,
       jueves: 4,
       viernes: 5,
-      sábado: 6,
       sabado: 6,
     };
 

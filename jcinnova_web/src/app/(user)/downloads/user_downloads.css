@@ -281,6 +281,8 @@
   padding: 0.75rem 1rem;
   cursor: pointer;
 
+  font-family: inherit;
+
   transition: color 0.2s ease;
 }
 
@@ -321,11 +323,13 @@
 }
 
 .pg_down-searchInput {
+  font-family: inherit;
+  font-size: 1rem;
   width: min(440px, 100%);
   padding: 0.75rem 0.95rem;
   border-radius: 14px;
   border: 1px solid rgba(5, 43, 105, 0.16);
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.925);
   outline: none;
 
   font-weight: 700;
@@ -689,7 +693,7 @@
 
 .pg_down-chip {
   flex-shrink: 0;
-  max-width: 40%;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -865,4 +869,28 @@
 .pg_down-cardActions .pg_down-btnPrimary:hover {
   transform: translateY(-1px);
   box-shadow: 0 24px 62px rgba(0, 140, 255, 0.3);
+}
+
+.pg_down-search {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+}
+
+.pg_down-searchIcon {
+  position: absolute;
+  left: 0.95rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+  z-index: 1;
+}
+
+.pg_down-searchInput {
+  width: 100%;
+  padding-left: 2.6rem;
 }

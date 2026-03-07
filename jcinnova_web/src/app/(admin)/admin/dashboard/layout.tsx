@@ -231,6 +231,14 @@ export default function DashboardShell({
                 >
                   Descargas
                 </Link>
+
+                <Link
+                  href="/admin/dashboard/prices"
+                  className="dashboard_nav_item"
+                  onClick={closeSidebar}
+                >
+                  Precios
+                </Link>
               </nav>
             </div>
           </aside>

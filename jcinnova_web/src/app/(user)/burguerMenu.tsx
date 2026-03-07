@@ -56,6 +56,9 @@ export default function HeaderClient() {
           <div className="pg_header-linkrouter">
             <Link href="/downloads">Descargar</Link>
           </div>
+          <div className="pg_header-linkrouter">
+            <Link href="/prices">Precios</Link>
+          </div>
         </div>
       </div>
 
@@ -83,11 +86,7 @@ export default function HeaderClient() {
           aria-label="Menú móvil"
         >
           <nav className="pg_header-mobileNav">
-            <Link
-              className="pg_header-mobileLink"
-              href="/"
-              onClick={closeMenu}
-            >
+            <Link className="pg_header-mobileLink" href="/" onClick={closeMenu}>
               Inicio
             </Link>
             <Link
@@ -110,6 +109,14 @@ export default function HeaderClient() {
               onClick={closeMenu}
             >
               Descargar
+            </Link>
+
+            <Link
+              className="pg_header-mobileLink"
+              href="/prices"
+              onClick={closeMenu}
+            >
+              Precios
             </Link>
 
             <div className="pg_header-mobileDivider" />

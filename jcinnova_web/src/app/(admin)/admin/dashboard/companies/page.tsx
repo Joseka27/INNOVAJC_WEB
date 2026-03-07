@@ -24,10 +24,9 @@ async function fetchCompanyPage(
   pageSize: number,
 ): Promise<{ items: any[]; count: number | null }> {
   const offset = page * pageSize;
-  const res = await fetch(
-    `/api/companies?limit=${pageSize}&offset=${offset}`,
-    { cache: "no-store" },
-  );
+  const res = await fetch(`/api/companies?limit=${pageSize}&offset=${offset}`, {
+    cache: "no-store",
+  });
   const data = await res.json();
   if (!res.ok) {
     let errMsg = "Error cargando empresas";
@@ -326,10 +325,12 @@ export default function AdminDashboardPage() {
   }
 
   async function removeCompany(id: number) {
+    const company = companies.find((c) => c.id === id);
+
     const confirmId = push({
       type: "info",
       title: "Confirmación",
-      message: "¿Eliminar esta empresa? Esta acción no se puede deshacer.",
+      message: `¿Eliminar la empresa "${company?.name ?? "esta empresa"}"? Esta acción no se puede deshacer.`,
       actions: [
         { label: "Cancelar", onClick: () => remove(confirmId) },
         {
@@ -354,11 +355,14 @@ export default function AdminDashboardPage() {
               push({
                 type: "success",
                 title: "Eliminado",
-                message: "Empresa eliminada.",
+                message: `Empresa "${company?.name ?? ""}" eliminada.`,
                 durationMs: 1800,
               });
 
-              await loadCompanies(page);
+              const nextPage =
+                companies.length === 1 && page > 0 ? page - 1 : page;
+
+              await loadCompanies(nextPage);
             } catch {
               push({
                 type: "error",

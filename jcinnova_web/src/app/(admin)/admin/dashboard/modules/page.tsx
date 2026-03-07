@@ -434,10 +434,12 @@ export default function AdminModulesPage() {
   }
 
   async function removeModule(id: number) {
+    const moduleItem = modules.find((m) => m.id === id);
+
     const confirmId = push({
       type: "info",
       title: "Confirmación",
-      message: "¿Eliminar este módulo? Esta acción no se puede deshacer.",
+      message: `¿Eliminar el módulo "${moduleItem?.title ?? "este módulo"}"? Esta acción no se puede deshacer.`,
       actions: [
         { label: "Cancelar", onClick: () => remove(confirmId) },
         {
@@ -462,7 +464,7 @@ export default function AdminModulesPage() {
               push({
                 type: "success",
                 title: "Eliminado",
-                message: "Módulo eliminado.",
+                message: `Módulo "${moduleItem?.title ?? ""}" eliminado.`,
                 durationMs: 1800,
               });
 

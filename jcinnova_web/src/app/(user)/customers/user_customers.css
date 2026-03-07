@@ -59,6 +59,7 @@
   font-weight: 800;
   color: var(--comp-blue);
   font-size: 1rem;
+  font-family: inherit;
 }
 
 .pg_companies-searchInput::placeholder {
@@ -93,6 +94,8 @@
 }
 
 .pg_companies-sortSelect {
+  font-family: inherit;
+  font-size: 1rem;
   height: 2.75rem;
   padding: 0 0.9rem;
   border-radius: 12px;

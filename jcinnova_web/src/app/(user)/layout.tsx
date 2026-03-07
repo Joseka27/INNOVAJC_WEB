@@ -75,6 +75,10 @@ export default function RootLayout({
                   </div>
 
                   <div className="pg_footer-linkrouter">
+                    <Link href="/prices">Precios</Link>
+                  </div>
+
+                  <div className="pg_footer-linkrouter">
                     <Link href="/contact">Contáctanos</Link>
                   </div>
                 </div>

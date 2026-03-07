@@ -328,11 +328,20 @@ export default function Downloads() {
               </div>
 
               <div className="pg_down-search">
+                <span className="pg_down-searchIcon" aria-hidden="true">
+                  <Image
+                    src="/images/mainpage/lupa.png"
+                    alt=""
+                    width={16}
+                    height={16}
+                  />
+                </span>
+
                 <input
                   className="pg_down-searchInput"
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
-                  placeholder="Buscar (ej: SECE, Soporte, v1.8...)"
+                  placeholder="Buscar Archivos"
                   aria-label="Buscar descargas"
                 />
               </div>
