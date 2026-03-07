@@ -213,7 +213,7 @@
 
 .pg_prices-list {
   width: 100%;
-  padding: 5rem 1.25rem;
+  padding: 3rem 1.25rem;
   background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
 }
 
@@ -390,7 +390,7 @@
 }
 
 .pg_prices-card:hover .pg_prices-cardTop {
-  background: linear-gradient(#0289f8, #063b7d);
+  background: linear-gradient(#006fc9, #063b7d);
 }
 
 .pg_prices-desc {
@@ -633,6 +633,13 @@
   background-color: #0269bd;
 }
 
+.pg_down-grad {
+  background: linear-gradient(90deg, #008cff, #2d9bf5, #1976d2);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 @media (max-width: 1100px) {
   .pg_prices-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -655,7 +662,7 @@
   }
 
   .pg_prices-card .pg_prices-title {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
   }
 
   .pg_prices-chip {

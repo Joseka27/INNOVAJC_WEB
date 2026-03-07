@@ -177,7 +177,10 @@ export default function PricesPage() {
         <section className="pg_prices-list">
           <div className="pg_prices-listInner">
             <div className="pg_prices-head">
-              <h2>Precios</h2>
+              <h2>
+                Planes y <span className="pg_down-grad">Precios</span> de
+                nuestros Sistemas
+              </h2>
 
               <p>
                 Explora nuestros servicios, soluciones empresariales y
