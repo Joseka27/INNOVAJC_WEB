@@ -645,9 +645,13 @@
 
 @media (max-width: 520px) {
   .pg_about_module_detail-lightboxArrow {
+    top: 93.5%;
     width: 2.5rem;
     height: 2.5rem;
-    font-size: 1.7rem;
+    padding-top: 0.8rem;
+    font-size: 4rem;
+
+    font-weight: 900;
   }
 
   .pg_about_module_detail-lightboxArrowLeft {
