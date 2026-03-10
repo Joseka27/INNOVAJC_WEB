@@ -87,6 +87,10 @@ export default function AdminDownloadsPage() {
   // FILES CREATE
   const [createFile, setCreateFile] = useState<File | null>(null);
   const [createImage, setCreateImage] = useState<File | null>(null);
+  const [createImagePreview, setCreateImagePreview] = useState<string | null>(
+    null,
+  );
+  const [editImagePreview, setEditImagePreview] = useState<string | null>(null);
 
   // EDIT
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -157,6 +161,30 @@ export default function AdminDownloadsPage() {
       loadDownloads(0);
     }
   }, [booting, userEmail, isAdmin]);
+
+  useEffect(() => {
+    if (!createImage) {
+      setCreateImagePreview(null);
+      return;
+    }
+
+    const url = URL.createObjectURL(createImage);
+    setCreateImagePreview(url);
+
+    return () => URL.revokeObjectURL(url);
+  }, [createImage]);
+
+  useEffect(() => {
+    if (!editImage) {
+      setEditImagePreview(null);
+      return;
+    }
+
+    const url = URL.createObjectURL(editImage);
+    setEditImagePreview(url);
+
+    return () => URL.revokeObjectURL(url);
+  }, [editImage]);
 
   async function logout() {
     await fetch("/api/auth/logout", { method: "POST", cache: "no-store" });
@@ -702,6 +730,16 @@ export default function AdminDownloadsPage() {
                       </span>
                     </div>
                     <span className="download_file_button">Elegir</span>
+
+                    {createImagePreview && (
+                      <div className="download_preview_box">
+                        <img
+                          src={createImagePreview}
+                          alt="Preview"
+                          className="download_preview_img"
+                        />
+                      </div>
+                    )}
                   </label>
 
                   <input
@@ -849,6 +887,27 @@ export default function AdminDownloadsPage() {
                         </span>
                       </div>
                       <span className="download_file_button">Elegir</span>
+                      {editImagePreview ? (
+                        <div className="download_preview_box">
+                          <img
+                            src={editImagePreview}
+                            alt="Preview nueva"
+                            className="download_preview_img"
+                          />
+                        </div>
+                      ) : editingDownload?.app_image &&
+                        signedUrlByPath[editingDownload.app_image] ? (
+                        <div className="download_preview_box">
+                          <Image
+                            src={signedUrlByPath[editingDownload.app_image]}
+                            alt="Imagen actual"
+                            width={200}
+                            height={120}
+                            className="download_preview_img"
+                            unoptimized
+                          />
+                        </div>
+                      ) : null}
                     </label>
 
                     <input

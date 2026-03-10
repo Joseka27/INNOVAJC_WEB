@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { LazyMotion, m, domAnimation } from "framer-motion";
+import Link from "next/link";
 import "./about_modules.css";
 import { slugify } from "@/app/(user)/_utils/helpers";
 
@@ -11,28 +12,15 @@ type ModuleItem = {
   module_category: string;
   short_desc: string;
   long_desc: string;
-  image_url: string;
+  banner_image_url: string;
 };
 
 const FETCH_LIMIT = 200;
 
-function parseLongDesc(text: string | null): string[][] {
-  const s = (text ?? "").trim();
-  if (!s) return [];
-
-  return s
-    .replace(/\\n/g, "\n")
-    .split(/\n\s*\n/g)
-    .map((block) =>
-      block
-        .split(/\r?\n/g)
-        .map((line) => line.trim())
-        .filter(Boolean),
-    )
-    .filter((group) => group.length > 0);
-}
-
-async function fetchModulePage(offset: number, limit: number): Promise<ModuleItem[]> {
+async function fetchModulePage(
+  offset: number,
+  limit: number,
+): Promise<ModuleItem[]> {
   const qs = new URLSearchParams();
   qs.set("limit", String(limit));
   qs.set("offset", String(offset));
@@ -44,6 +32,7 @@ async function fetchModulePage(offset: number, limit: number): Promise<ModuleIte
 
   const raw = await res.text();
   let data: any = null;
+
   try {
     if (raw) data = JSON.parse(raw);
   } catch {
@@ -53,26 +42,16 @@ async function fetchModulePage(offset: number, limit: number): Promise<ModuleIte
   }
 
   if (!res.ok) {
-    let errMsg = "Error cargando módulos";
-    if (data && data.error) {
-      errMsg = data.error;
-    }
-    throw new Error(errMsg);
+    throw new Error(data?.error ?? "Error cargando módulos");
   }
 
-  let batch: ModuleItem[] = [];
-  if (data && Array.isArray(data.items)) {
-    batch = data.items;
-  }
-  return batch;
+  return Array.isArray(data?.items) ? data.items : [];
 }
 
 export default function AboutServices() {
   const [modules, setModules] = useState<ModuleItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const [activeCat] = useState<string>("Todos");
 
   async function fetchAllModules() {
     setLoading(true);
@@ -89,172 +68,134 @@ export default function AboutServices() {
         if (batch.length < FETCH_LIMIT) break;
 
         offset += FETCH_LIMIT;
-
         if (offset > 5000) break;
       }
 
       setModules(all);
     } catch (e: any) {
-      let errMsg = "Error inesperado cargando módulos.";
-      if (e && e.message) {
-        errMsg = e.message;
-      }
-      setError(errMsg);
       setModules([]);
+      setError(e?.message ?? "Error inesperado cargando módulos.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   useEffect(() => {
     fetchAllModules();
   }, []);
 
-  useEffect(() => {
-    if (loading) return;
-    if (error) return;
-    if (modules.length === 0) return;
-
-    const hash = typeof window !== "undefined" ? window.location.hash : "";
-    const id = hash ? hash.replace("#", "") : "";
-    if (!id) return;
-
-    requestAnimationFrame(() => {
-      const el = document.getElementById(id);
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    });
-  }, [loading, error, modules]);
-
-  const categories = useMemo(() => {
-    const set = new Set<string>();
-    for (const m of modules) {
-      const c = (m.module_category ?? "").trim();
-      if (c) set.add(c);
-    }
-    return ["Todos", ...Array.from(set).sort((a, b) => a.localeCompare(b))];
-  }, [modules]);
-
-  const filtered = useMemo(() => {
-    if (activeCat === "Todos") return modules;
-    return modules.filter((m) => m.module_category === activeCat);
-  }, [modules, activeCat]);
-
   const grouped = useMemo(() => {
     const map = new Map<string, ModuleItem[]>();
 
-    for (const m of filtered) {
+    for (const m of modules) {
       const cat = (m.module_category ?? "").trim() || "Sin categoría";
       if (!map.has(cat)) map.set(cat, []);
       map.get(cat)!.push(m);
     }
 
-    const orderedCats = Array.from(map.keys()).sort((a, b) =>
-      a.localeCompare(b),
-    );
-
-    return orderedCats.map((cat) => ({
-      cat,
-      items: (map.get(cat) ?? []).sort((a, b) =>
-        a.title.localeCompare(b.title),
-      ),
-    }));
-  }, [filtered]);
+    return Array.from(map.entries())
+      .sort((a, b) => a[0].localeCompare(b[0], "es"))
+      .map(([cat, items]) => ({
+        cat,
+        items: items.sort((a, b) => a.title.localeCompare(b.title, "es")),
+      }));
+  }, [modules]);
 
   return (
     <LazyMotion features={domAnimation}>
-    <section className="pg_about_services" id="pg_about_services">
-      <div className="pg_about_services-sections">
-        <m.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          viewport={{ once: true }}
-        >
-          <div className="pg_about_services-head">
-            <h2>SECE Software se adapta a tu negocio</h2>
-            <p>
-              Ofrecemos servicios tecnológicos enfocados en la optimización y
-              control empresarial, incluyendo implementación de sistemas ERP,
-              configuración de módulos, soporte técnico y acompañamiento
-              continuo. Nuestras soluciones están diseñadas para adaptarse a las
-              necesidades de cada empresa, garantizando eficiencia, seguridad y
-              escalabilidad.
-            </p>
-          </div>
-        </m.div>
+      <section className="pg_about_services" id="pg_about_services">
+        <div className="pg_about_services-sections">
+          <m.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            viewport={{ once: true }}
+          >
+            <div className="pg_about_services-head">
+              <h2>SECE Software se adapta a tu negocio</h2>
+              <p>
+                Explora cada módulo del sistema y entra a su página individual
+                para ver la información completa, beneficios y alcance
+                funcional.
+              </p>
+            </div>
+          </m.div>
 
-        {loading && (
-          <div className="pg_about_services-empty">Cargando módulos…</div>
-        )}
-        {!loading && error && (
-          <div className="pg_about_services-empty">❌ {error}</div>
-        )}
+          {loading && (
+            <div className="pg_about_services-empty">Cargando módulos…</div>
+          )}
 
-        {!loading && !error && (
-          <div className="pg_about_services-groups">
-            {grouped.map(({ cat, items }) => (
-              <section key={cat} className="pg_about_services-group">
-                <div className="pg_about_services-catDivider" id={slugify(cat)}>
-                  <span className="pg_about_services-catLine" aria-hidden />
-                  <h3 className="pg_about_services-catTitle">{cat}</h3>
-                  <span className="pg_about_services-catLine" aria-hidden />
-                </div>
+          {!loading && error && (
+            <div className="pg_about_services-empty">❌ {error}</div>
+          )}
 
-                <div className="pg_about_services-grid">
-                  {items.map((item) => (
-                    <article
-                      key={item.id}
-                      className="pg_about_services-card"
-                      id={String(slugify(item.title))}
-                    >
-                      <div
-                        className="pg_about_services-cardtext"
-                        style={{
-                          backgroundImage: item.image_url
-                            ? `url(${item.image_url})`
-                            : undefined,
-                        }}
-                      >
-                        <div className="pg_about_services-overlay">
-                          <div className="pg_about_services-cardtop">
-                            <h3>{item.title}</h3>
-                            <span className="pg_about_services-chip">
-                              {item.module_category}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
+          {!loading && !error && grouped.length > 0 && (
+            <div className="pg_about_services-groups">
+              {grouped.map(({ cat, items }) => (
+                <section key={cat} className="pg_about_services-group">
+                  <div
+                    className="pg_about_services-catDivider"
+                    id={slugify(cat)}
+                  >
+                    <span className="pg_about_services-catLine" aria-hidden />
+                    <h3 className="pg_about_services-catTitle">{cat}</h3>
+                    <span className="pg_about_services-catLine" aria-hidden />
+                  </div>
 
-                      {parseLongDesc(item.long_desc).map((group, groupIdx) => (
-                        <div
-                          key={`${item.id}-group-${groupIdx}`}
-                          className="pg_about_services-descGroup"
+                  <div className="pg_about_services-grid">
+                    {items.map((item) => {
+                      const slug = slugify(item.title);
+
+                      return (
+                        <article
+                          key={item.id}
+                          className="pg_about_services-card"
+                          id={slug}
                         >
-                          <ul className="pg_about_services-descList">
-                            {group.map((line) => (
-                              <li key={`${item.id}-${groupIdx}-${line.slice(0, 60)}`}>
-                                {line}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      ))}
-                    </article>
-                  ))}
-                </div>
-              </section>
-            ))}
-          </div>
-        )}
+                          <div
+                            className="pg_about_services-cardtext"
+                            style={{
+                              backgroundImage: item.banner_image_url
+                                ? `url(${item.banner_image_url})`
+                                : undefined,
+                            }}
+                          >
+                            <div className="pg_about_services-overlay">
+                              <div className="pg_about_services-cardtop">
+                                <h3>{item.title}</h3>
+                                <span className="pg_about_services-chip">
+                                  {item.module_category}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
 
-        {!loading && !error && filtered.length === 0 && (
-          <div className="pg_about_services-empty">
-            No hay módulos para esta categoría.
-          </div>
-        )}
-      </div>
-    </section>
+                          <div className="pg_about_services-summary">
+                            <p>{item.short_desc}</p>
+
+                            <Link
+                              href={`/about/${slug}`}
+                              className="pg_about_services-link"
+                            >
+                              Ver módulo completo
+                            </Link>
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </div>
+                </section>
+              ))}
+            </div>
+          )}
+
+          {!loading && !error && grouped.length === 0 && (
+            <div className="pg_about_services-empty">
+              No hay módulos disponibles.
+            </div>
+          )}
+        </div>
+      </section>
     </LazyMotion>
   );
 }

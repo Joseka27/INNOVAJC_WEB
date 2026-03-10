@@ -12,7 +12,7 @@ type ModuleItem = {
   module_category: string;
   short_desc: string;
   long_desc: string;
-  image_url: string;
+  banner_image_url: string;
 };
 
 const FETCH_LIMIT = 200;
@@ -23,7 +23,10 @@ const MOBILE_PER_PAGE = 4;
 
 const MOBILE_MAX = 620;
 
-async function fetchModulePage(offset: number, limit: number): Promise<ModuleItem[]> {
+async function fetchModulePage(
+  offset: number,
+  limit: number,
+): Promise<ModuleItem[]> {
   const qs = new URLSearchParams();
   qs.set("limit", String(limit));
   qs.set("offset", String(offset));
@@ -156,106 +159,106 @@ export default function ServicesSection() {
 
   return (
     <LazyMotion features={domAnimation}>
-    <section className="pg_main-presentation-part4" id="servicios">
-      <div className="pg_main-part4-sections">
-        <m.div
-          className="h1-span-part6"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
-          viewport={{ once: true }}
-        >
-          <div className="pg_main-part4-head">
-            <h2>Todo tu negocio en un solo sistema</h2>
-            <p id="subtitle">
-              Módulos integrados para controlar las distintas operaciones de tu
-              empresa. Totalmente ajustables a tu negocio
-            </p>
-          </div>
-        </m.div>
-
-        {loading && (
-          <div className="pg_main-part4-empty">Cargando módulos…</div>
-        )}
-
-        {!loading && error && (
-          <div className="pg_main-part4-empty">❌ {error}</div>
-        )}
-
-        {!loading && !error && (
-          <div className="pg_main-part4-grid " id="cards">
-            {pageItems.map((item, idx) => (
-              <article key={item.id} className="pg_main-part4-card">
-                <div className="pg_main-part4-media" aria-hidden>
-                  <Image
-                    src={item.image_url}
-                    alt=""
-                    fill
-                    className="pg_main-part4-img"
-                    priority={idx < 2 && page === 1}
-                    sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 320px"
-                  />
-                </div>
-
-                <div className="pg_main-part4-cardtext">
-                  <div className="pg_main-part4-cardtop">
-                    <h3>{item.title}</h3>
-                    <span className="pg_main-part4-chip">
-                      {item.module_category}
-                    </span>
-                  </div>
-                  <p>{item.short_desc}</p>
-                </div>
-
-                <div className="pg_main-part4-cardmoreinfo">
-                  <Link href={`/about#${slugify(item.title)}`}>
-                    Más información ↗
-                  </Link>
-                </div>
-              </article>
-            ))}
-          </div>
-        )}
-
-        {!loading && !error && filtered.length > perPage && (
-          <div className="pg_main-part4-pagination" aria-label="Paginación">
-            <button
-              type="button"
-              className="pg_main-part4-pagebtn"
-              onClick={() => {
-                setPage((p) => Math.max(1, p - 1));
-                scrollToSection();
-              }}
-              disabled={!canPrev}
-            >
-              ← Anterior
-            </button>
-
-            <div className="pg_main-part4-pagestatus">
-              Página <b>{page}</b> de <b>{totalPages}</b>
+      <section className="pg_main-presentation-part4" id="servicios">
+        <div className="pg_main-part4-sections">
+          <m.div
+            className="h1-span-part6"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
+            viewport={{ once: true }}
+          >
+            <div className="pg_main-part4-head">
+              <h2>Todo tu negocio en un solo sistema</h2>
+              <p id="subtitle">
+                Módulos integrados para controlar las distintas operaciones de
+                tu empresa. Totalmente ajustables a tu negocio
+              </p>
             </div>
+          </m.div>
 
-            <button
-              type="button"
-              className="pg_main-part4-pagebtn"
-              onClick={() => {
-                setPage((p) => Math.min(totalPages, p + 1));
-                scrollToSection();
-              }}
-              disabled={!canNext}
-            >
-              Siguiente →
-            </button>
-          </div>
-        )}
+          {loading && (
+            <div className="pg_main-part4-empty">Cargando módulos…</div>
+          )}
 
-        {!loading && !error && filtered.length === 0 && (
-          <div className="pg_main-part4-empty">
-            No hay módulos para esta categoría.
-          </div>
-        )}
-      </div>
-    </section>
+          {!loading && error && (
+            <div className="pg_main-part4-empty">❌ {error}</div>
+          )}
+
+          {!loading && !error && (
+            <div className="pg_main-part4-grid " id="cards">
+              {pageItems.map((item, idx) => (
+                <article key={item.id} className="pg_main-part4-card">
+                  <div className="pg_main-part4-media" aria-hidden>
+                    <Image
+                      src={item.banner_image_url}
+                      alt=""
+                      fill
+                      className="pg_main-part4-img"
+                      priority={idx < 2 && page === 1}
+                      sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 320px"
+                    />
+                  </div>
+
+                  <div className="pg_main-part4-cardtext">
+                    <div className="pg_main-part4-cardtop">
+                      <h3>{item.title}</h3>
+                      <span className="pg_main-part4-chip">
+                        {item.module_category}
+                      </span>
+                    </div>
+                    <p>{item.short_desc}</p>
+                  </div>
+
+                  <div className="pg_main-part4-cardmoreinfo">
+                    <Link href={`/about/${slugify(item.title)}`}>
+                      Más información ↗
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+
+          {!loading && !error && filtered.length > perPage && (
+            <div className="pg_main-part4-pagination" aria-label="Paginación">
+              <button
+                type="button"
+                className="pg_main-part4-pagebtn"
+                onClick={() => {
+                  setPage((p) => Math.max(1, p - 1));
+                  scrollToSection();
+                }}
+                disabled={!canPrev}
+              >
+                ← Anterior
+              </button>
+
+              <div className="pg_main-part4-pagestatus">
+                Página <b>{page}</b> de <b>{totalPages}</b>
+              </div>
+
+              <button
+                type="button"
+                className="pg_main-part4-pagebtn"
+                onClick={() => {
+                  setPage((p) => Math.min(totalPages, p + 1));
+                  scrollToSection();
+                }}
+                disabled={!canNext}
+              >
+                Siguiente →
+              </button>
+            </div>
+          )}
+
+          {!loading && !error && filtered.length === 0 && (
+            <div className="pg_main-part4-empty">
+              No hay módulos para esta categoría.
+            </div>
+          )}
+        </div>
+      </section>
     </LazyMotion>
   );
 }

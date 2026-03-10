@@ -1,4 +1,5 @@
 /* Rules before interact with db */
+
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { modulesRepository } from "@/repositories/modulesRepository";
 import type { Module, InsertModule, UpdateModule } from "@/models/modulesModel";
@@ -38,6 +39,15 @@ function validateUrlLike(url: string, fieldName: string) {
   }
 }
 
+function validateGallery(images: unknown): string[] {
+  if (!Array.isArray(images)) return [];
+
+  return images
+    .map((v) => normText(v))
+    .filter((v) => v.length > 0)
+    .slice(0, 20); // límite razonable
+}
+
 export const modulesService = {
   async create(supabase: SupabaseClient, data: InsertModule): Promise<Module> {
     const title = requireText(data.title, {
@@ -61,13 +71,32 @@ export const modulesService = {
       message: "Descripción larga requerida",
     });
 
-    const image_url = requireText(data.image_url, {
-      field: "image_url",
+    const second_text =
+      data.second_text !== undefined
+        ? normText(data.second_text) || null
+        : null;
+
+    const banner_image_url = requireText(data.banner_image_url, {
+      field: "banner_image_url",
       min: 2,
       max: 600,
-      message: "Imagen requerida",
+      message: "Banner requerido",
     });
-    validateUrlLike(image_url, "URL de imagen");
+    validateUrlLike(banner_image_url, "URL del banner");
+
+    let featured_image_url: string | null = null;
+    if (data.featured_image_url) {
+      const v = requireText(data.featured_image_url, {
+        field: "featured_image_url",
+        min: 2,
+        max: 600,
+        message: "Imagen destacada inválida",
+      });
+      validateUrlLike(v, "URL de imagen destacada");
+      featured_image_url = v;
+    }
+
+    const gallery_images = validateGallery(data.gallery_images);
 
     const module_category = requireText(data.module_category, {
       field: "module_category",
@@ -80,7 +109,10 @@ export const modulesService = {
       title,
       short_desc,
       long_desc,
-      image_url,
+      second_text,
+      banner_image_url,
+      featured_image_url,
+      gallery_images,
       module_category,
     });
   },
@@ -125,15 +157,38 @@ export const modulesService = {
       });
     }
 
-    if (patch.image_url !== undefined) {
-      const v = requireText(patch.image_url, {
-        field: "image_url",
+    if (patch.second_text !== undefined) {
+      clean.second_text = normText(patch.second_text) || null;
+    }
+
+    if (patch.banner_image_url !== undefined) {
+      const v = requireText(patch.banner_image_url, {
+        field: "banner_image_url",
         min: 2,
         max: 600,
-        message: "Imagen requerida",
+        message: "Banner requerido",
       });
-      validateUrlLike(v, "URL de imagen");
-      clean.image_url = v;
+      validateUrlLike(v, "URL del banner");
+      clean.banner_image_url = v;
+    }
+
+    if (patch.featured_image_url !== undefined) {
+      if (patch.featured_image_url === null) {
+        clean.featured_image_url = null;
+      } else {
+        const v = requireText(patch.featured_image_url, {
+          field: "featured_image_url",
+          min: 2,
+          max: 600,
+          message: "Imagen destacada inválida",
+        });
+        validateUrlLike(v, "URL de imagen destacada");
+        clean.featured_image_url = v;
+      }
+    }
+
+    if (patch.gallery_images !== undefined) {
+      clean.gallery_images = validateGallery(patch.gallery_images);
     }
 
     if (patch.module_category !== undefined) {
@@ -158,9 +213,11 @@ export const modulesService = {
   async createModule(supabase: SupabaseClient, data: InsertModule) {
     return this.create(supabase, data);
   },
+
   async modulesList(supabase: SupabaseClient) {
     return this.list(supabase);
   },
+
   async updateModule(
     supabase: SupabaseClient,
     id: number,
@@ -168,6 +225,7 @@ export const modulesService = {
   ) {
     return this.update(supabase, id, patch);
   },
+
   async deleteModule(supabase: SupabaseClient, id: number) {
     return this.remove(supabase, id);
   },

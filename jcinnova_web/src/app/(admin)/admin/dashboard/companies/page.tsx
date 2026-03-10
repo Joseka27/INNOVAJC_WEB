@@ -69,6 +69,8 @@ export default function AdminDashboardPage() {
   const [description, setDescription] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [creating, setCreating] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [editPreviewUrl, setEditPreviewUrl] = useState<string | null>(null);
 
   const [editingId, setEditingId] = useState<number | null>(null);
   const editingCompany = useMemo(
@@ -104,6 +106,30 @@ export default function AdminDashboardPage() {
     setEditFile(null);
     if (editFileRef.current) editFileRef.current.value = "";
   }
+
+  useEffect(() => {
+    if (!file) {
+      setPreviewUrl(null);
+      return;
+    }
+
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
+
+  useEffect(() => {
+    if (!editFile) {
+      setEditPreviewUrl(null);
+      return;
+    }
+
+    const url = URL.createObjectURL(editFile);
+    setEditPreviewUrl(url);
+
+    return () => URL.revokeObjectURL(url);
+  }, [editFile]);
 
   useEffect(() => {
     if (!booting && userEmail && isAdmin) {
@@ -435,6 +461,16 @@ export default function AdminDashboardPage() {
                     </div>
 
                     <span className="file_button">Elegir</span>
+
+                    {previewUrl && (
+                      <div className="company_preview_box">
+                        <img
+                          src={previewUrl}
+                          alt="Preview empresa"
+                          className="company_preview_img"
+                        />
+                      </div>
+                    )}
                   </label>
 
                   <input
@@ -503,6 +539,27 @@ export default function AdminDashboardPage() {
                       </div>
 
                       <span className="file_button">Cambiar</span>
+
+                      {editPreviewUrl ? (
+                        <div className="company_preview_box">
+                          <img
+                            src={editPreviewUrl}
+                            alt="Preview nueva imagen"
+                            className="company_preview_img"
+                          />
+                        </div>
+                      ) : editingCompany?.image_url ? (
+                        <div className="company_preview_box">
+                          <Image
+                            src={editingCompany.image_url}
+                            alt="Imagen actual"
+                            width={200}
+                            height={120}
+                            className="company_preview_img"
+                            unoptimized
+                          />
+                        </div>
+                      ) : null}
                     </label>
 
                     <input

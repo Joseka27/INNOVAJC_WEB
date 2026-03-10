@@ -6,7 +6,7 @@ import Image from "next/image";
 import { FaFacebook, FaInstagram, FaTwitter, FaWhatsapp } from "react-icons/fa";
 import { Roboto } from "next/font/google";
 
-import HeaderClient from "./burguerMenu";
+import HeaderClient from "./clientheader";
 import FooterSchedule from "./footercalendar";
 
 export const metadata: Metadata = {

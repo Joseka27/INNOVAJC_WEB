@@ -1,30 +1,52 @@
-/* Principal endpoint to create & list modules */
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/serverClient";
 import { requireAdmin } from "@/lib/auth/requireAdmin";
 
+function mapDbError(e: any) {
+  const message = String(e?.message ?? "").toLowerCase();
+  const details = String(e?.details ?? "").toLowerCase();
+  const code = String(e?.code ?? "");
+
+  // PostgreSQL unique violation
+  if (
+    code === "23505" &&
+    (message.includes("title") ||
+      details.includes("title") ||
+      message.includes("modules_title_unique") ||
+      details.includes("modules_title_unique") ||
+      message.includes("modules_title_unique_idx") ||
+      details.includes("modules_title_unique_idx"))
+  ) {
+    return {
+      status: 409,
+      message: "Ya existe un módulo con ese título.",
+    };
+  }
+
+  return {
+    status: e?.status ?? 400,
+    message: e?.message ?? "Error en la base de datos.",
+  };
+}
+
 export async function GET(req: Request) {
   try {
-    //Crea el cliente server
     const supabase = await createClient();
 
-    // Leer parametros del query
     const url = new URL(req.url);
 
-    //resultado en grupos de 50
     const limit = Math.min(Number(url.searchParams.get("limit") ?? 10), 50);
     const cursor = url.searchParams.get("cursor");
     const offset = url.searchParams.get("offset");
 
-    // Querry Base
     let q = supabase
-      .from("Modules")
-      .select("id,title,module_category,short_desc,long_desc,image_url", {
-        count: "exact",
-      })
+      .from("PagesModules")
+      .select(
+        "id,title,module_category,short_desc,long_desc,second_text,banner_image_url,featured_image_url,gallery_images",
+        { count: "exact" },
+      )
       .order("id", { ascending: true });
 
-    //Paginacion
     if (cursor) {
       const c = Number(cursor);
       if (Number.isFinite(c) && c > 0) q = q.gt("id", c);
@@ -38,7 +60,13 @@ export async function GET(req: Request) {
     const { data, error, count } = await q.limit(limit);
     if (error) throw error;
 
-    const items = data ?? [];
+    const items = (data ?? []).map((item: any) => ({
+      ...item,
+      gallery_images: Array.isArray(item.gallery_images)
+        ? item.gallery_images
+        : [],
+    }));
+
     const nextCursor = items.length ? items[items.length - 1].id : null;
 
     return NextResponse.json({
@@ -47,9 +75,11 @@ export async function GET(req: Request) {
       nextCursor,
     });
   } catch (e: any) {
+    const mapped = mapDbError(e);
+
     return NextResponse.json(
-      { error: e.message ?? "Error fetching modules" },
-      { status: 400 },
+      { error: mapped.message },
+      { status: mapped.status },
     );
   }
 }
@@ -58,32 +88,36 @@ export async function POST(req: Request) {
   try {
     const supabase = await createClient();
 
-    //Verifica Admin
     await requireAdmin(supabase);
 
     const body = await req.json();
 
-    //Inserta modulo
     const { data, error } = await supabase
-      .from("Modules")
+      .from("PagesModules")
       .insert({
         title: body.title,
         module_category: body.module_category,
         short_desc: body.short_desc,
         long_desc: body.long_desc,
-        image_url: body.image_url,
+        second_text: body.second_text ?? null,
+        banner_image_url: body.banner_image_url,
+        featured_image_url: body.featured_image_url ?? null,
+        gallery_images: body.gallery_images ?? [],
       })
-      .select("id,title,module_category,short_desc,long_desc,image_url")
+      .select(
+        "id,title,module_category,short_desc,long_desc,second_text,banner_image_url,featured_image_url,gallery_images",
+      )
       .single();
 
     if (error) throw error;
 
-    //Devuelve el nuevo Modulo
     return NextResponse.json(data);
   } catch (e: any) {
+    const mapped = mapDbError(e);
+
     return NextResponse.json(
-      { error: e.message ?? "Error creating module" },
-      { status: e.status ?? 400 },
+      { error: mapped.message },
+      { status: mapped.status },
     );
   }
 }
