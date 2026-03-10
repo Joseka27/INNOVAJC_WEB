@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./user_layout.css";
+import "./whatsappbtn.css";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -36,6 +37,15 @@ export default function RootLayout({
           </header>
 
           {children}
+
+          <a
+            href="https://wa.me/40701423"
+            className="whatsapp-button text-4xl"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaWhatsapp />
+          </a>
 
           <footer className="footer">
             <div className="pg_footer section-footer">
