@@ -24,7 +24,6 @@ type PriceRow = {
 };
 
 const CATEGORY_OPTIONS: Category[] = [
-  "Todos",
   "Facturacion Servicios",
   "Puntos de Venta",
   "Despachos Contables",
@@ -89,7 +88,7 @@ async function fetchPricePage(
 }
 
 export default function PricesPage() {
-  const [active, setActive] = useState<Category>("Todos");
+  const [active, setActive] = useState<Category>("Facturacion Servicios");
   const [query, setQuery] = useState("");
 
   const [rows, setRows] = useState<PriceRow[]>([]);
@@ -201,35 +200,14 @@ export default function PricesPage() {
                   </button>
                 ))}
               </div>
-
-              <div className="pg_prices-search">
-                <span className="pg_prices-searchIcon" aria-hidden="true">
-                  <Image
-                    src="/images/mainpage/lupa.png"
-                    alt=""
-                    width={16}
-                    height={16}
-                    className="pg_prices-searchIconImg"
-                  />
-                </span>
-
-                <input
-                  className="pg_prices-searchInput"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Buscar Planes"
-                  aria-label="Buscar precios"
-                />
-              </div>
             </div>
-
             {loading ? (
               <div className="pg_prices-empty">Cargando precios…</div>
             ) : error ? (
               <div className="pg_prices-empty">❌ {error}</div>
             ) : filtered.length === 0 ? (
               <div className="pg_prices-empty">
-                No hay resultados para esta categoría
+                No hay planes para esta servicio
               </div>
             ) : (
               <div className="pg_prices-grid">
