@@ -36,8 +36,8 @@ export default function HeaderClient() {
               className="pg_header_logo"
               src="/images/LogoInnova.png"
               alt="Logo"
-              width={80}
-              height={80}
+              width={96}
+              height={67}
               priority
             />
           </Link>
