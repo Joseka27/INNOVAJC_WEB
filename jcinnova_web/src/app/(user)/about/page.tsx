@@ -4,7 +4,6 @@ import Image from "next/image";
 import { FaFacebook, FaInstagram, FaTwitter, FaWhatsapp } from "react-icons/fa";
 import "./user_about.css";
 import Link from "next/link";
-import AboutServices from "@/app/(user)/about/_components/about_modules";
 import LocationMap from "@/app/(user)/about/_components/about_location";
 import { section2About, section2RightSide } from "./_components/about_data";
 
@@ -187,10 +186,6 @@ const About = () => {
               </m.div>
             </div>
           </div>
-        </section>
-
-        <section className="pg_about_services" id="services">
-          <AboutServices />
         </section>
 
         <section className="pg_about_location" id="location">

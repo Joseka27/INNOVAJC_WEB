@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { LazyMotion, m, domAnimation } from "framer-motion";
 import Link from "next/link";
-import "./about_modules.css";
+import "./user_products.css";
 import { slugify } from "@/app/(user)/_utils/helpers";
 
 type ModuleItem = {

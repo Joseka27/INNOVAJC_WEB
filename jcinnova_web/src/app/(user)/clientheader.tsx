@@ -51,6 +51,9 @@ export default function HeaderClient() {
             <Link href="/about">Sobre Nosotros</Link>
           </div>
           <div className="pg_header-linkrouter">
+            <Link href="/products">Productos</Link>
+          </div>
+          <div className="pg_header-linkrouter">
             <Link href="/customers">Clientes</Link>
           </div>
           <div className="pg_header-linkrouter">
