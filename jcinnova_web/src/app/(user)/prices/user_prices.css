@@ -395,6 +395,7 @@
 
 .pg_prices-desc {
   color: white;
+  white-space: pre-line;
 }
 
 .pg_prices-info {
