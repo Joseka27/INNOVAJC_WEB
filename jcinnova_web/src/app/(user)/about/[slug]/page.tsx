@@ -32,6 +32,18 @@ function parseTextBlocks(text: string | null | undefined): string[] {
     .filter(Boolean);
 }
 
+function formatCategoryLabel(value: string) {
+  return value
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => {
+      if (word === "erp") return "ERP";
+      if (word === "rrhh") return "RRHH";
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
+}
+
 function parseLines(block: string): string[] {
   return block
     .split("\n")
@@ -231,7 +243,7 @@ export default function AboutModuleDetailPage() {
               >
                 <div className="pg_about_module_detail-overlay">
                   <span className="pg_about_module_detail-chip">
-                    {moduleItem.module_category}
+                    {formatCategoryLabel(moduleItem.module_category)}
                   </span>
 
                   <h1>{moduleItem.title}</h1>

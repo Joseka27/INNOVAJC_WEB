@@ -33,7 +33,7 @@
   background-size: cover;
   background-repeat: no-repeat;
   background-color: #0b1f44;
-  border: 1px solid rgba(5, 43, 105, 0.1);
+  border: 0px solid rgba(5, 43, 105, 0.1);
   box-shadow: 0 24px 80px rgba(2, 6, 23, 0.12);
 }
 
@@ -331,7 +331,7 @@
   position: relative;
   width: 100%;
   min-height: 540px;
-  border-radius: 26px;
+  border-radius: 5px;
   overflow: hidden;
   background: #dcecff;
   border: 1px solid rgba(5, 43, 105, 0.1);
