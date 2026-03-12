@@ -161,6 +161,7 @@
   font-size: 1.1rem;
   font-weight: 700;
   color: #ffffff;
+  overflow-wrap: break-word;
 }
 
 .category_dashboard_actions_buttons {
@@ -192,4 +193,15 @@
 
 .category_loading_status {
   color: #ffffff;
+}
+
+@media (max-width: 620px) {
+  .category_dashboard_actions_buttons {
+    margin: 5px 0;
+  }
+  .category_category_item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
