@@ -2,35 +2,26 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { LazyMotion, domAnimation } from "framer-motion";
-import Image from "next/image";
 import Link from "next/link";
 import "./user_prices.css";
-
-type Category =
-  | "Todos"
-  | "Facturacion Servicios"
-  | "Puntos de Venta"
-  | "Despachos Contables"
-  | "Plantillas"
-  | "ERP";
 
 type PriceRow = {
   id: number;
   title: string | null;
   description: string | null;
-  category: Category | null;
+  category: string | null;
   characteristics: string | null;
   created_at?: string | null;
 };
 
-const CATEGORY_OPTIONS: Category[] = [
-  "Facturacion Servicios",
-  "Puntos de Venta",
-  "Despachos Contables",
-  "Plantillas",
-  "ERP",
-];
+type CategoryRow = {
+  id: number;
+  page: string;
+  name: string;
+  created_at?: string | null;
+};
 
+const PAGE_KEY = "prices";
 const FETCH_LIMIT = 500;
 
 function parseCharacteristics(req: string | null): string[] {
@@ -41,6 +32,18 @@ function parseCharacteristics(req: string | null): string[] {
     .split(/\r?\n|;/g)
     .map((x) => x.trim())
     .filter(Boolean);
+}
+
+function formatCategoryLabel(value: string) {
+  return value
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => {
+      if (word === "erp") return "ERP";
+      if (word === "rrhh") return "RRHH";
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
 }
 
 async function fetchPricePage(
@@ -57,7 +60,6 @@ async function fetchPricePage(
   });
 
   const raw = await res.text();
-
   let data: any = null;
 
   try {
@@ -70,29 +72,49 @@ async function fetchPricePage(
 
   if (!res.ok) {
     let errMsg = "Error cargando precios";
-
-    if (data && data.error) {
-      errMsg = data.error;
-    }
-
+    if (data && data.error) errMsg = data.error;
     throw new Error(errMsg);
   }
 
-  let batch: PriceRow[] = [];
+  return data && Array.isArray(data.items) ? data.items : [];
+}
 
-  if (data && Array.isArray(data.items)) {
-    batch = data.items;
+async function fetchCategories(page: string): Promise<string[]> {
+  const res = await fetch(`/api/categories?page=${encodeURIComponent(page)}`, {
+    method: "GET",
+    cache: "no-store",
+  });
+
+  const raw = await res.text();
+  let data: any = null;
+
+  try {
+    if (raw) data = JSON.parse(raw);
+  } catch {
+    throw new Error(
+      `La API no devolvió JSON. Revisa /api/categories (status ${res.status}).`,
+    );
   }
 
-  return batch;
+  if (!res.ok) {
+    let errMsg = "Error cargando categorías";
+    if (data && data.error) errMsg = data.error;
+    throw new Error(errMsg);
+  }
+
+  const items: CategoryRow[] = Array.isArray(data) ? data : [];
+  return items.map((x) => x.name).filter(Boolean);
 }
 
 export default function PricesPage() {
-  const [active, setActive] = useState<Category>("Facturacion Servicios");
+  const [active, setActive] = useState("Todos");
   const [query, setQuery] = useState("");
 
   const [rows, setRows] = useState<PriceRow[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+
   const [loading, setLoading] = useState(false);
+  const [categoriesLoading, setCategoriesLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function fetchAllPrices() {
@@ -105,40 +127,52 @@ export default function PricesPage() {
 
       while (true) {
         const batch = await fetchPricePage(offset, FETCH_LIMIT);
-
         all.push(...batch);
 
         if (batch.length < FETCH_LIMIT) break;
 
         offset += FETCH_LIMIT;
-
         if (offset > 5000) break;
       }
 
       setRows(all);
     } catch (e: any) {
-      let errMsg = "Error inesperado cargando precios.";
-
-      if (e && e.message) {
-        errMsg = e.message;
-      }
-
-      setError(errMsg);
+      setError(e?.message ?? "Error inesperado cargando precios.");
       setRows([]);
     }
 
     setLoading(false);
   }
 
+  async function loadCategories() {
+    setCategoriesLoading(true);
+
+    try {
+      const items = await fetchCategories(PAGE_KEY);
+      setCategories(items);
+
+      setActive((prev) => {
+        if (prev === "Todos") return prev;
+        return items.includes(prev) ? prev : "Todos";
+      });
+    } catch (e: any) {
+      setError((prev) => prev ?? e?.message ?? "Error cargando categorías.");
+      setCategories([]);
+      setActive("Todos");
+    }
+
+    setCategoriesLoading(false);
+  }
+
   useEffect(() => {
-    fetchAllPrices();
+    void Promise.all([fetchAllPrices(), loadCategories()]);
   }, []);
 
   const pricesUI = useMemo(() => {
     return rows
       .filter((r) => typeof r.id === "number")
       .map((r) => {
-        const category = (r.category ?? "Plantillas") as Category;
+        const category = (r.category ?? "").toString();
 
         return {
           id: r.id,
@@ -159,7 +193,6 @@ export default function PricesPage() {
         : pricesUI.filter((d) => d.category === active);
 
     const q = query.trim().toLowerCase();
-
     if (!q) return base;
 
     return base.filter((d) => {
@@ -169,6 +202,8 @@ export default function PricesPage() {
       return haystack.includes(q);
     });
   }, [active, query, pricesUI]);
+
+  const filterOptions = useMemo(() => ["Todos", ...categories], [categories]);
 
   return (
     <LazyMotion features={domAnimation}>
@@ -189,25 +224,27 @@ export default function PricesPage() {
 
             <div className="pg_prices-toolbar">
               <div className="pg_prices-filters">
-                {CATEGORY_OPTIONS.map((p) => (
+                {filterOptions.map((p) => (
                   <button
                     key={p}
                     type="button"
                     className={`pg_prices-filterBtn ${active === p ? "is-active" : ""}`}
                     onClick={() => setActive(p)}
+                    disabled={categoriesLoading && p !== "Todos"}
                   >
-                    {p}
+                    {p === "Todos" ? "Todos" : formatCategoryLabel(p)}
                   </button>
                 ))}
               </div>
             </div>
+
             {loading ? (
               <div className="pg_prices-empty">Cargando precios…</div>
             ) : error ? (
               <div className="pg_prices-empty">❌ {error}</div>
             ) : filtered.length === 0 ? (
               <div className="pg_prices-empty">
-                No hay planes para esta servicio
+                No hay planes para este servicio
               </div>
             ) : (
               <div className="pg_prices-grid">
@@ -222,7 +259,9 @@ export default function PricesPage() {
                         <div className="pg_prices-desc">{p.description}</div>
 
                         <span className="pg_prices-chip">
-                          {p.category.toUpperCase()}
+                          {p.category
+                            ? formatCategoryLabel(p.category)
+                            : "Sin categoría"}
                         </span>
                       </div>
                     </div>

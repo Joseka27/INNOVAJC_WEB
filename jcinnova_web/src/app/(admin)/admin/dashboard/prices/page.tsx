@@ -11,18 +11,12 @@ import {
 } from "@/app/(admin)/admin/_admin_components/useToast";
 import { useAdminGate } from "@/app/(admin)/admin/_admin_components/useAdmingate";
 import { useIdleLogout } from "@/app/(admin)/admin/_admin_components/useIdlelogout";
+import CategoryManager, {
+  type CategoryRow,
+} from "@/app/(admin)/admin/_admin_components/categoryManage";
 
 const PAGE_SIZE = 10;
-
-const CATEGORY_OPTIONS = [
-  "Facturacion Servicios",
-  "Puntos de Venta",
-  "Despachos Contables",
-  "Plantillas",
-  "ERP",
-] as const;
-
-type PriceCategory = (typeof CATEGORY_OPTIONS)[number];
+const PAGE_KEY = "prices";
 
 type PriceRow = {
   id: number;
@@ -32,6 +26,17 @@ type PriceRow = {
   characteristics: string | null;
   created_at?: string | null;
 };
+
+function formatCategoryLabel(value: string) {
+  return value
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => {
+      if (word === "erp") return "ERP";
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
+}
 
 export default function AdminPricesPage() {
   const router = useRouter();
@@ -50,16 +55,21 @@ export default function AdminPricesPage() {
   const [prices, setPrices] = useState<PriceRow[]>([]);
   const [loading, setLoading] = useState(false);
 
+  const [categories, setCategories] = useState<CategoryRow[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(false);
+
   const [page, setPage] = useState(0);
   const [total, setTotal] = useState<number | null>(null);
 
   const [query, setQuery] = useState("");
   const [filterCategory, setFilterCategory] = useState("Todos");
 
+  const [showCategoryManager, setShowCategoryManager] = useState(false);
+
   // CREATE
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState<PriceCategory | "">("");
+  const [category, setCategory] = useState("");
   const [characteristics, setCharacteristics] = useState("");
   const [creating, setCreating] = useState(false);
 
@@ -72,7 +82,7 @@ export default function AdminPricesPage() {
 
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
-  const [editCategory, setEditCategory] = useState<PriceCategory | "">("");
+  const [editCategory, setEditCategory] = useState("");
   const [editCharacteristics, setEditCharacteristics] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -113,9 +123,26 @@ export default function AdminPricesPage() {
     setEditCharacteristics("");
   }
 
+  function syncCategoriesState(items: CategoryRow[]) {
+    setCategories(items);
+
+    setFilterCategory((prev) => {
+      if (prev === "Todos") return prev;
+      return items.some((x) => x.name === prev) ? prev : "Todos";
+    });
+
+    setCategory((prev) =>
+      prev && items.some((x) => x.name === prev) ? prev : "",
+    );
+
+    setEditCategory((prev) =>
+      prev && items.some((x) => x.name === prev) ? prev : "",
+    );
+  }
+
   useEffect(() => {
     if (!booting && userEmail && isAdmin) {
-      loadPrices(0);
+      void Promise.all([loadCategories(), loadPrices(0)]);
     }
   }, [booting, userEmail, isAdmin]);
 
@@ -125,10 +152,47 @@ export default function AdminPricesPage() {
     clearAll();
     resetForms();
     setPrices([]);
+    setCategories([]);
     setTotal(null);
     setPage(0);
 
     router.replace("/admin");
+  }
+
+  async function loadCategories() {
+    setCategoriesLoading(true);
+
+    try {
+      const res = await fetch(`/api/categories?page=${PAGE_KEY}`, {
+        cache: "no-store",
+      });
+
+      const raw = await res.text();
+      let data: any = null;
+
+      try {
+        if (raw) data = JSON.parse(raw);
+      } catch {
+        throw new Error(
+          `La API no devolvió JSON. Revisa /api/categories (status ${res.status}).`,
+        );
+      }
+
+      if (!res.ok) {
+        throw new Error(data?.error ?? "Error cargando categorías");
+      }
+
+      const items: CategoryRow[] = Array.isArray(data) ? data : [];
+      syncCategoriesState(items);
+    } catch (err: any) {
+      push({
+        type: "error",
+        title: "Error",
+        message: err?.message ?? "No se pudieron cargar las categorías.",
+      });
+    }
+
+    setCategoriesLoading(false);
   }
 
   async function loadPrices(p = page) {
@@ -258,7 +322,7 @@ export default function AdminPricesPage() {
         push({
           type: "error",
           title: "No se pudo guardar",
-          message: (d as any)?.error ?? "Error creando precio.",
+          message: d?.error ?? "Error creando precio.",
         });
         setCreating(false);
         return;
@@ -271,7 +335,11 @@ export default function AdminPricesPage() {
         durationMs: 1800,
       });
 
-      resetForms();
+      setTitle("");
+      setDescription("");
+      setCategory("");
+      setCharacteristics("");
+
       await loadPrices(0);
     } catch (err: any) {
       push({
@@ -286,10 +354,9 @@ export default function AdminPricesPage() {
 
   function startEdit(price: PriceRow) {
     setEditingId(price.id);
-
     setEditTitle(price.title ?? "");
     setEditDescription(price.description ?? "");
-    setEditCategory((price.category as PriceCategory) ?? "");
+    setEditCategory(price.category ?? "");
     setEditCharacteristics(price.characteristics ?? "");
   }
 
@@ -356,7 +423,7 @@ export default function AdminPricesPage() {
         push({
           type: "error",
           title: "No se pudo guardar",
-          message: (d as any)?.error ?? "Error guardando cambios.",
+          message: d?.error ?? "Error guardando cambios.",
         });
         setSaving(false);
         return;
@@ -418,7 +485,13 @@ export default function AdminPricesPage() {
                 durationMs: 1800,
               });
 
-              await loadPrices(page);
+              const nextTotal = total !== null ? Math.max(0, total - 1) : null;
+              const nextMaxPage =
+                nextTotal !== null
+                  ? Math.max(0, Math.ceil(nextTotal / PAGE_SIZE) - 1)
+                  : page;
+
+              await loadPrices(Math.min(page, nextMaxPage));
             } catch {
               push({
                 type: "error",
@@ -473,20 +546,36 @@ export default function AdminPricesPage() {
                   rows={2}
                 />
 
-                <select
-                  className="prices_select_field"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value as PriceCategory)}
-                >
-                  <option value="" disabled>
-                    Selecciona categoría…
-                  </option>
-                  {CATEGORY_OPTIONS.map((opt) => (
-                    <option key={opt} value={opt}>
-                      {opt}
+                <div className="prices_category_picker">
+                  <button
+                    type="button"
+                    className="prices_category_add_btn"
+                    onClick={() => setShowCategoryManager(true)}
+                    aria-label="Administrar categorías"
+                    title="Administrar categorías"
+                  >
+                    +
+                  </button>
+
+                  <select
+                    className="prices_select_field"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    disabled={categoriesLoading}
+                  >
+                    <option value="" disabled>
+                      {categoriesLoading
+                        ? "Cargando categorías…"
+                        : "Selecciona categoría…"}
                     </option>
-                  ))}
-                </select>
+
+                    {categories.map((opt) => (
+                      <option key={opt.id} value={opt.name}>
+                        {formatCategoryLabel(opt.name)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
                 <textarea
                   className="prices_textarea_field"
@@ -513,7 +602,7 @@ export default function AdminPricesPage() {
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
-                    saveEdit();
+                    void saveEdit();
                   }}
                   className="prices_dashboard_actions_form"
                 >
@@ -532,22 +621,26 @@ export default function AdminPricesPage() {
                     rows={2}
                   />
 
-                  <select
-                    className="prices_select_field"
-                    value={editCategory}
-                    onChange={(e) =>
-                      setEditCategory(e.target.value as PriceCategory)
-                    }
-                  >
-                    <option value="" disabled>
-                      Selecciona categoría…
-                    </option>
-                    {CATEGORY_OPTIONS.map((opt) => (
-                      <option key={opt} value={opt}>
-                        {opt}
+                  <div className="prices_category_picker">
+                    <select
+                      className="prices_select_field"
+                      value={editCategory}
+                      onChange={(e) => setEditCategory(e.target.value)}
+                      disabled={categoriesLoading}
+                    >
+                      <option value="" disabled>
+                        {categoriesLoading
+                          ? "Cargando categorías…"
+                          : "Selecciona categoría…"}
                       </option>
-                    ))}
-                  </select>
+
+                      {categories.map((opt) => (
+                        <option key={opt.id} value={opt.name}>
+                          {formatCategoryLabel(opt.name)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
                   <textarea
                     className="prices_textarea_field"
@@ -603,11 +696,13 @@ export default function AdminPricesPage() {
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value)}
               style={{ maxWidth: 260 }}
+              disabled={categoriesLoading}
             >
               <option value="Todos">Todos</option>
-              {CATEGORY_OPTIONS.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
+
+              {categories.map((opt) => (
+                <option key={opt.id} value={opt.name}>
+                  {formatCategoryLabel(opt.name)}
                 </option>
               ))}
             </select>
@@ -624,7 +719,7 @@ export default function AdminPricesPage() {
 
             {!loading && prices.length > 0 && filteredPrices.length === 0 && (
               <div className="prices_loading_status">
-                No se encontraron precios para esta categoria
+                No se encontraron precios para esta categoría
               </div>
             )}
 
@@ -636,7 +731,7 @@ export default function AdminPricesPage() {
                       <div className="prices_card_top">
                         <div className="prices_card_name">{p.title}</div>
                         <div className="prices_card_category">
-                          {p.category ?? "N/A"}
+                          {p.category ? formatCategoryLabel(p.category) : "N/A"}
                         </div>
                       </div>
 
@@ -694,7 +789,7 @@ export default function AdminPricesPage() {
             <div className="prices_pageButtons">
               <button
                 disabled={loading || page === 0}
-                onClick={() => loadPrices(page - 1)}
+                onClick={() => void loadPrices(page - 1)}
                 type="button"
               >
                 ←
@@ -705,7 +800,7 @@ export default function AdminPricesPage() {
               <button
                 disabled={loading || isLastPage}
                 onClick={() => {
-                  if (!isLastPage) loadPrices(page + 1);
+                  if (!isLastPage) void loadPrices(page + 1);
                 }}
                 type="button"
               >
@@ -715,6 +810,41 @@ export default function AdminPricesPage() {
           </section>
         </div>
       </div>
+
+      {showCategoryManager && (
+        <div
+          className="prices_modal_overlay"
+          onClick={() => setShowCategoryManager(false)}
+        >
+          <div
+            className="prices_modal_card"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="prices_modal_header">
+              <h2>Administrar Categorías</h2>
+
+              <button
+                type="button"
+                className="prices_modal_close"
+                onClick={() => setShowCategoryManager(false)}
+                aria-label="Cerrar"
+              >
+                ×
+              </button>
+            </div>
+
+            <CategoryManager
+              pageKey={PAGE_KEY}
+              push={push}
+              remove={(id: string | number) => remove(String(id))}
+              className="prices_dashboard_actions prices_dashboard_actions_modal"
+              onChanged={(items) => {
+                syncCategoriesState(items);
+              }}
+            />
+          </div>
+        </div>
+      )}
     </>
   );
 }

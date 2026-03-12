@@ -1,14 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { InsertPrice, Price, UpdatePrice } from "@/models/pricesModel";
 import { pricesRepository } from "@/repositories/pricesRepository";
-
-const ALLOWED_CATEGORIES = [
-  "Facturacion Servicios",
-  "Puntos de Venta",
-  "Despachos Contables",
-  "Plantillas",
-  "ERP",
-] as const;
+import { categoriesRepository } from "@/repositories/categoriesRepository";
 
 function assertPositiveInt(id: number, label = "id") {
   if (!Number.isInteger(id) || id <= 0) {
@@ -27,6 +20,13 @@ function normMultilineText(v: unknown): string {
     .replace(/\r\n/g, "\n")
     .replace(/\r/g, "\n")
     .trim();
+}
+
+function normalizeCategoryName(value: unknown): string {
+  return String(value ?? "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .toLowerCase();
 }
 
 function requireInlineText(
@@ -63,10 +63,20 @@ function requireMultilineText(
   return v;
 }
 
-function requireCategory(value: unknown): string {
-  const v = normInlineText(value);
+async function requireCategory(
+  supabase: SupabaseClient,
+  value: unknown,
+  page = "prices",
+): Promise<string> {
+  const v = normalizeCategoryName(value);
 
-  if (!ALLOWED_CATEGORIES.includes(v as (typeof ALLOWED_CATEGORIES)[number])) {
+  if (!v) {
+    throw new Error("Categoría inválida");
+  }
+
+  const found = await categoriesRepository(supabase).getByPageAndName(page, v);
+
+  if (!found) {
     throw new Error("Categoría inválida");
   }
 
@@ -89,7 +99,7 @@ export const pricesService = {
       message: "Descripción requerida",
     });
 
-    const category = requireCategory(data.category);
+    const category = await requireCategory(supabase, data.category, "prices");
 
     const characteristics = requireMultilineText(data.characteristics, {
       field: "characteristics",
@@ -146,7 +156,11 @@ export const pricesService = {
     }
 
     if (patch.category !== undefined) {
-      clean.category = requireCategory(patch.category);
+      clean.category = await requireCategory(
+        supabase,
+        patch.category,
+        "prices",
+      );
     }
 
     if (patch.characteristics !== undefined) {

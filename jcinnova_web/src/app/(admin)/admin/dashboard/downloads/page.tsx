@@ -12,24 +12,16 @@ import {
 } from "@/app/(admin)/admin/_admin_components/useToast";
 import { useAdminGate } from "@/app/(admin)/admin/_admin_components/useAdmingate";
 import { useIdleLogout } from "@/app/(admin)/admin/_admin_components/useIdlelogout";
+import CategoryManager, {
+  type CategoryRow,
+} from "@/app/(admin)/admin/_admin_components/categoryManage";
 
-// tamaño de la pagina
 const PAGE_SIZE = 10;
+const PAGE_KEY = "downloads";
 
-// Bucket Division
 const DOWNLOADS_BUCKET = "downloads";
 const FILES_FOLDER = "AppLink";
 const COVERS_FOLDER = "AppImages";
-
-// Opciones en input
-const TYPE_FILE_OPTIONS = [
-  "Software",
-  "Documentacion",
-  "Soporte",
-  "Reportes",
-] as const;
-
-type TypeFile = (typeof TYPE_FILE_OPTIONS)[number];
 
 type DownloadRow = {
   id: number;
@@ -46,6 +38,17 @@ type DownloadRow = {
 
 function safeFileName(name: string) {
   return name.replace(/[^\w.\-() ]+/g, "_").trim();
+}
+
+function formatCategoryLabel(value: string) {
+  return value
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => {
+      if (word === "erp") return "ERP";
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
 }
 
 export default function AdminDownloadsPage() {
@@ -65,6 +68,10 @@ export default function AdminDownloadsPage() {
   const [downloads, setDownloads] = useState<DownloadRow[]>([]);
   const [loading, setLoading] = useState(false);
 
+  const [categories, setCategories] = useState<CategoryRow[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(false);
+  const [showCategoryManager, setShowCategoryManager] = useState(false);
+
   const [page, setPage] = useState(0);
   const [total, setTotal] = useState<number | null>(null);
 
@@ -80,7 +87,7 @@ export default function AdminDownloadsPage() {
   const [description, setDescription] = useState("");
   const [size, setSize] = useState("");
   const [version, setVersion] = useState("");
-  const [typeFile, setTypeFile] = useState<TypeFile | "">("");
+  const [typeFile, setTypeFile] = useState("");
   const [requirements, setRequirements] = useState("");
   const [creating, setCreating] = useState(false);
 
@@ -103,7 +110,7 @@ export default function AdminDownloadsPage() {
   const [editDescription, setEditDescription] = useState("");
   const [editSize, setEditSize] = useState("");
   const [editVersion, setEditVersion] = useState("");
-  const [editTypeFile, setEditTypeFile] = useState<TypeFile | "">("");
+  const [editTypeFile, setEditTypeFile] = useState("");
   const [editRequirements, setEditRequirements] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -135,6 +142,23 @@ export default function AdminDownloadsPage() {
     });
   }, [downloads, query, filterCategory]);
 
+  function syncCategoriesState(items: CategoryRow[]) {
+    setCategories(items);
+
+    setFilterCategory((prev) => {
+      if (prev === "Todos") return prev;
+      return items.some((x) => x.name === prev) ? prev : "Todos";
+    });
+
+    setTypeFile((prev) =>
+      prev && items.some((x) => x.name === prev) ? prev : "",
+    );
+
+    setEditTypeFile((prev) =>
+      prev && items.some((x) => x.name === prev) ? prev : "",
+    );
+  }
+
   async function resetForms() {
     setTitle("");
     setDescription("");
@@ -158,7 +182,7 @@ export default function AdminDownloadsPage() {
 
   useEffect(() => {
     if (!booting && userEmail && isAdmin) {
-      loadDownloads(0);
+      void Promise.all([loadCategories(), loadDownloads(0)]);
     }
   }, [booting, userEmail, isAdmin]);
 
@@ -192,11 +216,48 @@ export default function AdminDownloadsPage() {
     clearAll();
     await resetForms();
     setDownloads([]);
+    setCategories([]);
     setTotal(null);
     setPage(0);
     setSignedUrlByPath({});
 
     router.replace("/admin");
+  }
+
+  async function loadCategories() {
+    setCategoriesLoading(true);
+
+    try {
+      const res = await fetch(`/api/categories?page=${PAGE_KEY}`, {
+        cache: "no-store",
+      });
+
+      const raw = await res.text();
+      let data: any = null;
+
+      try {
+        if (raw) data = JSON.parse(raw);
+      } catch {
+        throw new Error(
+          `La API no devolvió JSON. Revisa /api/categories (status ${res.status}).`,
+        );
+      }
+
+      if (!res.ok) {
+        throw new Error(data?.error ?? "Error cargando categorías");
+      }
+
+      const items: CategoryRow[] = Array.isArray(data) ? data : [];
+      syncCategoriesState(items);
+    } catch (err: any) {
+      push({
+        type: "error",
+        title: "Error",
+        message: err?.message ?? "No se pudieron cargar las categorías.",
+      });
+    }
+
+    setCategoriesLoading(false);
   }
 
   async function loadDownloads(p = page) {
@@ -225,26 +286,14 @@ export default function AdminDownloadsPage() {
       }
 
       if (!res.ok) {
-        let errMsg = "Error cargando las aplicaciones";
-        if (data && data.error) {
-          errMsg = data.error;
-        }
-        throw new Error(errMsg);
+        throw new Error(data?.error ?? "Error cargando las aplicaciones");
       }
 
-      let items: DownloadRow[] = [];
-      if (data && Array.isArray(data.items)) {
-        items = data.items;
-      }
+      const items: DownloadRow[] =
+        data && Array.isArray(data.items) ? data.items : [];
 
       setDownloads(items);
-
-      let dlTotal: number | null = null;
-      if (typeof data.count === "number") {
-        dlTotal = data.count;
-      }
-
-      setTotal(dlTotal);
+      setTotal(typeof data?.count === "number" ? data.count : null);
       setPage(p);
 
       void prefetchCoverSignedUrls(items);
@@ -422,7 +471,7 @@ export default function AdminDownloadsPage() {
         push({
           type: "error",
           title: "No se pudo guardar",
-          message: (d as any)?.error ?? "Error creando download.",
+          message: d?.error ?? "Error creando download.",
         });
         setCreating(false);
         return;
@@ -454,7 +503,7 @@ export default function AdminDownloadsPage() {
     setEditDescription(d.description ?? "");
     setEditSize(d.size ?? "");
     setEditVersion(d.version ?? "");
-    setEditTypeFile((d.type_file as TypeFile) ?? "");
+    setEditTypeFile(d.type_file ?? "");
     setEditRequirements(d.requirements ?? "");
 
     setEditFile(null);
@@ -555,7 +604,7 @@ export default function AdminDownloadsPage() {
         push({
           type: "error",
           title: "No se pudo guardar",
-          message: (d as any)?.error ?? "Error guardando cambios.",
+          message: d?.error ?? "Error guardando cambios.",
         });
         setSaving(false);
         return;
@@ -603,7 +652,7 @@ export default function AdminDownloadsPage() {
                 push({
                   type: "error",
                   title: "Error",
-                  message: (d as any)?.error ?? "No se pudo eliminar.",
+                  message: d?.error ?? "No se pudo eliminar.",
                 });
                 return;
               }
@@ -649,7 +698,7 @@ export default function AdminDownloadsPage() {
 
           <section className="download_config">
             <div className="download_dashboard_actions">
-              <h2>Agregar Archivo o Aplicacion</h2>
+              <h2>Agregar Archivo o Aplicación</h2>
 
               <form
                 onSubmit={createDownload}
@@ -686,20 +735,36 @@ export default function AdminDownloadsPage() {
                   />
                 </div>
 
-                <select
-                  className="download_select_field"
-                  value={typeFile}
-                  onChange={(e) => setTypeFile(e.target.value as TypeFile)}
-                >
-                  <option value="" disabled>
-                    Selecciona sistema…
-                  </option>
-                  {TYPE_FILE_OPTIONS.map((opt) => (
-                    <option key={opt} value={opt}>
-                      {opt.toUpperCase()}
+                <div className="download_category_picker">
+                  <button
+                    type="button"
+                    className="download_category_add_btn"
+                    onClick={() => setShowCategoryManager(true)}
+                    aria-label="Administrar categorías"
+                    title="Administrar categorías"
+                  >
+                    +
+                  </button>
+
+                  <select
+                    className="download_select_field"
+                    value={typeFile}
+                    onChange={(e) => setTypeFile(e.target.value)}
+                    disabled={categoriesLoading}
+                  >
+                    <option value="" disabled>
+                      {categoriesLoading
+                        ? "Cargando categorías…"
+                        : "Selecciona tipo…"}
                     </option>
-                  ))}
-                </select>
+
+                    {categories.map((opt) => (
+                      <option key={opt.id} value={opt.name}>
+                        {formatCategoryLabel(opt.name)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
                 <textarea
                   className="download_textarea_field"
@@ -723,7 +788,7 @@ export default function AdminDownloadsPage() {
                     />
                     <div className="download_file_text">
                       <span className="download_file_title">
-                        Subir imagen (Del Archivo)
+                        Subir imagen (del archivo)
                       </span>
                       <span className="download_file_subtitle">
                         {createImage ? createImage.name : "PNG, JPG, WEBP"}
@@ -803,7 +868,7 @@ export default function AdminDownloadsPage() {
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
-                    saveEdit();
+                    void saveEdit();
                   }}
                   className="download_dashboard_actions_form"
                 >
@@ -838,22 +903,26 @@ export default function AdminDownloadsPage() {
                     />
                   </div>
 
-                  <select
-                    className="download_select_field"
-                    value={editTypeFile}
-                    onChange={(e) =>
-                      setEditTypeFile(e.target.value as TypeFile)
-                    }
-                  >
-                    <option value="" disabled>
-                      Selecciona sistema…
-                    </option>
-                    {TYPE_FILE_OPTIONS.map((opt) => (
-                      <option key={opt} value={opt}>
-                        {opt.toUpperCase()}
+                  <div className="download_category_picker">
+                    <select
+                      className="download_select_field"
+                      value={editTypeFile}
+                      onChange={(e) => setEditTypeFile(e.target.value)}
+                      disabled={categoriesLoading}
+                    >
+                      <option value="" disabled>
+                        {categoriesLoading
+                          ? "Cargando categorías…"
+                          : "Selecciona tipo…"}
                       </option>
-                    ))}
-                  </select>
+
+                      {categories.map((opt) => (
+                        <option key={opt.id} value={opt.name}>
+                          {formatCategoryLabel(opt.name)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
                   <textarea
                     className="download_textarea_field"
@@ -887,6 +956,7 @@ export default function AdminDownloadsPage() {
                         </span>
                       </div>
                       <span className="download_file_button">Elegir</span>
+
                       {editImagePreview ? (
                         <div className="download_preview_box">
                           <img
@@ -1000,11 +1070,13 @@ export default function AdminDownloadsPage() {
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value)}
               style={{ maxWidth: 260 }}
+              disabled={categoriesLoading}
             >
               <option value="Todos">Todos</option>
-              {TYPE_FILE_OPTIONS.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
+
+              {categories.map((opt) => (
+                <option key={opt.id} value={opt.name}>
+                  {formatCategoryLabel(opt.name)}
                 </option>
               ))}
             </select>
@@ -1025,7 +1097,7 @@ export default function AdminDownloadsPage() {
               downloads.length > 0 &&
               filteredDownloads.length === 0 && (
                 <div className="downloads_loading_status">
-                  No se encontraron resultados para este tipo archivo
+                  No se encontraron resultados para este tipo de archivo
                 </div>
               )}
 
@@ -1057,7 +1129,9 @@ export default function AdminDownloadsPage() {
                       <div className="download_card_top">
                         <div className="download_card_name">{d.title}</div>
                         <div className="download_card_category">
-                          {(d.type_file ?? "N/A").toUpperCase()}
+                          {d.type_file
+                            ? formatCategoryLabel(d.type_file)
+                            : "N/A"}
                         </div>
                       </div>
 
@@ -1139,7 +1213,7 @@ export default function AdminDownloadsPage() {
             <div className="download_pageButtons">
               <button
                 disabled={loading || page === 0}
-                onClick={() => loadDownloads(page - 1)}
+                onClick={() => void loadDownloads(page - 1)}
                 type="button"
               >
                 ←
@@ -1150,7 +1224,7 @@ export default function AdminDownloadsPage() {
               <button
                 disabled={loading || isLastPage}
                 onClick={() => {
-                  if (!isLastPage) loadDownloads(page + 1);
+                  if (!isLastPage) void loadDownloads(page + 1);
                 }}
                 type="button"
               >
@@ -1160,6 +1234,41 @@ export default function AdminDownloadsPage() {
           </section>
         </div>
       </div>
+
+      {showCategoryManager && (
+        <div
+          className="download_modal_overlay"
+          onClick={() => setShowCategoryManager(false)}
+        >
+          <div
+            className="download_modal_card"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="download_modal_header">
+              <h2>Administrar Categorías</h2>
+
+              <button
+                type="button"
+                className="download_modal_close"
+                onClick={() => setShowCategoryManager(false)}
+                aria-label="Cerrar"
+              >
+                ×
+              </button>
+            </div>
+
+            <CategoryManager
+              pageKey={PAGE_KEY}
+              push={push}
+              remove={(id: string | number) => remove(String(id))}
+              className="download_dashboard_actions download_dashboard_actions_modal"
+              onChanged={(items) => {
+                syncCategoriesState(items);
+              }}
+            />
+          </div>
+        </div>
+      )}
     </>
   );
 }

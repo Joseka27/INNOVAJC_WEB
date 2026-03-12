@@ -22,22 +22,16 @@ import {
 } from "@/app/(admin)/admin/_admin_components/useToast";
 import { useAdminGate } from "@/app/(admin)/admin/_admin_components/useAdmingate";
 import { useIdleLogout } from "@/app/(admin)/admin/_admin_components/useIdlelogout";
+import CategoryManager, {
+  type CategoryRow,
+} from "@/app/(admin)/admin/_admin_components/categoryManage";
 
 const PAGE_SIZE = 10;
 const SHORT_DESC_LIMIT = 150;
 const LONG_DESC_LIMIT = 4000;
 const SECOND_TEXT_LIMIT = 10000;
 const MAX_GALLERY_FILES = 20;
-
-const CATEGORY_OPTIONS = [
-  "Finanzas",
-  "Operación",
-  "Comercial",
-  "RRHH",
-  "Control",
-] as const;
-
-type Category = (typeof CATEGORY_OPTIONS)[number];
+const PAGE_KEY = "modules";
 
 type PreviewItem = {
   file: File;
@@ -69,6 +63,18 @@ function revokePreviewItems(items: PreviewItem[]) {
   }
 }
 
+function formatCategoryLabel(value: string) {
+  return value
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => {
+      if (word === "rrhh") return "RRHH";
+      if (word === "erp") return "ERP";
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
+}
+
 export default function AdminModulesPage() {
   const router = useRouter();
   const supabase = createClient();
@@ -93,13 +99,18 @@ export default function AdminModulesPage() {
   const [modules, setModules] = useState<Module[]>([]);
   const [loading, setLoading] = useState(false);
 
+  const [categories, setCategories] = useState<CategoryRow[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(false);
+  const [showCategoryManager, setShowCategoryManager] = useState(false);
+
   const [page, setPage] = useState(0);
   const [total, setTotal] = useState<number | null>(null);
   const [query, setQuery] = useState("");
+  const [filterCategory, setFilterCategory] = useState("Todos");
 
   // CREATE
   const [title, setTitle] = useState("");
-  const [moduleCategory, setModuleCategory] = useState<Category | "">("");
+  const [moduleCategory, setModuleCategory] = useState("");
   const [shortDesc, setShortDesc] = useState("");
   const [longDesc, setLongDesc] = useState("");
   const [secondText, setSecondText] = useState("");
@@ -125,9 +136,7 @@ export default function AdminModulesPage() {
   );
 
   const [editTitle, setEditTitle] = useState("");
-  const [editModuleCategory, setEditModuleCategory] = useState<Category | "">(
-    "",
-  );
+  const [editModuleCategory, setEditModuleCategory] = useState("");
   const [editShortDesc, setEditShortDesc] = useState("");
   const [editLongDesc, setEditLongDesc] = useState("");
   const [editSecondText, setEditSecondText] = useState("");
@@ -148,8 +157,6 @@ export default function AdminModulesPage() {
 
   const [editExistingGallery, setEditExistingGallery] = useState<string[]>([]);
   const [editRemoveFeatured, setEditRemoveFeatured] = useState(false);
-
-  const [filterCategory, setFilterCategory] = useState("Todos");
 
   const [saving, setSaving] = useState(false);
 
@@ -318,9 +325,26 @@ export default function AdminModulesPage() {
     if (editGalleryRef.current) editGalleryRef.current.value = "";
   }
 
+  function syncCategoriesState(items: CategoryRow[]) {
+    setCategories(items);
+
+    setFilterCategory((prev) => {
+      if (prev === "Todos") return prev;
+      return items.some((x) => x.name === prev) ? prev : "Todos";
+    });
+
+    setModuleCategory((prev) =>
+      prev && items.some((x) => x.name === prev) ? prev : "",
+    );
+
+    setEditModuleCategory((prev) =>
+      prev && items.some((x) => x.name === prev) ? prev : "",
+    );
+  }
+
   useEffect(() => {
     if (!booting && userEmail && isAdmin) {
-      loadModules(0);
+      void Promise.all([loadCategories(), loadModules(0)]);
     }
   }, [booting, userEmail, isAdmin]);
 
@@ -330,10 +354,47 @@ export default function AdminModulesPage() {
     clearAll();
     await resetForms();
     setModules([]);
+    setCategories([]);
     setTotal(null);
     setPage(0);
 
     router.replace("/admin");
+  }
+
+  async function loadCategories() {
+    setCategoriesLoading(true);
+
+    try {
+      const res = await fetch(`/api/categories?page=${PAGE_KEY}`, {
+        cache: "no-store",
+      });
+
+      const raw = await res.text();
+      let data: any = null;
+
+      try {
+        if (raw) data = JSON.parse(raw);
+      } catch {
+        throw new Error(
+          `La API no devolvió JSON. Revisa /api/categories (status ${res.status}).`,
+        );
+      }
+
+      if (!res.ok) {
+        throw new Error(data?.error ?? "Error cargando categorías");
+      }
+
+      const items: CategoryRow[] = Array.isArray(data) ? data : [];
+      syncCategoriesState(items);
+    } catch (err: any) {
+      push({
+        type: "error",
+        title: "Error",
+        message: err?.message ?? "No se pudieron cargar las categorías.",
+      });
+    }
+
+    setCategoriesLoading(false);
   }
 
   async function loadModules(p = page) {
@@ -551,7 +612,7 @@ export default function AdminModulesPage() {
       });
 
       if (!res.ok) {
-        const d = await res.json();
+        const d = await res.json().catch(() => ({}));
         throw new Error(d.error ?? "Error creando módulo.");
       }
 
@@ -580,7 +641,7 @@ export default function AdminModulesPage() {
 
     setEditingId(m.id);
     setEditTitle(m.title ?? "");
-    setEditModuleCategory((m.module_category as Category) ?? "");
+    setEditModuleCategory((m.module_category as string) ?? "");
     setEditShortDesc(m.short_desc ?? "");
     setEditLongDesc(m.long_desc ?? "");
     setEditSecondText(m.second_text ?? "");
@@ -700,7 +761,7 @@ export default function AdminModulesPage() {
       });
 
       if (!res.ok) {
-        const d = await res.json();
+        const d = await res.json().catch(() => ({}));
         throw new Error(d.error ?? "Error guardando cambios.");
       }
 
@@ -784,7 +845,7 @@ export default function AdminModulesPage() {
               });
 
               if (!res.ok) {
-                const d = await res.json();
+                const d = await res.json().catch(() => ({}));
                 throw new Error(d.error ?? "No se pudo eliminar.");
               }
 
@@ -795,7 +856,13 @@ export default function AdminModulesPage() {
                 durationMs: 1800,
               });
 
-              await loadModules(page);
+              const nextTotal = total !== null ? Math.max(0, total - 1) : null;
+              const nextMaxPage =
+                nextTotal !== null
+                  ? Math.max(0, Math.ceil(nextTotal / PAGE_SIZE) - 1)
+                  : page;
+
+              await loadModules(Math.min(page, nextMaxPage));
             } catch (err: any) {
               push({
                 type: "error",
@@ -820,20 +887,12 @@ export default function AdminModulesPage() {
       <Toasts items={toasts} onClose={remove} />
 
       <div className="pg_module">
-        <div id="dashboard" className="module_dashboard">
+        <div id="dashboard_scroll" className="module_dashboard">
           <div className="module_dashboard_logaccount">
             <div className="module_panelinfo">
               <h1>PANEL ADMINISTRADOR MÓDULOS</h1>
               <p>Cuenta: {userEmail}</p>
             </div>
-
-            <button
-              type="button"
-              className="module_logout_button"
-              onClick={logout}
-            >
-              Cerrar sesión
-            </button>
           </div>
 
           <section className="module_config">
@@ -851,22 +910,36 @@ export default function AdminModulesPage() {
                   onChange={(e) => setTitle(e.target.value)}
                 />
 
-                <select
-                  className="module_select_field"
-                  value={moduleCategory}
-                  onChange={(e) =>
-                    setModuleCategory(e.target.value as Category)
-                  }
-                >
-                  <option value="" disabled>
-                    Selecciona categoría…
-                  </option>
-                  {CATEGORY_OPTIONS.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
+                <div className="module_category_picker">
+                  <button
+                    type="button"
+                    className="module_category_add_btn"
+                    onClick={() => setShowCategoryManager(true)}
+                    aria-label="Administrar categorías"
+                    title="Administrar categorías"
+                  >
+                    +
+                  </button>
+
+                  <select
+                    className="module_select_field"
+                    value={moduleCategory}
+                    onChange={(e) => setModuleCategory(e.target.value)}
+                    disabled={categoriesLoading}
+                  >
+                    <option value="" disabled>
+                      {categoriesLoading
+                        ? "Cargando categorías…"
+                        : "Selecciona categoría…"}
                     </option>
-                  ))}
-                </select>
+
+                    {categories.map((c) => (
+                      <option key={c.id} value={c.name}>
+                        {formatCategoryLabel(c.name)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
                 <textarea
                   className="module_textarea_field"
@@ -922,7 +995,6 @@ export default function AdminModulesPage() {
 
                     {bannerPreviewUrl && (
                       <div className="module_preview_box">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={bannerPreviewUrl}
                           alt="Preview banner"
@@ -977,9 +1049,9 @@ export default function AdminModulesPage() {
                       </span>
                     </div>
                     <span className="module_file_button">Elegir</span>
+
                     {featuredPreviewUrl && (
                       <div className="module_preview_box">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={featuredPreviewUrl}
                           alt="Preview imagen destacada"
@@ -1058,7 +1130,6 @@ export default function AdminModulesPage() {
                         key={`${item.file.name}-${i}`}
                         className="module_preview_box"
                       >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={item.previewUrl}
                           alt={item.file.name}
@@ -1093,7 +1164,7 @@ export default function AdminModulesPage() {
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
-                    saveEdit();
+                    void saveEdit();
                   }}
                   className="module_dashboard_actions_form"
                 >
@@ -1104,22 +1175,26 @@ export default function AdminModulesPage() {
                     onChange={(e) => setEditTitle(e.target.value)}
                   />
 
-                  <select
-                    className="module_select_field"
-                    value={editModuleCategory}
-                    onChange={(e) =>
-                      setEditModuleCategory(e.target.value as Category)
-                    }
-                  >
-                    <option value="" disabled>
-                      Selecciona categoría…
-                    </option>
-                    {CATEGORY_OPTIONS.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
+                  <div className="module_category_picker">
+                    <select
+                      className="module_select_field"
+                      value={editModuleCategory}
+                      onChange={(e) => setEditModuleCategory(e.target.value)}
+                      disabled={categoriesLoading}
+                    >
+                      <option value="" disabled>
+                        {categoriesLoading
+                          ? "Cargando categorías…"
+                          : "Selecciona categoría…"}
                       </option>
-                    ))}
-                  </select>
+
+                      {categories.map((c) => (
+                        <option key={c.id} value={c.name}>
+                          {formatCategoryLabel(c.name)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
                   <textarea
                     className="module_textarea_field"
@@ -1179,7 +1254,6 @@ export default function AdminModulesPage() {
 
                       {editBannerPreviewUrl ? (
                         <div className="module_preview_box">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={editBannerPreviewUrl}
                             alt="Preview banner nuevo"
@@ -1188,7 +1262,6 @@ export default function AdminModulesPage() {
                         </div>
                       ) : editingModule.banner_image_url ? (
                         <div className="module_preview_box">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={editingModule.banner_image_url}
                             alt="Banner actual"
@@ -1236,7 +1309,6 @@ export default function AdminModulesPage() {
 
                       {editFeaturedPreviewUrl ? (
                         <div className="module_preview_box">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={editFeaturedPreviewUrl}
                             alt="Preview imagen destacada nueva"
@@ -1246,7 +1318,6 @@ export default function AdminModulesPage() {
                       ) : editingModule.featured_image_url &&
                         !editRemoveFeatured ? (
                         <div className="module_preview_box">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={editingModule.featured_image_url}
                             alt="Imagen destacada actual"
@@ -1337,7 +1408,6 @@ export default function AdminModulesPage() {
                             key={`${url}-${i}`}
                             className="module_preview_box"
                           >
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                               src={url}
                               alt={`Imagen actual ${i + 1}`}
@@ -1365,7 +1435,6 @@ export default function AdminModulesPage() {
                             key={`${item.file.name}-${i}`}
                             className="module_preview_box"
                           >
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                               src={item.previewUrl}
                               alt={item.file.name}
@@ -1428,12 +1497,13 @@ export default function AdminModulesPage() {
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value)}
               style={{ maxWidth: 260 }}
+              disabled={categoriesLoading}
             >
               <option value="Todos">Todos</option>
 
-              {CATEGORY_OPTIONS.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
+              {categories.map((opt) => (
+                <option key={opt.id} value={opt.name}>
+                  {formatCategoryLabel(opt.name)}
                 </option>
               ))}
             </select>
@@ -1452,7 +1522,7 @@ export default function AdminModulesPage() {
 
             {!loading && modules.length > 0 && filteredModules.length === 0 && (
               <div className="modules_loading_status">
-                No se encontraron módulos para esta categoria
+                No se encontraron módulos para esta categoría
               </div>
             )}
 
@@ -1472,7 +1542,9 @@ export default function AdminModulesPage() {
                     <div className="module_card_top">
                       <div className="module_card_name">{m.title}</div>
                       <div className="module_card_category">
-                        {m.module_category}
+                        {m.module_category
+                          ? formatCategoryLabel(m.module_category)
+                          : "N/A"}
                       </div>
                     </div>
 
@@ -1533,7 +1605,7 @@ export default function AdminModulesPage() {
             <div className="module_pageButtons">
               <button
                 disabled={loading || page === 0}
-                onClick={() => loadModules(page - 1)}
+                onClick={() => void loadModules(page - 1)}
                 type="button"
               >
                 ←
@@ -1544,7 +1616,7 @@ export default function AdminModulesPage() {
               <button
                 disabled={loading || isLastPage}
                 onClick={() => {
-                  if (!isLastPage) loadModules(page + 1);
+                  if (!isLastPage) void loadModules(page + 1);
                 }}
                 type="button"
               >
@@ -1554,6 +1626,41 @@ export default function AdminModulesPage() {
           </section>
         </div>
       </div>
+
+      {showCategoryManager && (
+        <div
+          className="module_modal_overlay"
+          onClick={() => setShowCategoryManager(false)}
+        >
+          <div
+            className="module_modal_card"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="module_modal_header">
+              <h2>Administrar Categorías</h2>
+
+              <button
+                type="button"
+                className="module_modal_close"
+                onClick={() => setShowCategoryManager(false)}
+                aria-label="Cerrar"
+              >
+                ×
+              </button>
+            </div>
+
+            <CategoryManager
+              pageKey={PAGE_KEY}
+              push={push}
+              remove={(id: string | number) => remove(String(id))}
+              className="module_dashboard_actions module_dashboard_actions_modal"
+              onChanged={(items) => {
+                syncCategoriesState(items);
+              }}
+            />
+          </div>
+        </div>
+      )}
     </>
   );
 }

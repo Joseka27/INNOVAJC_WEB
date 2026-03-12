@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { downloadsRepository } from "@/repositories/downloadsRepository";
+import { categoriesRepository } from "@/repositories/categoriesRepository";
 import type {
   Download,
   InsertDownload,
@@ -14,6 +15,13 @@ function normText(v: unknown): string {
   return String(v ?? "")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function normalizeCategoryName(value: unknown): string {
+  return String(value ?? "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .toLowerCase();
 }
 
 function requireText(
@@ -43,6 +51,26 @@ function validateUrlLike(url: string, fieldName: string) {
 
 function normalizeVersion(v: string) {
   return v.replace(/\s+/g, "");
+}
+
+async function requireCategory(
+  supabase: SupabaseClient,
+  value: unknown,
+  page = "downloads",
+): Promise<string> {
+  const v = normalizeCategoryName(value);
+
+  if (!v) {
+    throw new Error("Categoría inválida");
+  }
+
+  const found = await categoriesRepository(supabase).getByPageAndName(page, v);
+
+  if (!found) {
+    throw new Error("Categoría inválida");
+  }
+
+  return v;
 }
 
 export const downloadsService = {
@@ -96,12 +124,11 @@ export const downloadsService = {
     });
     validateUrlLike(file_url, "URL de archivo");
 
-    const type_file = requireText(data.type_file, {
-      field: "type_file",
-      min: 1,
-      max: 30,
-      message: "Tipo de archivo requerido",
-    });
+    const type_file = await requireCategory(
+      supabase,
+      data.type_file,
+      "downloads",
+    );
 
     const requirements = requireText(data.requirements, {
       field: "requirements",
@@ -193,12 +220,11 @@ export const downloadsService = {
     }
 
     if (patch.type_file !== undefined) {
-      clean.type_file = requireText(patch.type_file, {
-        field: "type_file",
-        min: 1,
-        max: 30,
-        message: "Tipo de archivo requerido",
-      });
+      clean.type_file = await requireCategory(
+        supabase,
+        patch.type_file,
+        "downloads",
+      );
     }
 
     if (patch.requirements !== undefined) {

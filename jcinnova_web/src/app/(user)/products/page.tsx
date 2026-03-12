@@ -48,6 +48,18 @@ async function fetchModulePage(
   return Array.isArray(data?.items) ? data.items : [];
 }
 
+function formatCategoryLabel(value: string) {
+  return value
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => {
+      if (word === "erp") return "ERP";
+      if (word === "rrhh") return "RRHH";
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
+}
+
 export default function AboutServices() {
   const [modules, setModules] = useState<ModuleItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -81,7 +93,7 @@ export default function AboutServices() {
   }
 
   useEffect(() => {
-    fetchAllModules();
+    void fetchAllModules();
   }, []);
 
   const grouped = useMemo(() => {
@@ -97,6 +109,7 @@ export default function AboutServices() {
       .sort((a, b) => a[0].localeCompare(b[0], "es"))
       .map(([cat, items]) => ({
         cat,
+        catLabel: formatCategoryLabel(cat),
         items: items.sort((a, b) => a.title.localeCompare(b.title, "es")),
       }));
   }, [modules]);
@@ -126,19 +139,19 @@ export default function AboutServices() {
           )}
 
           {!loading && error && (
-            <div className="pg_about_services-empty">❌ {error}</div>
+            <div className="pg_about_services-empty">{error}</div>
           )}
 
           {!loading && !error && grouped.length > 0 && (
             <div className="pg_about_services-groups">
-              {grouped.map(({ cat, items }) => (
+              {grouped.map(({ cat, catLabel, items }) => (
                 <section key={cat} className="pg_about_services-group">
                   <div
                     className="pg_about_services-catDivider"
                     id={slugify(cat)}
                   >
                     <span className="pg_about_services-catLine" aria-hidden />
-                    <h3 className="pg_about_services-catTitle">{cat}</h3>
+                    <h3 className="pg_about_services-catTitle">{catLabel}</h3>
                     <span className="pg_about_services-catLine" aria-hidden />
                   </div>
 
@@ -164,7 +177,7 @@ export default function AboutServices() {
                               <div className="pg_about_services-cardtop">
                                 <h3>{item.title}</h3>
                                 <span className="pg_about_services-chip">
-                                  {item.module_category}
+                                  {formatCategoryLabel(item.module_category)}
                                 </span>
                               </div>
                             </div>

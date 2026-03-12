@@ -7,33 +7,41 @@ import { LazyMotion, m, domAnimation } from "framer-motion";
 import "./user_downloads.css";
 import { createClient } from "@/lib/supabase/browserClient";
 
-type Platform = "Todos" | "Software" | "Documentacion" | "Soporte" | "Reportes";
-
 type DownloadRow = {
   id: number;
   title: string | null;
   description: string | null;
   size: string | null;
   version: string | null;
-  type_file: Platform | null;
+  type_file: string | null;
   app_image: string | null;
   file_url: string | null;
   requirements: string | null;
   created_at?: string | null;
 };
 
+type CategoryRow = {
+  id: number;
+  page: string;
+  name: string;
+  created_at?: string | null;
+};
+
 const DOWNLOADS_BUCKET = "downloads";
-
-const PLATFORMS: Array<Platform | "Todos"> = [
-  "Todos",
-  "Software",
-  "Documentacion",
-  "Soporte",
-  "Reportes",
-];
-
-//limite de 500apps
+const PAGE_KEY = "downloads";
 const FETCH_LIMIT = 500;
+
+function formatCategoryLabel(value: string) {
+  return value
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => {
+      if (word === "erp") return "ERP";
+      if (word === "rrhh") return "RRHH";
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
+}
 
 function fmtDate(iso: string) {
   const d = new Date(iso);
@@ -78,27 +86,51 @@ async function fetchDownloadPage(
 
   if (!res.ok) {
     let errMsg = "Error cargando downloads";
-    if (data && data.error) {
-      errMsg = data.error;
-    }
+    if (data && data.error) errMsg = data.error;
     throw new Error(errMsg);
   }
 
-  let batch: DownloadRow[] = [];
-  if (data && Array.isArray(data.items)) {
-    batch = data.items;
+  return data && Array.isArray(data.items) ? data.items : [];
+}
+
+async function fetchCategories(page: string): Promise<string[]> {
+  const res = await fetch(`/api/categories?page=${encodeURIComponent(page)}`, {
+    method: "GET",
+    cache: "no-store",
+  });
+
+  const raw = await res.text();
+  let data: any = null;
+
+  try {
+    if (raw) data = JSON.parse(raw);
+  } catch {
+    throw new Error(
+      `La API no devolvió JSON. Revisa /api/categories (status ${res.status}).`,
+    );
   }
-  return batch;
+
+  if (!res.ok) {
+    let errMsg = "Error cargando categorías";
+    if (data && data.error) errMsg = data.error;
+    throw new Error(errMsg);
+  }
+
+  const items: CategoryRow[] = Array.isArray(data) ? data : [];
+  return items.map((x) => x.name).filter(Boolean);
 }
 
 export default function Downloads() {
   const supabase = createClient();
 
-  const [active, setActive] = useState<(typeof PLATFORMS)[number]>("Todos");
+  const [active, setActive] = useState("Todos");
   const [q, setQ] = useState("");
 
   const [rows, setRows] = useState<DownloadRow[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+
   const [loading, setLoading] = useState(false);
+  const [categoriesLoading, setCategoriesLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [signedUrlByPath, setSignedUrlByPath] = useState<
@@ -126,14 +158,31 @@ export default function Downloads() {
       setRows(all);
       void prefetchCovers(all);
     } catch (e: any) {
-      let errMsg = "Error inesperado cargando downloads.";
-      if (e && e.message) {
-        errMsg = e.message;
-      }
-      setError(errMsg);
+      setError(e?.message ?? "Error inesperado cargando downloads.");
       setRows([]);
     }
+
     setLoading(false);
+  }
+
+  async function loadCategories() {
+    setCategoriesLoading(true);
+
+    try {
+      const items = await fetchCategories(PAGE_KEY);
+      setCategories(items);
+
+      setActive((prev) => {
+        if (prev === "Todos") return prev;
+        return items.includes(prev) ? prev : "Todos";
+      });
+    } catch (e: any) {
+      setError((prev) => prev ?? e?.message ?? "Error cargando categorías.");
+      setCategories([]);
+      setActive("Todos");
+    }
+
+    setCategoriesLoading(false);
   }
 
   async function prefetchCovers(items: DownloadRow[]) {
@@ -155,7 +204,7 @@ export default function Downloads() {
 
         const { data, error } = await supabase.storage
           .from(DOWNLOADS_BUCKET)
-          .createSignedUrl(path, 60 * 30); // 30 min
+          .createSignedUrl(path, 60 * 30);
 
         if (!error && data?.signedUrl) next[path] = data.signedUrl;
       }),
@@ -167,14 +216,14 @@ export default function Downloads() {
   }
 
   useEffect(() => {
-    fetchAllDownloads();
+    void Promise.all([fetchAllDownloads(), loadCategories()]);
   }, []);
 
   const downloadsUI = useMemo(() => {
     return rows
       .filter((r) => typeof r.id === "number")
       .map((r) => {
-        const platform = (r.type_file ?? "windows") as Platform;
+        const platform = (r.type_file ?? "").toString();
 
         const coverUrl =
           r.app_image && signedUrlByPath[r.app_image]
@@ -193,7 +242,6 @@ export default function Downloads() {
           version: (r.version ?? "—").toString(),
           size: (r.size ?? "—").toString(),
           updatedISO,
-
           fileHref: `/api/downloads/${r.id}/download`,
           coverUrl,
           requirements: parseRequirements(r.requirements),
@@ -218,10 +266,11 @@ export default function Downloads() {
     });
   }, [active, q, downloadsUI]);
 
+  const filterOptions = useMemo(() => ["Todos", ...categories], [categories]);
+
   return (
     <LazyMotion features={domAnimation}>
       <div className="pg_down">
-        {/* HERO */}
         <section className="pg_down-hero" id="inicio">
           <div className="pg_down-heroInner">
             <div className="pg_down-heroSplit">
@@ -304,8 +353,8 @@ export default function Downloads() {
             <div className="pg_down-head">
               <h2>Descargas</h2>
               <p>
-                Aqui podras encontrar todo lo que necesites, desde el sorftware
-                hasta documentacion adecuada
+                Aqui podras encontrar todo lo que necesites, desde el software
+                hasta documentación adecuada
               </p>
             </div>
 
@@ -315,14 +364,15 @@ export default function Downloads() {
                 role="tablist"
                 aria-label="Filtros"
               >
-                {PLATFORMS.map((p) => (
+                {filterOptions.map((p) => (
                   <button
                     key={p}
                     type="button"
                     className={`pg_down-filterBtn ${active === p ? "is-active" : ""}`}
                     onClick={() => setActive(p)}
+                    disabled={categoriesLoading && p !== "Todos"}
                   >
-                    {p === "Todos" ? "Todos" : p}
+                    {p === "Todos" ? "Todos" : formatCategoryLabel(p)}
                   </button>
                 ))}
               </div>
@@ -341,7 +391,7 @@ export default function Downloads() {
                   className="pg_down-searchInput"
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
-                  placeholder="Buscar Archivos"
+                  placeholder="Buscar archivos"
                   aria-label="Buscar descargas"
                 />
               </div>
@@ -353,7 +403,7 @@ export default function Downloads() {
               <div className="pg_down-empty">❌ {error}</div>
             ) : filtered.length === 0 ? (
               <div className="pg_down-empty">
-                No hay resultados para esta categoria
+                No hay resultados para esta categoría
               </div>
             ) : (
               <div className="pg_down-grid">
@@ -386,7 +436,9 @@ export default function Downloads() {
                           <div className="pg_down-appNameRow">
                             <h3 className="pg_down-appName">{d.name}</h3>
                             <span className="pg_down-chip">
-                              {d.platform.toUpperCase()}
+                              {d.platform
+                                ? formatCategoryLabel(d.platform)
+                                : "Sin categoría"}
                             </span>
                           </div>
                           <div className="pg_down-appTagline">{d.tagline}</div>
@@ -432,6 +484,7 @@ export default function Downloads() {
             )}
           </div>
         </section>
+
         <section className="pg_down-safety" id="seguridad">
           <div className="pg_down-safetyInner">
             <div className="pg_down-safetyHead">
@@ -440,9 +493,9 @@ export default function Downloads() {
                 Seguridad y requisitos mínimos
               </h2>
               <p className="pg_down-safetyText">
-                Descarga siempre desde este Sitio ofiacial. Si tu antivirus o
+                Descarga siempre desde este sitio oficial. Si tu antivirus
                 muestra advertencias, valida que el archivo provenga de esta URL
-                y que tu equipo cuente con las caracteristicas minimas que el
+                y que tu equipo cuente con las características mínimas que el
                 sistema requiere.
               </p>
             </div>
@@ -451,11 +504,8 @@ export default function Downloads() {
               <div className="pg_down-safetyCard">
                 <h3>Recomendaciones</h3>
                 <ul>
-                  <li>
-                    Verifica que el sistema siempre este Actualizado a su ultima
-                    version por seguridad
-                  </li>
-                  <li>No instales desde paginas no oficiales</li>
+                  <li>Verifica que el sistema esté actualizado.</li>
+                  <li>No instales desde páginas no oficiales.</li>
                   <li>Si tienes dudas, contáctanos antes de instalar.</li>
                 </ul>
               </div>

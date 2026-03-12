@@ -2,6 +2,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { modulesRepository } from "@/repositories/modulesRepository";
+import { categoriesRepository } from "@/repositories/categoriesRepository";
 import type { Module, InsertModule, UpdateModule } from "@/models/modulesModel";
 
 function assertPositiveInt(id: number, label = "id") {
@@ -12,6 +13,13 @@ function normText(v: unknown): string {
   return String(v ?? "")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function normalizeCategoryName(value: unknown): string {
+  return String(value ?? "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .toLowerCase();
 }
 
 function requireText(
@@ -45,7 +53,27 @@ function validateGallery(images: unknown): string[] {
   return images
     .map((v) => normText(v))
     .filter((v) => v.length > 0)
-    .slice(0, 20); // límite razonable
+    .slice(0, 20);
+}
+
+async function requireCategory(
+  supabase: SupabaseClient,
+  value: unknown,
+  page = "modules",
+): Promise<string> {
+  const v = normalizeCategoryName(value);
+
+  if (!v) {
+    throw new Error("Categoría inválida");
+  }
+
+  const found = await categoriesRepository(supabase).getByPageAndName(page, v);
+
+  if (!found) {
+    throw new Error("Categoría inválida");
+  }
+
+  return v;
 }
 
 export const modulesService = {
@@ -98,12 +126,11 @@ export const modulesService = {
 
     const gallery_images = validateGallery(data.gallery_images);
 
-    const module_category = requireText(data.module_category, {
-      field: "module_category",
-      min: 2,
-      max: 80,
-      message: "Categoría requerida",
-    });
+    const module_category = await requireCategory(
+      supabase,
+      data.module_category,
+      "modules",
+    );
 
     return modulesRepository(supabase).createModule({
       title,
@@ -192,12 +219,11 @@ export const modulesService = {
     }
 
     if (patch.module_category !== undefined) {
-      clean.module_category = requireText(patch.module_category, {
-        field: "module_category",
-        min: 2,
-        max: 80,
-        message: "Categoría requerida",
-      });
+      clean.module_category = await requireCategory(
+        supabase,
+        patch.module_category,
+        "modules",
+      );
     }
 
     if (Object.keys(clean).length === 0) throw new Error("Nada que actualizar");
