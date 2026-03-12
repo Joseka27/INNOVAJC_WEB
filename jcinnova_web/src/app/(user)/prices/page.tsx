@@ -39,9 +39,10 @@ function formatCategoryLabel(value: string) {
     .split(" ")
     .filter(Boolean)
     .map((word) => {
-      if (word === "erp") return "ERP";
-      if (word === "rrhh") return "RRHH";
-      return word.charAt(0).toUpperCase() + word.slice(1);
+      const lower = word.toLowerCase();
+      if (lower === "erp") return "ERP";
+      if (lower === "rrhh") return "RRHH";
+      return lower.charAt(0).toUpperCase() + lower.slice(1);
     })
     .join(" ");
 }
@@ -107,7 +108,7 @@ async function fetchCategories(page: string): Promise<string[]> {
 }
 
 export default function PricesPage() {
-  const [active, setActive] = useState("Todos");
+  const [active, setActive] = useState("");
   const [query, setQuery] = useState("");
 
   const [rows, setRows] = useState<PriceRow[]>([]);
@@ -152,13 +153,13 @@ export default function PricesPage() {
       setCategories(items);
 
       setActive((prev) => {
-        if (prev === "Todos") return prev;
-        return items.includes(prev) ? prev : "Todos";
+        if (prev && items.includes(prev)) return prev;
+        return items[0] ?? "";
       });
     } catch (e: any) {
       setError((prev) => prev ?? e?.message ?? "Error cargando categorías.");
       setCategories([]);
-      setActive("Todos");
+      setActive("");
     }
 
     setCategoriesLoading(false);
@@ -187,10 +188,9 @@ export default function PricesPage() {
   }, [rows]);
 
   const filtered = useMemo(() => {
-    const base =
-      active === "Todos"
-        ? pricesUI
-        : pricesUI.filter((d) => d.category === active);
+    const base = active
+      ? pricesUI.filter((d) => d.category === active)
+      : pricesUI;
 
     const q = query.trim().toLowerCase();
     if (!q) return base;
@@ -203,7 +203,7 @@ export default function PricesPage() {
     });
   }, [active, query, pricesUI]);
 
-  const filterOptions = useMemo(() => ["Todos", ...categories], [categories]);
+  const filterOptions = useMemo(() => categories, [categories]);
 
   return (
     <LazyMotion features={domAnimation}>
@@ -230,9 +230,9 @@ export default function PricesPage() {
                     type="button"
                     className={`pg_prices-filterBtn ${active === p ? "is-active" : ""}`}
                     onClick={() => setActive(p)}
-                    disabled={categoriesLoading && p !== "Todos"}
+                    disabled={categoriesLoading}
                   >
-                    {p === "Todos" ? "Todos" : formatCategoryLabel(p)}
+                    {formatCategoryLabel(p)}
                   </button>
                 ))}
               </div>
@@ -244,7 +244,7 @@ export default function PricesPage() {
               <div className="pg_prices-empty">❌ {error}</div>
             ) : filtered.length === 0 ? (
               <div className="pg_prices-empty">
-                No hay planes para este servicio
+                No hay planes para esta categoría
               </div>
             ) : (
               <div className="pg_prices-grid">
