@@ -8,6 +8,7 @@ import type { Module } from "@/models/modulesModel";
 import "./modulesslugpage.css";
 
 const FETCH_LIMIT = 200;
+const RECOMMEND_LIMIT = 4;
 
 function slugify(text: string) {
   return String(text ?? "")
@@ -37,9 +38,10 @@ function formatCategoryLabel(value: string) {
     .split(" ")
     .filter(Boolean)
     .map((word) => {
-      if (word === "erp") return "ERP";
-      if (word === "rrhh") return "RRHH";
-      return word.charAt(0).toUpperCase() + word.slice(1);
+      const lower = word.toLowerCase();
+      if (lower === "erp") return "ERP";
+      if (lower === "rrhh") return "RRHH";
+      return lower.charAt(0).toUpperCase() + lower.slice(1);
     })
     .join(" ");
 }
@@ -59,6 +61,12 @@ function isListBlock(block: string) {
 
 function cleanListLine(line: string) {
   return line.replace(/^[-•*]\s+/, "").trim();
+}
+
+function normalizeCategory(value: string | null | undefined) {
+  return String(value ?? "")
+    .trim()
+    .toLowerCase();
 }
 
 async function fetchAllModules(): Promise<Module[]> {
@@ -111,6 +119,7 @@ export default function AboutModuleDetailPage() {
   const slug = String(params?.slug ?? "");
 
   const [loading, setLoading] = useState(true);
+  const [allModules, setAllModules] = useState<Module[]>([]);
   const [moduleItem, setModuleItem] = useState<Module | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -127,10 +136,13 @@ export default function AboutModuleDetailPage() {
         const found = modules.find((m) => slugify(m.title) === slug) ?? null;
 
         if (!cancelled) {
+          setAllModules(modules);
           setModuleItem(found);
         }
       } catch (err: any) {
         if (!cancelled) {
+          setAllModules([]);
+          setModuleItem(null);
           setError(err?.message ?? "No se pudo cargar el módulo.");
         }
       } finally {
@@ -141,9 +153,10 @@ export default function AboutModuleDetailPage() {
     }
 
     if (slug) {
-      run();
+      void run();
     } else {
       setLoading(false);
+      setAllModules([]);
       setModuleItem(null);
     }
 
@@ -165,7 +178,7 @@ export default function AboutModuleDetailPage() {
   const galleryImages = useMemo(
     () =>
       Array.isArray(moduleItem?.gallery_images)
-        ? moduleItem!.gallery_images
+        ? moduleItem.gallery_images
         : [],
     [moduleItem],
   );
@@ -174,12 +187,32 @@ export default function AboutModuleDetailPage() {
     () => galleryImages.slice(0, 4),
     [galleryImages],
   );
+
   const hiddenCount = Math.max(0, galleryImages.length - 4);
 
   const selectedImage =
     selectedIndex !== null && galleryImages[selectedIndex]
       ? galleryImages[selectedIndex]
       : null;
+
+  const recommendedModules = useMemo(() => {
+    if (!moduleItem || !allModules.length) return [];
+
+    const currentId = moduleItem.id;
+    const currentCategory = normalizeCategory(moduleItem.module_category);
+
+    const candidates = allModules.filter((m) => m.id !== currentId);
+
+    const sameCategory = candidates
+      .filter((m) => normalizeCategory(m.module_category) === currentCategory)
+      .sort((a, b) => a.title.localeCompare(b.title, "es"));
+
+    const otherCategories = candidates
+      .filter((m) => normalizeCategory(m.module_category) !== currentCategory)
+      .sort((a, b) => a.title.localeCompare(b.title, "es"));
+
+    return [...sameCategory, ...otherCategories].slice(0, RECOMMEND_LIMIT);
+  }, [allModules, moduleItem]);
 
   function openGalleryAt(index: number) {
     if (!galleryImages.length) return;
@@ -252,7 +285,7 @@ export default function AboutModuleDetailPage() {
               </div>
 
               <div className="pg_about_module_detail-actions">
-                <Link href="/about" className="pg_about_module_detail-back">
+                <Link href="/product" className="pg_about_module_detail-back">
                   ← Volver a módulos
                 </Link>
 
@@ -366,42 +399,39 @@ export default function AboutModuleDetailPage() {
                 <section className="pg_about_module_detail-secondary">
                   <div className="pg_about_module_detail-secondaryText">
                     {secondBlocks.length > 0 && (
-                      <>
-                        <div className="pg_about_module_detail-body">
-                          {secondBlocks.map((block, index) => {
-                            if (isListBlock(block)) {
-                              const lines =
-                                parseLines(block).map(cleanListLine);
-
-                              return (
-                                <div
-                                  key={`second-list-${index}`}
-                                  className="pg_about_module_detail-section"
-                                >
-                                  <ul className="pg_about_module_detail-list">
-                                    {lines.map((line, i) => (
-                                      <li key={`second-li-${index}-${i}`}>
-                                        {line}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                </div>
-                              );
-                            }
+                      <div className="pg_about_module_detail-body">
+                        {secondBlocks.map((block, index) => {
+                          if (isListBlock(block)) {
+                            const lines = parseLines(block).map(cleanListLine);
 
                             return (
                               <div
-                                key={`second-paragraph-${index}`}
+                                key={`second-list-${index}`}
                                 className="pg_about_module_detail-section"
                               >
-                                <p className="pg_about_module_detail-paragraph">
-                                  {block}
-                                </p>
+                                <ul className="pg_about_module_detail-list">
+                                  {lines.map((line, i) => (
+                                    <li key={`second-li-${index}-${i}`}>
+                                      {line}
+                                    </li>
+                                  ))}
+                                </ul>
                               </div>
                             );
-                          })}
-                        </div>
-                      </>
+                          }
+
+                          return (
+                            <div
+                              key={`second-paragraph-${index}`}
+                              className="pg_about_module_detail-section"
+                            >
+                              <p className="pg_about_module_detail-paragraph">
+                                {block}
+                              </p>
+                            </div>
+                          );
+                        })}
+                      </div>
                     )}
                   </div>
 
@@ -429,6 +459,67 @@ export default function AboutModuleDetailPage() {
                       </button>
                     </div>
                   )}
+                </section>
+              )}
+
+              {recommendedModules.length > 0 && (
+                <section className="pg_about_module_detail-recommendations">
+                  <div className="pg_about_module_detail-recommendationsHead">
+                    <h2>Otros módulos recomendados</h2>
+                    <p>
+                      Te pueden interesar más opciones relacionadas con este
+                      módulo.
+                    </p>
+                  </div>
+
+                  <div className="pg_about_module_detail-recommendationsGrid">
+                    {recommendedModules.map((item) => {
+                      const itemSlug = slugify(item.title);
+                      const sameCategory =
+                        normalizeCategory(item.module_category) ===
+                        normalizeCategory(moduleItem.module_category);
+
+                      return (
+                        <article
+                          key={item.id}
+                          className="pg_about_module_detail-recommendationCard"
+                        >
+                          <div
+                            className="pg_about_module_detail-recommendationHero"
+                            style={{
+                              backgroundImage: item.banner_image_url
+                                ? `url(${item.banner_image_url})`
+                                : undefined,
+                            }}
+                          >
+                            <div className="pg_about_module_detail-recommendationOverlay">
+                              <span className="pg_about_module_detail-recommendationChip">
+                                {formatCategoryLabel(item.module_category)}
+                              </span>
+
+                              {sameCategory && (
+                                <span className="pg_about_module_detail-recommendationBadge">
+                                  Misma categoría
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="pg_about_module_detail-recommendationBody">
+                            <h3>{item.title}</h3>
+                            <p>{item.short_desc}</p>
+
+                            <Link
+                              href={`/products/${itemSlug}`}
+                              className="pg_about_module_detail-recommendationLink"
+                            >
+                              Visitar módulo
+                            </Link>
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </div>
                 </section>
               )}
             </>

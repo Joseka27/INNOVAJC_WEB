@@ -187,7 +187,7 @@ export default function AboutServices() {
                             <p>{item.short_desc}</p>
 
                             <Link
-                              href={`/about/${slug}`}
+                              href={`/products/${slug}`}
                               className="pg_about_services-link"
                             >
                               Ver módulo completo
