@@ -96,6 +96,9 @@ export default function AdminModulesPage() {
   const editGalleryRef = useRef<HTMLInputElement | null>(null);
   const editBoxRef = useRef<HTMLDivElement | null>(null);
 
+  const galleryPreviewsRef = useRef<PreviewItem[]>([]);
+  const editGalleryPreviewsRef = useRef<PreviewItem[]>([]);
+
   const [modules, setModules] = useState<Module[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -233,11 +236,19 @@ export default function AdminModulesPage() {
   }, [editFeaturedFile]);
 
   useEffect(() => {
+    galleryPreviewsRef.current = galleryPreviews;
+  }, [galleryPreviews]);
+
+  useEffect(() => {
+    editGalleryPreviewsRef.current = editGalleryPreviews;
+  }, [editGalleryPreviews]);
+
+  useEffect(() => {
     return () => {
-      revokePreviewItems(galleryPreviews);
-      revokePreviewItems(editGalleryPreviews);
+      revokePreviewItems(galleryPreviewsRef.current);
+      revokePreviewItems(editGalleryPreviewsRef.current);
     };
-  }, [galleryPreviews, editGalleryPreviews]);
+  }, []);
 
   function setCreateGalleryWithPreviews(files: File[]) {
     setGalleryFiles(files);
