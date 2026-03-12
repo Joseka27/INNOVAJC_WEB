@@ -101,6 +101,13 @@ export default function HeaderClient() {
             </Link>
             <Link
               className="pg_header-mobileLink"
+              href="/products"
+              onClick={closeMenu}
+            >
+              Productos
+            </Link>
+            <Link
+              className="pg_header-mobileLink"
               href="/customers"
               onClick={closeMenu}
             >
