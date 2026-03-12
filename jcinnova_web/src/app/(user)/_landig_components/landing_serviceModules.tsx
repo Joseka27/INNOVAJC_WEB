@@ -157,6 +157,18 @@ export default function ServicesSection() {
   const canPrev = page > 1;
   const canNext = page < totalPages;
 
+  function formatCategoryLabel(value: string) {
+    return value
+      .split(" ")
+      .filter(Boolean)
+      .map((word) => {
+        if (word === "erp") return "ERP";
+        if (word === "rrhh") return "RRHH";
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      })
+      .join(" ");
+  }
+
   return (
     <LazyMotion features={domAnimation}>
       <section className="pg_main-presentation-part4" id="servicios">
@@ -204,7 +216,7 @@ export default function ServicesSection() {
                     <div className="pg_main-part4-cardtop">
                       <h3>{item.title}</h3>
                       <span className="pg_main-part4-chip">
-                        {item.module_category}
+                        {formatCategoryLabel(item.module_category)}
                       </span>
                     </div>
                     <p>{item.short_desc}</p>
