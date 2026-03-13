@@ -189,7 +189,8 @@ export default function CompaniesPage() {
         <section className="pg_companies-hero" id="companies-hero">
           <div className="pg_companies-heroInner">
             <h1 className="pg_companies-title">
-              Empresas que trabajan y cerren en nosotros.
+              Empresas que Trabajan y <span className="relevance">Creen</span>{" "}
+              en nosotros.
             </h1>
 
             <div className="pg_companies-toolbar">
@@ -347,7 +348,7 @@ export default function CompaniesPage() {
                 {loading
                   ? "Cargando…"
                   : canLoadMore
-                    ? "Load More Results"
+                    ? "Cargar más resultados"
                     : "No hay más resultados"}
               </button>
             </div>

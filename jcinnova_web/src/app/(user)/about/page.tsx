@@ -69,15 +69,19 @@ const About = () => {
                   className="pg_about_innovajc_socialmedia"
                   aria-label="Redes sociales"
                 >
-                  <a href="https://facebook.com" aria-label="Facebook">
+                  <a
+                    href="https://facebook.com/innovajc.cr"
+                    aria-label="Facebook"
+                  >
                     <FaFacebook />
                   </a>
-                  <a href="https://instagram.com" aria-label="Instagram">
+                  <a
+                    href="https://instagram.com/innovajccr"
+                    aria-label="Instagram"
+                  >
                     <FaInstagram />
                   </a>
-                  <a href="https://twitter.com" aria-label="Twitter">
-                    <FaTwitter />
-                  </a>
+
                   <a href="https://wa.me/40701423" aria-label="WhatsApp">
                     <FaWhatsapp />
                   </a>

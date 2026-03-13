@@ -125,7 +125,10 @@ export default function AboutServices() {
             viewport={{ once: true }}
           >
             <div className="pg_about_services-head">
-              <h2>SECE Software se adapta a tu negocio</h2>
+              <h2>
+                SECE Software se <span className="relevance">adapta</span> a tu
+                negocio
+              </h2>
               <p>
                 Explora cada módulo del sistema y entra a su página individual
                 para ver la información completa, beneficios y alcance

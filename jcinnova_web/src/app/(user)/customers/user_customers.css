@@ -313,6 +313,13 @@
   border-radius: 999px;
 }
 
+.relevance {
+  background: linear-gradient(90deg, #008cff, #2d9bf5, #1976d2);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 .pg_companies-loadMore {
   height: 3.1rem;
   padding: 0 1.2rem;
@@ -320,8 +327,10 @@
   border: 2px solid rgba(5, 43, 105, 0.85);
   background: rgba(255, 255, 255, 0.92);
   color: var(--comp-blue);
+  font-size: 1rem;
   font-weight: 900;
   cursor: pointer;
+  font-family: inherit;
 
   transition:
     transform 0.15s ease,

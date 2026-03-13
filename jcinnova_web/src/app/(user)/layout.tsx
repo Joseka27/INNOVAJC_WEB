@@ -101,16 +101,12 @@ export default function RootLayout({
                   <h4>Redes Sociales</h4>
 
                   <div className="socialmedia">
-                    <a href="https://facebook.com">
+                    <a href="https://facebook.com/innovajc.cr">
                       <FaFacebook />
                     </a>
 
-                    <a href="https://instagram.com">
+                    <a href="https://instagram.com/innovajccr">
                       <FaInstagram />
-                    </a>
-
-                    <a href="https://twitter.com">
-                      <FaTwitter />
                     </a>
 
                     <a href="https://wa.me/40701423">
