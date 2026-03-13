@@ -56,8 +56,8 @@ export default function RootLayout({
                       className="pg_footer-logo"
                       src="/images/LogoInnova.png"
                       alt="Logo"
-                      width={130}
-                      height={100}
+                      width={126}
+                      height={97}
                     />
                     <h3>Soluciones Integrales InnovaJC</h3>
                   </div>
