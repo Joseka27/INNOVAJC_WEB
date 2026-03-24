@@ -691,7 +691,7 @@ export default function AdminDownloadsPage() {
         <div id="dashboard_scroll" className="download_dashboard">
           <div className="download_dashboard_logaccount">
             <div className="download_panelinfo">
-              <h1>PANEL ADMINISTRADOR DOWNLOADS</h1>
+              <h1>PANEL ADMINISTRADOR DESCARGAS</h1>
               <p>Cuenta: {userEmail}</p>
             </div>
           </div>
