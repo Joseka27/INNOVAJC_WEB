@@ -107,9 +107,7 @@ const About = () => {
             <a className="pg_about_stickyNav-link" href="#WhatWeDo">
               Qué ofrece SECE
             </a>
-            <a className="pg_about_stickyNav-link" href="#services">
-              Módulos SECE
-            </a>
+           
             <a className="pg_about_stickyNav-link" href="#location">
               Ubicación
             </a>
