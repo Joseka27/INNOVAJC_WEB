@@ -183,7 +183,7 @@ const About = () => {
                     ))}
                   </ul>
 
-                  <a className="pg_about_servicesFeature-cta" href="#services">
+                  <a className="pg_about_servicesFeature-cta" href="/contact">
                     MÁS INFORMACIÓN
                   </a>
                 </aside>
