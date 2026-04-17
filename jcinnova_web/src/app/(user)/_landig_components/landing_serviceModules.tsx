@@ -223,7 +223,7 @@ export default function ServicesSection() {
                   </div>
 
                   <div className="pg_main-part4-cardmoreinfo">
-                    <Link href={`/about/${slugify(item.title)}`}>
+                    <Link href={`/products/${slugify(item.title)}`}>
                       Más información ↗
                     </Link>
                   </div>
